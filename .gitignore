@@ -1,0 +1,13 @@
+# compilación
+out/
+*.class
+
+# resultados que regenera cada corrida (los de referencia viven en resultados/)
+/resultados_configuracion.csv
+/resultados_variantes.csv
+
+# editores y sistema
+.idea/
+.vscode/
+*.iml
+.DS_Store

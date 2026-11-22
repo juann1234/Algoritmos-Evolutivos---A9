@@ -57,7 +57,7 @@ genes). El informe inicial está en `docs/Informe_Inicial_v2.pdf`.
 | Decodificador cronológico, reparación y función de fitness | hecho y validado |
 | AE generacional con elitismo, escenarios comunes y selección final en dos etapas | hecho y validado |
 | Referencias: statu quo, búsqueda aleatoria, greedy miope, óptimo exacto en micro-instancias | hechas |
-| Tests estadísticos: Lilliefors, ANOVA, Kruskal-Wallis, Friedman, Wilcoxon, Bonferroni | hechos y validados contra scipy |
+| Tests estadísticos: Shapiro-Wilk, Lilliefors, ANOVA, Kruskal-Wallis, Friedman, Wilcoxon (exacto), t de Welch, Mann-Whitney, Holm, Bonferroni | hechos y validados contra scipy (32 chequeos) |
 | Diseño factorial 3×3×3 de configuración paramétrica | hecho; **falta correrlo completo** |
 | Variantes del temario: gap generacional, estado estacionario, sharing, CHC, memético | hechas y comparadas |
 
@@ -85,20 +85,21 @@ la búsqueda.
 ### Comparación de variantes del temario
 
 10 semillas por variante, 8.000 evaluaciones (incluyen reevaluaciones y búsqueda
-local), Wilcoxon pareado por semilla contra la base con corrección de Bonferroni.
+local), Wilcoxon pareado por semilla contra la base con post-hoc de Holm (p exacto,
+ver DECISIONES D-A5; antes Bonferroni sobre la aproximación normal, que daba 0,025).
 Datos crudos en `resultados/resultados_variantes.csv`.
 
 | variante | media | dif. vs base | diversidad final | veredicto |
 |---|---|---|---|---|
 | **base** (generacional + elitismo) | **230,81** | — | 14,0 | — |
 | memético (búsqueda local cada 5 gen.) | 230,82 | +0,01 | 14,3 | sin diferencia |
-| sharing (σ = 6 genes) | 228,35 | −2,46 | 23,9 | peor (p = 0,025) |
-| gap generacional 50% | 228,05 | −2,76 | 7,4 | peor (p = 0,025) |
-| CHC | 218,34 | −12,47 | 31,2 | peor (p = 0,025) |
-| estado estacionario | 214,43 | −16,38 | 5,1 | peor (p = 0,025) |
+| sharing (σ = 6 genes) | 228,35 | −2,46 | 23,9 | peor (p Holm = 0,0098) |
+| gap generacional 50% | 228,05 | −2,76 | 7,4 | peor (p Holm = 0,0098) |
+| CHC | 218,34 | −12,47 | 31,2 | peor (p Holm = 0,0098) |
+| estado estacionario | 214,43 | −16,38 | 5,1 | peor (p Holm = 0,0098) |
 
 Con 24.000 evaluaciones, sharing contra base: −1,08, ya no significativo
-(p = 0,35). **Conclusión: el AE generacional con elitismo queda como algoritmo
+(p exacto = 0,44). **Conclusión: el AE generacional con elitismo queda como algoritmo
 definitivo.** La explicación de cada resultado está en los comentarios de
 `AlgoritmoEvolutivo.java` y es material directo para el informe final.
 

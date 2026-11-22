@@ -14,7 +14,7 @@ Estados: ⬜ pendiente · 🟨 en curso · ✅ hecho · ⛔ bloqueado
 |---|---|---|---|---|---|
 | P01 | Validación del trabajo previo | — | Alen | ✅ | `docs/VALIDACION.md` |
 | P02 | Documentación de coordinación (CLAUDE.md, REFERENCIAS, DECISIONES, este archivo) | — | Alen | ✅ | |
-| P03 | Shapiro-Wilk, Mann-Whitney, Holm, Wilcoxon exacto, validados contra scipy | §IV-A, §IV-B | Alen | ⬜ | D-A5 |
+| P03 | Shapiro-Wilk, Mann-Whitney, Holm, Wilcoxon exacto, validados contra scipy | §IV-A, §IV-B | Alen | ✅ | D-A5; 32 chequeos en `ValidarEstadistica` |
 | P04 | Adaptador jMetal + AE generacional sobre jMetal + equivalencia con el AE propio | §III | Alen | ⬜ | D-A1, D-A2 |
 | P05 | NSGA-II con jMetal (f₁ utilidad deportiva, f₂ costo neto) | §III-C | Alen | ⬜ | D-A6 |
 | P06 | Métricas multiobjetivo: hipervolumen relativo, spread, GD; frente de referencia por unión de ≥ 30 corridas; estadística por métrica | §IV-C, Tema 12 | Alen | ⬜ | |
@@ -58,7 +58,19 @@ final. Agregar acá cada vez que aparezca una.
 
 Entradas nuevas arriba. Formato: fecha · quién · qué se hizo · cómo se validó · qué sigue.
 
-### 22/11/2026 · Alen (con Claude)
+### 22/11/2026 · Alen (con Claude) · módulo de estadística
+- `Estadistica.java`: Shapiro-Wilk (AS R94 de Royston), t de Welch,
+  Mann-Whitney (asintótico con corrección), Holm, Wilcoxon exacto cuando
+  no hay empates y n ≤ 50, cuantil normal (AS 241) y Φ de precisión doble.
+  Validado: `ValidarEstadistica` pasó de 8 a 32 chequeos contra scipy 1.18.1,
+  todos OK.
+- `Experimentos` usa Shapiro-Wilk (Lilliefors como control) y Holm;
+  `CompararVariantes` usa Holm. Su salida coincide con
+  `herramientas/recalcular_variantes.py` (p exacto 0,0020, Holm 0,0098).
+- Efecto en números de referencia: solo cambian los p de la comparación de
+  variantes (README actualizado). Las conclusiones no cambian.
+
+### 22/11/2026 · Alen (con Claude) · validación y coordinación
 - Validé todo lo de Juan (`docs/VALIDACION.md`): `validar.sh` reproduce
   exactamente todos los números; tests recalculados con scipy
   (`herramientas/recalcular_variantes.py`), las conclusiones se sostienen

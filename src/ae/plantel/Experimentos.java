@@ -158,18 +158,24 @@ public final class Experimentos {
         // ---------------- normalidad ----------------
         System.out.println();
         System.out.println(linea);
-        System.out.println("Test de normalidad (Kolmogorov-Smirnov / Lilliefors, alfa=5%)");
+        System.out.println("Test de normalidad (Shapiro-Wilk, alfa=5%; Lilliefors como control)");
         System.out.println(linea);
+        // Shapiro-Wilk es el test principal (informe §IV-A, DECISIONES D-A5);
+        // Lilliefors se reporta como control porque el Tema 12 lo acepta.
         int normales = 0;
-        double critico = Estadistica.criticoLilliefors(bloques);
+        int normalesLilliefors = 0;
         for (int i = 0; i < grilla.size(); i++) {
-            if (Estadistica.esNormal(datos[i])) {
+            if (bloques >= 3 && Estadistica.esNormalShapiro(datos[i])) {
                 normales++;
             }
+            if (Estadistica.esNormal(datos[i])) {
+                normalesLilliefors++;
+            }
         }
-        System.out.printf("  valor crítico para n=%d: %.4f%n", bloques, critico);
-        System.out.printf("  configuraciones con distribución normal: %d de %d%n",
+        System.out.printf("  configuraciones normales según Shapiro-Wilk: %d de %d%n",
                 normales, grilla.size());
+        System.out.printf("  ídem según Lilliefors (crítico %.4f para n=%d): %d de %d%n",
+                Estadistica.criticoLilliefors(bloques), bloques, normalesLilliefors, grilla.size());
 
         // ---------------- comparación ----------------
         System.out.println();
@@ -239,15 +245,24 @@ public final class Experimentos {
         // con Wilcoxon pareado por semilla y corrección de Bonferroni.
         System.out.println();
         System.out.println(linea);
-        System.out.println("Mejor configuración contra las demás (Wilcoxon pareado, Bonferroni)");
+        System.out.println("Mejor configuración contra las demás (Wilcoxon pareado, post-hoc de Holm)");
         System.out.println(linea);
+        // Holm en lugar de Bonferroni: StatTests lámina 22, DECISIONES D-A5.
         int mejor = orden[0];
         int comparaciones = grilla.size() - 1;
         int indistinguibles = 0;
+        double[] pCrudos = new double[orden.length];
+        double[] zs = new double[orden.length];
+        for (int k = 1; k < orden.length; k++) {
+            double[] w = Estadistica.wilcoxon(datos[mejor], datos[orden[k]]);
+            zs[k] = w[0];
+            pCrudos[k] = w[1];
+        }
+        double[] pHolm = Estadistica.holm(java.util.Arrays.copyOfRange(pCrudos, 1, pCrudos.length));
         for (int k = 1; k < orden.length; k++) {
             int i = orden[k];
-            double[] w = Estadistica.wilcoxon(datos[mejor], datos[i]);
-            double pAjustado = Estadistica.bonferroni(w[1], comparaciones);
+            double[] w = { zs[k], pCrudos[k] };
+            double pAjustado = pHolm[k - 1];
             if (pAjustado >= 0.05) {
                 indistinguibles++;
             }

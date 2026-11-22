@@ -71,7 +71,7 @@ Todas las rutas son relativas a `src/ae/plantel/`.
 | §IV-A tres instancias (50, 150, 400 candidatos) | `GeneradorInstancias.java` · `evaluacion` | 🟨 | sintéticas; faltan datos reales (P17) |
 | §IV-A instancias de configuración separadas | `GeneradorInstancias.java` · `configuracion` | ✅ | |
 | §IV-A diseño factorial 3×3×3, 30 corridas | `Experimentos.java` | 🟨 | hecho; falta correrlo (P19) |
-| §IV-A Shapiro-Wilk → ANOVA / Kruskal-Wallis, Friedman | `Estadistica.java` | 🟨 | hoy Lilliefors; Shapiro en P03 |
+| §IV-A Shapiro-Wilk → ANOVA / Kruskal-Wallis, Friedman | `Estadistica.java` · `shapiroWilk`, `anova`, `kruskalWallis`, `friedman`; usado en `Experimentos.java` | ✅ | Lilliefors queda como control (D-A5) |
 | §IV-A estudio del número de réplicas N | — | ⬜ | P14 |
 | §IV-B(1) plan real del club | — | ⬜ | P18 |
 | §IV-B(2) óptimo exacto en micro-instancias | `OptimoExacto.java`; `Operadores.proyectarAGrilla` | ✅ | micro-instancia fácil (P16) |
@@ -79,7 +79,7 @@ Todas las rutas son relativas a `src/ae/plantel/`.
 | §IV-B(4) búsqueda aleatoria con igual presupuesto | `AlgoritmoEvolutivo.java` · `busquedaAleatoria` | ✅ | |
 | §IV-B(5) statu quo | `Cromosoma.java` · `statuQuo` | ✅ | |
 | §IV-B % de mejora y GAP | `EjecutarAE`, `GreedyMiope`, `OptimoExacto` | 🟨 | una corrida; falta la comparación con 30 (P07) |
-| §IV-B t / Mann-Whitney por referencia, Friedman + Holm | — | ⬜ | P03, P07 |
+| §IV-B t / Mann-Whitney por referencia, Friedman + Holm | `Estadistica.java` · `tStudent`, `mannWhitney`, `wilcoxon` (exacto si n ≤ 50), `friedman`, `holm`, `difiereCriterioTema12` | 🟨 | tests listos y validados; falta usarlos en la comparación (P07) |
 | §IV-C mejor, media, mediana, desvío; % factibles | `Experimentos.java`, `Evaluador.Fitness` | ✅ | |
 | §IV-C robustez con 10.000 simulaciones | — | 🟨 | hoy N=200 (P08) |
 | §IV-C evolución del fitness vs evaluaciones | `AlgoritmoEvolutivo.Resultado.historial*` | ✅ | |

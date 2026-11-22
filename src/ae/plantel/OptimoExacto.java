@@ -15,6 +15,8 @@ import java.util.List;
 /**
  * Óptimo exacto por enumeración exhaustiva sobre micro-instancias.
  *
+ * [Informe §IV-B(2) óptimo exacto en micro-instancias; §II-B tamaño del espacio]
+ *
  * Es la única referencia que permite decir cuán lejos está el AE del óptimo y
  * no solo cuánto le gana al statu quo. Como el problema real tiene del orden de
  * 10^293 genotipos, el óptimo exacto solo es alcanzable achicando dos cosas:

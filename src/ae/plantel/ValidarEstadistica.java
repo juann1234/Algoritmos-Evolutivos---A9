@@ -2,6 +2,8 @@ package ae.plantel;
 
 /**
  * Valida los tests estadísticos implementados a mano contra valores de
+ *
+ * [Informe §IV-A/§IV-B: validación de los tests contra scipy]
  * referencia calculados con scipy.stats sobre los mismos datos. Si alguna
  * línea dice FALLA, hay un error en Estadistica.java.
  *

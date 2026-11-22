@@ -3,6 +3,8 @@ package ae.plantel;
 /**
  * Un escenario omega: una realización completa del azar del horizonte.
  *
+ * [Informe §III-B common random numbers, ref. [3]]
+ *
  * Cada sorteo se identifica por (jugador, período, evento) y su valor depende
  * solo de esa clave y de la semilla del escenario, NO del orden en que se
  * pidan los sorteos. Es lo que hace que common random numbers funcione de

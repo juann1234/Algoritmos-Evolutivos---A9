@@ -7,6 +7,22 @@ Integrantes: Juan Ignacio Apolo y Alen Cukier.
 > tomaron y por qué, qué falta, y te pide algo concreto antes de seguir:
 > **validar todo** (sección [Lo primero: validación](#lo-primero-validación)).
 > No avances con lo pendiente hasta que la validación esté hecha y anotada.
+>
+> **Juan (22/11, Alen):** la validación está hecha y anotada en
+> [`docs/VALIDACION.md`](docs/VALIDACION.md): todo se reproduce exactamente.
+> Desde ahí el trabajo se coordina con estos archivos (leelos antes de seguir):
+>
+> | archivo | para qué |
+> |---|---|
+> | [`CLAUDE.md`](CLAUDE.md) | reglas para nuestros dos Claude (y para nosotros) |
+> | [`docs/PENDIENTES.md`](docs/PENDIENTES.md) | tablero de tareas con responsable + bitácora + correcciones para el informe final |
+> | [`docs/DECISIONES.md`](docs/DECISIONES.md) | tus decisiones D1–D11 y M1–M8, más las nuevas D-A* |
+> | [`REFERENCIAS.md`](REFERENCIAS.md) | qué parte del informe está en qué archivo |
+>
+> Cambio grande: **la biblioteca del proyecto es jMetal 5.10** (la del Tema 6).
+> Tu simulador y tus operadores siguen siendo el código del problema; jMetal
+> pone el motor. Tu `AlgoritmoEvolutivo` queda como implementación de
+> referencia para validar la versión jMetal (ver D-A1).
 
 ---
 
@@ -138,12 +154,20 @@ Casi todas existen porque el AE encontró y explotó un agujero del simulador.
 
 ## Cómo compilar y correr
 
-Java 21, sin dependencias externas.
+Java 21 y jMetal 5.10 (con sus dependencias de Apache Commons), declarados en
+`pom.xml`. Las fuentes siguen en `src/`.
 
 ```bash
-mkdir -p out && javac -d out $(find src -name '*.java')
-./validar.sh                                       # validación completa (unos minutos)
+./compilar.sh      # compila en out/; usa los .jar de lib/ o los baja con Maven
+./validar.sh       # compila y corre la validación completa (unos 4 minutos)
+CP="$(cat out/classpath.txt)"   # classpath para correr cualquier programa
 ```
+
+`lib/` no se commitea (la consigna prohíbe incluir el framework). Si no
+tenés Maven, poné ahí los `.jar` de `jmetal-core` y `jmetal-algorithm` 5.10
+y sus dependencias, o definí `JMETAL_CP`.
+
+En la tabla de abajo, `java -cp out` se lee como `java -cp "$CP"`.
 
 | comando | qué hace |
 |---|---|

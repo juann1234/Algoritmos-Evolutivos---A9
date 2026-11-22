@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Build del proyecto. Ver docs/DECISIONES.md D-A1 y D-A4.
+
+  - Las fuentes siguen en src/ (no se movió ningún archivo).
+  - jMetal 5.10 es la versión que enseña el curso (Tema 6).
+  - `mvn -q package` compila; `mvn dependency:copy-dependencies -DoutputDirectory=lib`
+    deja los .jar en lib/, que es donde los busca compilar.sh.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>uy.edu.fing.ae</groupId>
+  <artifactId>plantel-ae</artifactId>
+  <version>1.0</version>
+  <packaging>jar</packaging>
+  <name>Planificación plurianual de un plantel con AE</name>
+
+  <properties>
+    <maven.compiler.release>21</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <jmetal.version>5.10</jmetal.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.uma.jmetal</groupId>
+      <artifactId>jmetal-core</artifactId>
+      <version>${jmetal.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.uma.jmetal</groupId>
+      <artifactId>jmetal-algorithm</artifactId>
+      <version>${jmetal.version}</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <sourceDirectory>src</sourceDirectory>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.13.0</version>
+        <configuration>
+          <release>21</release>
+          <compilerArgs>
+            <arg>-Xlint:all</arg>
+          </compilerArgs>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

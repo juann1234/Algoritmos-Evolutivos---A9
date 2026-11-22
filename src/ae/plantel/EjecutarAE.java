@@ -10,6 +10,8 @@ import java.util.List;
 
 /**
  * Primera pregunta real del proyecto: ¿el AE le gana al statu quo, y le gana a
+ *
+ * [Informe §IV-B(4) búsqueda aleatoria y §IV-B(5) statu quo]
  * la búsqueda aleatoria con el MISMO presupuesto de evaluaciones?
  *
  * La comparación contra búsqueda aleatoria con presupuesto igualado es la que

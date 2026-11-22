@@ -4,6 +4,8 @@ import java.util.Arrays;
 
 /**
  * Tests estadísticos necesarios para la evaluación experimental, implementados
+ *
+ * [Informe §IV-A y §IV-B análisis estadístico]
  * sin dependencias externas.
  *
  * El guion es el del Tema 12: primero test de normalidad; si las muestras son

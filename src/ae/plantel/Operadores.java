@@ -9,6 +9,8 @@ import java.util.List;
 /**
  * Operadores evolutivos.
  *
+ * [Informe §III-C inicialización, selección, cruzamiento y mutación]
+ *
  * Todos son operadores del temario: selección por torneo, cruzamiento uniforme
  * a nivel de gen, cruzamiento aritmético para los campos reales y mutación
  * gaussiana o de reasignación para los discretos.
@@ -54,6 +56,8 @@ public final class Operadores {
      * prioridades) y encuentra planes mejores que el supuesto óptimo: el GAP
      * sale negativo y la comparación no significa nada. Para medir GAP, los dos
      * métodos tienen que buscar en el mismo conjunto.
+     *
+     * [Informe §IV-B(2) micro-instancias]
      */
     public static void proyectarAGrilla(Cromosoma c) {
         for (int i = 0; i < c.n; i++) {
@@ -100,6 +104,8 @@ public final class Operadores {
      * Población inicial: una fracción sembrada con variantes del statu quo y
      * el resto aleatoria sesgada. El statu quo puro entra siempre como
      * individuo 0, para que el AE nunca pueda devolver algo peor que no operar.
+     *
+     * [Informe §III-C inicialización]
      */
     public static Cromosoma[] poblacionInicial(Instancia inst, int tamano, Aleatorio rng) {
         Cromosoma[] pob = new Cromosoma[tamano];
@@ -117,7 +123,11 @@ public final class Operadores {
     // Selección
     // ----------------------------------------------------------------
 
-    /** Torneo de tamaño k; devuelve el índice del ganador. */
+    /**
+     * Torneo de tamaño k; devuelve el índice del ganador.
+     *
+     * [Informe §III-C selección por torneo de tamaño 3]
+     */
     public static int torneo(double[] fitness, int k, Aleatorio rng) {
         int mejor = rng.entero(0, fitness.length);
         for (int i = 1; i < k; i++) {
@@ -146,6 +156,8 @@ public final class Operadores {
      * MISMO con ese jugador. Si uno lo compra y el otro lo ignora, promediar
      * sus salarios no significa nada; si los dos lo compran, un salario
      * intermedio es una oferta intermedia.
+     *
+     * [Informe §III-C cruzamiento uniforme + aritmético]
      */
     public static Cromosoma[] cruzar(Cromosoma p1, Cromosoma p2, double pC, Aleatorio rng) {
         Cromosoma h1 = p1.copia();
@@ -182,7 +194,11 @@ public final class Operadores {
     // Mutación
     // ----------------------------------------------------------------
 
-    /** Mutación por gen: con probabilidad pM se aplica uno de cinco operadores. */
+    /**
+     * Mutación por gen: con probabilidad pM se aplica uno de cinco operadores.
+     *
+     * [Informe §III-C mutación: cinco operadores]
+     */
     public static void mutar(Instancia inst, Cromosoma c, double pM, Aleatorio rng) {
         for (int i = 0; i < c.n; i++) {
             if (rng.uniforme() >= pM) {
@@ -226,6 +242,8 @@ public final class Operadores {
      *
      * Es la métrica sobre la que trabajan sharing (Tema 8) y la prevención de
      * incesto de CHC (Tema 9).
+     *
+     * [Informe §III-C distancia entre planes para sharing/crowding]
      */
     public static int distancia(Cromosoma a, Cromosoma b) {
         int d = 0;

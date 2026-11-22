@@ -19,6 +19,15 @@ import java.util.*;
  *   S4  ceder (-1.07) mejor que vender (-5.46) y que liberar (-7.65)
  *   S5  correlación de escenarios entre planes: >= 0.99
  *   S6  penalización por puestos del statu quo: aprox. 1.10
+ *   S7  cláusula baja no es explotable (Alen, validación 22/11):
+ *       renovar a los propios de nivel >= 78 en V1 con cláusula 1x: f aprox. -12.80
+ *       (pierde unos 3 jugadores por cláusula y puntos en T2-T3); con 3x/10x: aprox. -0.5/-0.3
+ *   S8  cupo lleno: comprar 3 candidatos en V1 sin vender no concreta nada (f = statu quo);
+ *       vender 3 y comprar 3 en la misma ventana sí: f aprox. +6.32
+ *   S9  vender a los mayores de 29 en V1: f aprox. -11.94 (la caja sube, los puntos bajan)
+ *
+ * [Informe §I-B, §III-A y §III-B] Cada sonda verifica que el fitness solo sube
+ * cuando suben los puntos de liga (la utilidad deportiva de la ec. 2).
  *
  * Uso:  java -cp out ae.plantel.ValidarAgujeros
  */
@@ -109,6 +118,42 @@ public final class ValidarAgujeros {
         double pen = 0; int nf = 0;
         for (int k = 0; k < N; k++) { Evaluador.Resultado r = Evaluador.simular(inst, sq, new Escenario(S + k), P); pen += r.penalizacion / N; }
         System.out.printf("  penalización media del statu quo: %.2f puntos de utilidad%n", pen);
+
+        sondasNuevas(inst, fsq, psq);
+    }
+
+    /** S7-S9: sondas agregadas en la validación de Alen (docs/VALIDACION.md §3). */
+    static void sondasNuevas(Instancia inst, Evaluador.Fitness fsq, double[] psq) {
+        int n = inst.jugadores.size();
+        System.out.println("\n== S7. Cláusula de rescisión baja contra alta (renovar nivel >= 78 en V1)");
+        for (double cl : new double[]{1.0, 3.0, 10.0}) {
+            Cromosoma c = Cromosoma.statuQuo(inst);
+            for (int i = 0; i < n; i++) {
+                Modelo.JugadorBase j = inst.jugadores.get(i);
+                if (j.pertenencia() == Pertenencia.PROPIO && j.thetaInicial() >= 78) {
+                    c.accion[i] = Accion.RENOVAR.ordinal(); c.ventana[i] = 1; c.duracion[i] = 4;
+                    c.salario[i] = 1.3; c.clausula[i] = cl;
+                }
+            }
+            report("cláusula " + cl + "x", inst, c, fsq, psq);
+        }
+
+        System.out.println("\n== S8. Cupo de fichas lleno: comprar exige vender");
+        List<Integer> mk = new ArrayList<>(), pr = new ArrayList<>();
+        for (int i = 0; i < n; i++) (inst.jugadores.get(i).pertenencia() == Pertenencia.MERCADO ? mk : pr).add(i);
+        mk.sort(Comparator.comparingDouble(i -> -inst.jugadores.get(i).thetaInicial()));
+        pr.sort(Comparator.comparingDouble(i -> inst.jugadores.get(i).thetaInicial()));
+        Cromosoma c = Cromosoma.statuQuo(inst);
+        for (int q = 0; q < 3; q++) { int i = mk.get(q + 2); c.accion[i] = 1; c.ventana[i] = 1; c.duracion[i] = 4; c.salario[i] = 1.3; c.clausula[i] = 4; }
+        report("comprar 3 sin vender", inst, c, fsq, psq);
+        for (int q = 0; q < 3; q++) { int i = pr.get(q); c.accion[i] = Accion.VENDER.ordinal(); c.ventana[i] = 1; }
+        report("vender 3 peores y comprar 3", inst, c, fsq, psq);
+
+        System.out.println("\n== S9. Vender veteranos para hacer caja");
+        c = Cromosoma.statuQuo(inst);
+        int k = 0;
+        for (int i : pr) if (inst.jugadores.get(i).edad() >= 29) { c.accion[i] = Accion.VENDER.ordinal(); c.ventana[i] = 1; k++; }
+        report("vender los " + k + " mayores de 29 en V1", inst, c, fsq, psq);
     }
 
     static void report(String et, Instancia inst, Cromosoma c, Evaluador.Fitness fsq, double[] psq) {

@@ -20,6 +20,8 @@ import java.util.concurrent.Future;
 /**
  * Configuración paramétrica: diseño factorial completo con análisis estadístico.
  *
+ * [Informe §IV-A configuración paramétrica (diseño factorial)]
+ *
  * Barre todas las combinaciones de probabilidad de cruzamiento, probabilidad de
  * mutación y tamaño de población (ortogonalidad: se analizan TODAS, no una
  * variable por vez), con R ejecuciones independientes por combinación e

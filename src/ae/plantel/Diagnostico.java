@@ -10,6 +10,8 @@ import java.nio.charset.StandardCharsets;
 /**
  * Diagnóstico del plan que encuentra el AE: de dónde sale la utilidad.
  *
+ * [Informe §I-B y §I-C: verificación de que la utilidad sale de los puntos de liga]
+ *
  * Sirve para detectar que el AE esté explotando un agujero del simulador en
  * lugar de resolver el problema. Las señales de alarma conocidas:
  *   - patrimonio que sube sin que suban los puntos (renovaciones o fichajes

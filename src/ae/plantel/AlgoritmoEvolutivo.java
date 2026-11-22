@@ -9,6 +9,8 @@ import java.util.List;
 
 /**
  * Algoritmo evolutivo sobre un fitness ruidoso, con las variantes del temario
+ *
+ * [Informe §III-B manejo del ruido; §III-C reemplazo, parada y diversidad; §IV-B(4) búsqueda aleatoria]
  * como opciones de configuración.
  *
  * Tres cuidados que el ruido del simulador obliga a tener, en todas las
@@ -257,6 +259,8 @@ public final class AlgoritmoEvolutivo {
      * Se desplaza por fmin porque el sharing divide: aplicado sobre valores
      * del orden de 200 con diferencias de pocas unidades, la división por el
      * tamaño del nicho borraría toda la presión selectiva.
+     *
+     * [Informe §III-C preservación de diversidad (sharing)]
      */
     private static double[] compartido(Cromosoma[] pob, double[] fit, double sigma) {
         int tam = pob.length;
@@ -433,6 +437,8 @@ public final class AlgoritmoEvolutivo {
     /**
      * Búsqueda aleatoria con EXACTAMENTE el mismo presupuesto y la misma
      * selección final que el AE.
+     *
+     * [Informe §IV-B(4)]
      */
     public static Resultado busquedaAleatoria(Instancia inst, Config cfg, Parametros p) {
         long t0 = System.nanoTime();

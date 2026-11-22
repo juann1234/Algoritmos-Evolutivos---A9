@@ -11,6 +11,8 @@ import java.util.Arrays;
 /**
  * Validación del decodificador y de la función de fitness.
  *
+ * [Informe §III-A decodificador y §III-B fitness: validación]
+ *
  * Lo que hay que ver acá, antes de escribir una línea del AE:
  *
  *   1. El statu quo es evaluable y da lo mismo que antes.

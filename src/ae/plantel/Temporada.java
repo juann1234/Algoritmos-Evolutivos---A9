@@ -9,6 +9,8 @@ import java.util.Arrays;
 /**
  * Reparto de minutos y rendimiento deportivo de un período (media temporada).
  *
+ * [Informe §III-B paso (iii): alineaciones según μ, once titular y profundidad]
+ *
  * Solo resuelve la parte deportiva. El orden de los pasos lo fija el
  * Evaluador: primero se sortean las lesiones (definen los minutos
  * disponibles), después se reparten los minutos y recién entonces se calcula
@@ -143,6 +145,8 @@ public final class Temporada {
      * producía un resultado absurdo: liberar a los seis peores SUBÍA los puntos
      * (de 76.3 a 77.8), porque la media mejoraba. Con el banco acotado, tener
      * más jugadores nunca resta y perder suplentes cuesta.
+     *
+     * [Informe §III-B paso (iii): once titular y profundidad]
      */
     public static double fuerza(EstadoJugador[] e, int[] conv, int nConv, double[] minutos,
                                 double minutosFilial, double[] auxNiveles) {

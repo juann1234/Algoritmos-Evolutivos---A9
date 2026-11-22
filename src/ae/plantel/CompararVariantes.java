@@ -19,6 +19,8 @@ import java.util.TreeMap;
 /**
  * Comparación de las variantes del AE contra la configuración base.
  *
+ * [Informe §III-C variantes del modelo evolutivo y diversidad; §IV-B análisis estadístico]
+ *
  * Todas las variantes corren con el mismo presupuesto de evaluaciones (que
  * incluye reevaluaciones y búsqueda local), las mismas semillas y la misma
  * selección final. El fitness que se compara es el revaluado con N=200 sobre

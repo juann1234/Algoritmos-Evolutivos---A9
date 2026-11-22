@@ -1,6 +1,11 @@
 # compilación
 out/
 *.class
+target/
+
+# dependencias (jMetal y Apache Commons): las baja Maven o compilar.sh; la consigna
+# prohíbe incluir el código del framework (docs/DECISIONES.md D-A4)
+lib/
 
 # resultados que regenera cada corrida (los de referencia viven en resultados/)
 /resultados_configuracion.csv

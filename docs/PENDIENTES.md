@@ -36,6 +36,9 @@ Estados: ⬜ pendiente · 🟨 en curso · ✅ hecho · ⛔ bloqueado
 | P22 | Zip de entrega: fuentes + instancias, sin binarios ni framework | consigna | ambos | ⬜ | |
 | P23 | Corridas completas en ClusterUY: `CompararReferencias 40000 30` (3 instancias) y `ExperimentoMO 40000 30` por instancia | §IV-B, §IV-C | — | ⬜ | en el entorno del Claude de Alen solo hay 2 núcleos: ahí se corrieron versiones chicas |
 | P24 | Pasar `Experimentos` (factorial) a `AGPlantel` | §IV-A | Alen | ✅ | |
+| P25 | Repetir la comparación de variantes (gap, sharing, CHC, memético) sobre las instancias de configuración | §IV-A, Tema 12 | Juan (es su código) | ⬜ | `demo` = `eval-chica` (D-A16); agregar un argumento de instancia a `CompararVariantes` |
+| P26 | Revisar y aprobar la decisión de N = 10 (D-A13) | §IV-A | Juan | ⬜ | si no, cambiar `N_FINAL`/`EVALUACIONES_FINALES` |
+| P27 | Probar `herramientas/clusteruy.sh` en ClusterUY (partición, módulo de Java) | — | quien tenga cuenta | ⬜ | |
 
 ## Correcciones para el informe final (acumuladas)
 
@@ -63,6 +66,19 @@ final. Agregar acá cada vez que aparezca una.
 ## Bitácora
 
 Entradas nuevas arriba. Formato: fecha · quién · qué se hizo · cómo se validó · qué sigue.
+
+### 22/11/2026 · Alen (con Claude) · corridas preliminares y control de sesgo
+- Corridas preliminares con el protocolo final reducido (N = 10, 24.000
+  evaluaciones, 10 corridas): en eval-chica el AE mejora +6,7% sobre el
+  greedy y +10,6% sobre el statu quo; en eval-media +13,5% y +16,6%; todos
+  los tests significativos. NSGA-II vs agregación en eval-chica: RHV 0,93
+  vs 0,76, GD 0,008 vs 0,041 (p < 0,0001). Salidas `resultados/*_preliminar.*`.
+- `demo` = `eval-chica` (D-A16): los estudios de N y de operadores se
+  repitieron sobre conf-joven y conf-veterano y las decisiones se sostienen.
+- `herramientas/graficos.py` → `docs/figuras/` (frente de Pareto, GAP vs
+  presupuesto, estudio de N). `herramientas/clusteruy.sh` para las corridas
+  completas (sin probar). `docs/RESULTADOS.md`: todo lo obtenido, listo para
+  el informe final.
 
 ### 22/11/2026 · Alen (con Claude) · compromisos pendientes del informe
 - Selección proporcional con escalado (truncamiento sigma + lineal, ruleta

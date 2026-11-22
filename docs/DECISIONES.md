@@ -293,3 +293,25 @@ números de referencia de `validar.sh`. Usan el protocolo final
 **Juan:** si no estás de acuerdo, se revierte cambiando `N_FINAL` y
 `EVALUACIONES_FINALES` en `AlgoritmoEvolutivo` (y se agrega una D-A que lo
 explique).
+
+### D-A16 · La instancia "demo" es eval-chica: los estudios de diseño se repiten en las de configuración
+**Fecha:** 22/11/2026 · **Estado:** vigente · **Corrige un sesgo metodológico**
+
+`GeneradorInstancias.generar("demo", 25, 50, 101)` produce exactamente la
+misma instancia que `eval-chica` (mismo generador, misma semilla). Sobre ella
+se hicieron la comparación de variantes (Juan), la de operadores y el estudio
+de N. El Tema 12 pide ajustar sobre instancias de configuración distintas de
+las de evaluación, para no sesgar. Por eso se repitieron el estudio de N y el
+de operadores sobre **conf-joven** y **conf-veterano**
+(`resultados/diseno_conf-*.txt`):
+
+| estudio | conf-joven | conf-veterano | ¿se sostiene la decisión? |
+|---|---|---|---|
+| N a igual costo (240.000 simulaciones) | N=10: 226,82 vs N=30: 222,38 (p Holm 0,0078) | N=10: 220,36 vs N=30: 216,19 (p Holm 0,0078) | sí, D-A13 |
+| proporcional vs torneo | −3,80 (p Holm < 0,0001) | −2,03 (p Holm 0,0001) | sí, se queda torneo |
+| bloques vs uniforme | −3,49 (p Holm < 0,0001) | −1,97 (p Holm 0,0001) | sí, se queda uniforme (en demo no difería; acá es peor) |
+
+Las decisiones de diseño valen en instancias que la evaluación no usa. Queda
+pendiente repetir la comparación de variantes de Juan (gap, sharing, CHC,
+memético) sobre las de configuración (PENDIENTES P25); `CompararVariantes`
+tiene la instancia fija en demo.

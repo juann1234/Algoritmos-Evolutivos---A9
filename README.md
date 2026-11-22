@@ -18,6 +18,7 @@ Integrantes: Juan Ignacio Apolo y Alen Cukier.
 > | [`docs/PENDIENTES.md`](docs/PENDIENTES.md) | tablero de tareas con responsable + bitácora + correcciones para el informe final |
 > | [`docs/DECISIONES.md`](docs/DECISIONES.md) | tus decisiones D1–D11 y M1–M8, más las nuevas D-A* |
 > | [`REFERENCIAS.md`](REFERENCIAS.md) | qué parte del informe está en qué archivo |
+> | [`docs/RESULTADOS.md`](docs/RESULTADOS.md) | todos los resultados obtenidos, listos para el informe final |
 >
 > Cambio grande: **la biblioteca del proyecto es jMetal 5.10** (la del Tema 6).
 > Tu simulador y tus operadores siguen siendo el código del problema; jMetal

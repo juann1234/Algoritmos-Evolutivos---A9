@@ -1,0 +1,19 @@
+Instancia 'eval-chica': 25 propios / 50 candidatos | edad media 26.0 | nivel medio 77.9 | masa salarial 35.2M de un tope de 44.0M | presupuesto 120.0M
+Presupuesto por corrida: 24000 evaluaciones | 10 corridas por técnica | betas [0.0, 0.02, 0.05, 0.1, 0.2, 0.5]
+
+======================================================================================
+Frente de referencia: 50 puntos no dominados (unión de 20 frentes)
+======================================================================================
+métrica     NSGA-II media±sdagregación media±sd    mejor NSGA  mejor agreg.  test (protocolo del curso)
+RHV            0.9267±0.0343     0.7615±0.0133        0.9790        0.7825  t Welch p = 0.0000 (significativa)
+spread         0.7657±0.0327     0.6776±0.0883        0.7257        0.5244  t Welch p = 0.0125 (significativa)
+GD             0.0077±0.0045     0.0407±0.0043        0.0003        0.0343  t Welch p = 0.0000 (significativa)
+puntos        38.2000±7.2234     5.4000±0.5164       50.0000        6.0000  Mann-Whitney p = 0.0001 (significativa)
+segundos      13.4830±0.6056    12.4324±0.6389       12.8762       11.9262  Mann-Whitney p = 0.0022 (significativa)
+
+======================================================================================
+Plan mono-objetivo (β = 0,05) respecto del frente de NSGA-II de la misma semilla
+======================================================================================
+  dominado por el frente de NSGA-II en 4 de 10 corridas; distancia media al frente de referencia (normalizada) 0.0907
+  escrito resultados/mo_eval-chica_metricas.csv
+  escrito resultados/mo_eval-chica_frentes.csv

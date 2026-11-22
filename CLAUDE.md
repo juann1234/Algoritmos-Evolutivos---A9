@@ -13,7 +13,8 @@ otro no existe.
    con el porqué. **No cambies una decisión sin agregar una nueva que la
    reemplace y explique por qué.**
 4. `REFERENCIAS.md`: qué parte del informe está implementada en qué archivo.
-5. `docs/VALIDACION.md`: qué se verificó y con qué resultado.
+5. `docs/VALIDACION.md`: qué se verificó y con qué resultado; `docs/RESULTADOS.md`:
+   qué resultados hay (y cuáles son preliminares).
 6. El informe inicial `docs/Informe_Inicial_v2.pdf`. Es el contrato con el
    profesor: lo que dice que vamos a hacer, hay que hacerlo, o justificar en
    el informe final por qué no.

@@ -1,0 +1,22 @@
+Instancia 'conf-veterano': 25 propios / 30 candidatos | edad media 28.0 | nivel medio 78.8 | masa salarial 37.4M de un tope de 39.2M | presupuesto 60.0M
+
+Parte 2: AE con distintos N y el mismo total de simulaciones (240,000), 10 semillas
+     N     evals     media   desvío    mejor  p Holm vs 30
+     5     48000    221.03     1.18   222.43        0.0078
+    10     24000    220.36     1.35   222.39        0.0078
+    20     12000    218.44     1.43   221.09        0.0078
+    30      8000    216.19     1.31   217.37  (referencia)
+    50      4800    214.03     0.97   215.25        0.0078
+
+Instancia 'conf-veterano': 25 propios / 30 candidatos | edad media 28.0 | nivel medio 78.8 | masa salarial 37.4M de un tope de 39.2M | presupuesto 60.0M
+20 semillas por variante, 8000 evaluaciones, fitness revaluado con N=200
+
+variante           media   desvío  mediana    mejor  div.final     SW p
+base              216.70     1.21   216.96   218.83       11.9    0.038
+proporcional      214.67     0.89   214.55   216.09       21.6    0.679
+bloques           214.73     0.87   214.65   216.32        9.4    0.815
+
+Cada variante contra la base (Wilcoxon pareado por semilla, post-hoc de Holm):
+  proporcional   dif. media   -2.03  p = 0.0000  p Holm = 0.0001  -> PEOR que la base
+  bloques        dif. media   -1.97  p = 0.0001  p Holm = 0.0001  -> PEOR que la base
+  datos crudos en resultados/operadores_conf-veterano.csv

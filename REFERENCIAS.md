@@ -103,3 +103,5 @@ Todas las rutas son relativas a `src/ae/plantel/`.
 | escalado, ruleta con punteros equiespaciados, cruzamiento por bloques | `jmetal/ValidarOperadores.java` |
 | determinismo del modelo de islas con 1 y k hilos | `jmetal/ExperimentoIslas.java` (parte 1) |
 | reporte de validación | `docs/VALIDACION.md` |
+| resultados para el informe final | `docs/RESULTADOS.md`; gráficos con `herramientas/graficos.py` → `docs/figuras/` |
+| corridas completas en ClusterUY | `herramientas/clusteruy.sh` |

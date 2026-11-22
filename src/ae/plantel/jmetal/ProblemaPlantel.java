@@ -108,6 +108,15 @@ public class ProblemaPlantel implements Problem<SolucionPlantel> {
         semillaEscenarios += replicas;
     }
 
+    /**
+     * Fija la semilla de los escenarios. La usa el modelo de islas para que
+     * todas las islas evalúen cada generación sobre el MISMO azar y los
+     * migrantes sean comparables con los locales (escenarios comunes, M1).
+     */
+    public void fijarSemillaEscenarios(long semilla) {
+        semillaEscenarios = semilla;
+    }
+
     /** f(x) de una solución evaluada por este problema (deshace el signo). */
     public static double fitness(SolucionPlantel s) {
         return -s.getObjective(0);

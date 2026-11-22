@@ -207,3 +207,89 @@ de Student (Welch); si no, Mann-Whitney; además el criterio del Tema 12
 (|diferencia de medias| ≤ máx. desvíos). Se exige además que la misma
 semilla reproduzca la misma corrida aunque se corra en paralelo, y que las
 dos gasten exactamente las mismas evaluaciones y generaciones.
+
+### D-A14 · Modelo de islas sincrónico, con escenarios comunes entre islas
+**Fecha:** 22/11/2026 · **Estado:** vigente
+
+`jmetal/IslasPlantel`: la población total se reparte en k islas (por defecto
+4), cada una un AE generacional con elitismo y los operadores del proyecto;
+cada 5 generaciones cada isla manda copias de sus 2 mejores a la siguiente
+del anillo, donde reemplazan a las 2 peores (Tema 11). Tres decisiones:
+(a) **sincrónico**: todas las islas terminan la generación antes de migrar,
+así una semilla da el mismo resultado con 1 o k hilos y el speedup mide solo
+tiempo; (b) **los mismos escenarios en todas las islas** en cada generación,
+para que un migrante llegue con un fitness comparable al de los locales;
+(c) **presupuesto global** sumando todas las islas, con la misma selección
+final en dos etapas. jMetal 5.10 no trae modelo de islas: se arma con sus
+componentes y un ciclo propio.
+
+### D-A15 · Para medir GAP, el AE optimiza sobre los escenarios fijos de la enumeración
+**Fecha:** 22/11/2026 · **Estado:** vigente · **Corrige un sesgo de la medición anterior**
+
+El "óptimo exacto" es el plan que maximiza el promedio sobre N = 30
+escenarios **fijos** (semilla 424.242). El AE normal busca con escenarios que
+rotan y elige su plan final con otros: optimiza el valor esperado, que no es
+lo mismo. Medido así, el GAP mezclaba dos objetivos, y se notaba: con más
+presupuesto el AE **no** llegaba más seguido al óptimo (21/30 con 500
+evaluaciones, 18/30 con 8.000 en la micro-instancia 55). Con
+`Config.semillaEscenariosFija` el AE busca y hace la selección final sobre
+esos mismos 30 escenarios, sin rotar; ahí los aciertos crecen con el
+presupuesto como corresponde (25 → 30 de 30). Solo se usa para el GAP; el
+resto de los experimentos sigue con escenarios rotativos.
+
+Resultado (`jmetal/GapMicroInstancias`, 3 micro-instancias de 5 jugadores
+con el statu quo a 5,7%, 13,8% y 5,9% del óptimo, 30 corridas): con 8.000
+evaluaciones (7,4% del espacio de 107.811 planes) el AE encuentra el óptimo
+exacto en **30 de 30** corridas en las tres; con 4.000, en las micro 56 y 57.
+
+Nota para leer `validar.sh` (paso 7): ahí `OptimoExacto` sigue corriendo el
+AE con escenarios rotativos, como Juan lo diseñó, y la línea "AE jMetal"
+puede decir "óptimo en 0 de 10" con un GAP de 0,03%. No es una falla: es
+exactamente el sesgo que describe esta decisión. El número que va al informe
+es el de `GapMicroInstancias`.
+
+### D-A13 · Número de réplicas: N = 10 en los experimentos finales, con presupuesto equivalente en simulaciones
+**Fecha:** 22/11/2026 · **Estado:** vigente · **Afecta al informe** (§IV-A lo anticipaba: "se estudiará aparte el número de réplicas N")
+
+Estudio en `jmetal/EstudioReplicas` (salida en `resultados/replicas_demo.txt`):
+
+1. **Ordenamiento** contra una referencia de N = 1.000. Con planes diversos
+   (población inicial) hasta N = 5 ordena casi perfecto (ρ = 0,99); con planes
+   convergidos (población final), el orden se degrada al bajar N
+   (N = 30: ρ = 0,95, τ = 0,83; N = 10: ρ = 0,86, τ = 0,70; N = 5: ρ = 0,81,
+   τ = 0,65). El criterio fijado de antemano (ρ ≥ 0,9 en diversos y τ ≥ 0,5
+   en convergidos) resultó demasiado laxo: lo cumple N = 5. Con eso solo no
+   se puede decidir, porque un N chico ordena peor pero deja hacer más
+   generaciones.
+2. **Lo que decide: el AE a igual costo** (mismo total de simulaciones,
+   evaluaciones × N constante), Wilcoxon pareado por semilla contra N = 30,
+   con Holm:
+
+   | N | 240.000 simulaciones (10 semillas) | 720.000 simulaciones (6 semillas) |
+   |---|---|---|
+   | 5 | 234,48 (p Holm 0,0078) | 237,12 (0,125) |
+   | 10 | 233,98 (0,0078) | 236,57 (0,125) |
+   | 20 | 232,14 (0,0078) | 235,27 (0,125) |
+   | **30 (actual)** | 229,53 | 234,02 |
+   | 50 | 228,35 (0,11) | 233,74 (0,69) |
+
+   Con 240.000 simulaciones N = 5, 10 y 20 son significativamente mejores que
+   N = 30. Con 720.000 la dirección se mantiene en las 6 semillas, pero con
+   n = 6 y 4 comparaciones el menor p de Holm posible es 0,125.
+
+**Decisión:** los experimentos finales usan **N = 10 con 120.000
+evaluaciones** (`Config.protocoloFinal()`), que son las **mismas 1,2 millones
+de simulaciones** que las 40.000 evaluaciones con N = 30 del informe inicial:
+igual costo de cómputo y planes mejores. Se elige 10 y no 5 porque la
+diferencia entre ambos es chica (≈ 0,5) y no testeada, y N = 10 ordena mejor
+las poblaciones convergidas, que es donde el ruido más pesa. La selección
+final sigue remidiendo con 100 réplicas.
+
+**Qué no cambia:** los valores por defecto de `Config` (N = 30) y todos los
+números de referencia de `validar.sh`. Usan el protocolo final
+`CompararReferencias`, `ExperimentoMO`, `ExperimentoIslas` y `Experimentos`
+(el factorial).
+
+**Juan:** si no estás de acuerdo, se revierte cambiando `N_FINAL` y
+`EVALUACIONES_FINALES` en `AlgoritmoEvolutivo` (y se agrega una D-A que lo
+explique).

@@ -142,3 +142,19 @@ Shapiro-Wilk, lo que confirma que los no paramétricos son la elección correcta
 3. El greedy es determinista: contra él corresponde comparar la distribución
    del AE con un test de una muestra, o con el criterio
    |f̄(A) − f̄(B)| > máx(σA, σB) del Tema 12. → M5.
+
+---
+
+## 8. Validación de los módulos nuevos (Alen, 22/11/2026)
+
+Cada módulo nuevo se validó antes de subirlo. Resumen (detalle en la
+bitácora de `PENDIENTES.md`):
+
+| módulo | cómo se validó | resultado |
+|---|---|---|
+| Estadística (Shapiro-Wilk, Mann-Whitney, t de Welch, Holm, Wilcoxon exacto, Kendall, Spearman) | `ValidarEstadistica` contra scipy 1.18.1 | 34 de 34 OK |
+| AE sobre jMetal (`AGPlantel`) | `ValidarEquivalenciaJMetal` contra el AE de Juan, 50 semillas × 8.000 evaluaciones | mismas evaluaciones (7.934) y generaciones (78); diferencia −0,13 (IC 95% [−0,61; +0,35]); t de Welch p = 0,61; misma semilla reproduce aun en paralelo |
+| Variante multiobjetivo | `ValidarMO` | identidad f + ρσ = f₁ − βf₂ + C con error 1e-13; HV de jMetal = cálculo a mano; NSGA-II no dominado y reproducible |
+| Escalado, ruleta con punteros equiespaciados, cruzamiento por bloques | `ValidarOperadores` | propiedades del Tema 3 (media conservada, mejor = C_mult × media, orden); SUS da ⌊e⌋ o ⌈e⌉ copias; bloques heredados enteros |
+| Modelo de islas | `ExperimentoIslas`, parte 1 | misma semilla, mismo plan con 1 y con k hilos |
+| GAP contra el óptimo exacto | `GapMicroInstancias` | se detectó y corrigió un sesgo de medición (D-A15) |

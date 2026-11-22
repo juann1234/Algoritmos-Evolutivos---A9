@@ -62,7 +62,8 @@ public final class AGPlantel extends AbstractGeneticAlgorithm<SolucionPlantel, S
 
     /** Arma el AE con los operadores del proyecto (ver {@link OperadoresJMetal}). */
     public AGPlantel(Instancia inst, Config cfg, Parametros p) {
-        this(new ProblemaPlantel(inst, p, cfg.replicas, cfg.semilla * 1_000_003L,
+        this(new ProblemaPlantel(inst, p, cfg.replicas,
+                cfg.semillaEscenariosFija != null ? cfg.semillaEscenariosFija : cfg.semilla * 1_000_003L,
                 new Aleatorio(cfg.semilla)), cfg);
     }
 
@@ -72,9 +73,13 @@ public final class AGPlantel extends AbstractGeneticAlgorithm<SolucionPlantel, S
         this.cfg = cfg;
         this.rng = problema.rng();
         setMaxPopulationSize(cfg.poblacion);
-        this.crossoverOperator = new OperadoresJMetal.Cruzamiento(cfg.pC, rng, cfg.grilla);
+        OperadoresJMetal.Cruzamiento cruce = new OperadoresJMetal.Cruzamiento(cfg.pC, rng, cfg.grilla);
+        this.crossoverOperator = cfg.cruce == AlgoritmoEvolutivo.Cruce.BLOQUES_POSICIONALES
+                ? cruce.porBloques(problema.instancia()) : cruce;
         this.mutationOperator = new OperadoresJMetal.Mutacion(problema.instancia(), cfg.pM, rng, cfg.grilla);
-        this.selectionOperator = new OperadoresJMetal.Torneo(cfg.torneo, porObjetivo, rng);
+        this.selectionOperator = cfg.seleccion == AlgoritmoEvolutivo.Seleccion.PROPORCIONAL_ESCALADA
+                ? new OperadoresJMetal.ProporcionalEscalada(rng)
+                : new OperadoresJMetal.Torneo(cfg.torneo, porObjetivo, rng);
         // Mismo descuento que el AE de referencia: la selección final consume
         // parte del presupuesto.
         this.presupuesto = Math.max(cfg.poblacion, cfg.maxEvaluaciones - cfg.costoSeleccion());
@@ -115,6 +120,9 @@ public final class AGPlantel extends AbstractGeneticAlgorithm<SolucionPlantel, S
     @Override
     protected List<SolucionPlantel> selection(List<SolucionPlantel> poblacion) {
         int hijos = hijosPorGeneracion();
+        if (selectionOperator instanceof OperadoresJMetal.ProporcionalEscalada sus) {
+            return sus.seleccionar(poblacion, hijos);   // ruleta con punteros equiespaciados
+        }
         List<SolucionPlantel> pool = new ArrayList<>(hijos);
         for (int i = 0; i < hijos; i++) {
             pool.add(selectionOperator.execute(poblacion));
@@ -134,7 +142,9 @@ public final class AGPlantel extends AbstractGeneticAlgorithm<SolucionPlantel, S
                 hijos.add(mutationOperator.execute(h));
             }
         }
-        problema.rotarEscenarios();
+        if (cfg.semillaEscenariosFija == null) {
+            problema.rotarEscenarios();   // con escenarios fijos (solo para GAP) no se rota
+        }
         return hijos;
     }
 

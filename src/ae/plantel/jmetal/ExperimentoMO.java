@@ -47,6 +47,8 @@ import java.util.concurrent.Future;
  * Además se ubica el plan mono-objetivo con el β del modelo (0,05) respecto del
  * frente de NSGA-II: por D-A6 debería quedar sobre el frente o muy cerca.
  *
+ * Protocolo (D-A13): N = 10 réplicas, 120.000 evaluaciones por defecto.
+ *
  * Uso:  java -cp "$CP" ae.plantel.jmetal.ExperimentoMO [evaluaciones] [corridas] [instancia]
  *       instancia: demo | eval-chica | eval-media | eval-grande   (por defecto demo)
  *
@@ -67,7 +69,7 @@ public final class ExperimentoMO {
     public static void main(String[] args) throws Exception {
         System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out), true,
                 StandardCharsets.UTF_8));
-        int evaluaciones = args.length > 0 ? Integer.parseInt(args[0]) : 40_000;
+        int evaluaciones = args.length > 0 ? Integer.parseInt(args[0]) : AlgoritmoEvolutivo.EVALUACIONES_FINALES;
         int corridas = args.length > 1 ? Integer.parseInt(args[1]) : 30;
         String nombre = args.length > 2 ? args[2] : "demo";
         Instancia inst = instancia(nombre);
@@ -167,7 +169,7 @@ public final class ExperimentoMO {
 
     private static Corrida correrNsga(Instancia inst, Parametros p, int semilla, int evaluaciones) {
         long t0 = System.nanoTime();
-        AlgoritmoEvolutivo.Config cfg = new AlgoritmoEvolutivo.Config();
+        AlgoritmoEvolutivo.Config cfg = AlgoritmoEvolutivo.Config.protocoloFinal();   // N = 10 (D-A13)
         cfg.semilla = semilla;
         cfg.maxEvaluaciones = evaluaciones;
         NSGAIIPlantel alg = new NSGAIIPlantel(inst, cfg, p);
@@ -186,7 +188,7 @@ public final class ExperimentoMO {
         for (double beta : BETAS) {
             Parametros p = new Parametros();
             p.beta = beta;
-            AlgoritmoEvolutivo.Config cfg = new AlgoritmoEvolutivo.Config();
+            AlgoritmoEvolutivo.Config cfg = AlgoritmoEvolutivo.Config.protocoloFinal();   // N = 10 (D-A13)
             cfg.semilla = semilla;
             cfg.maxEvaluaciones = evaluaciones / BETAS.length;
             AlgoritmoEvolutivo.Resultado r = AGPlantel.ejecutar(inst, cfg, p);

@@ -21,13 +21,13 @@ Estados: ⬜ pendiente · 🟨 en curso · ✅ hecho · ⛔ bloqueado
 | P07 | Comparación AE vs referencias en las 3 instancias de evaluación, ≥ 30 corridas, % de mejora, tests (Shapiro → t / Mann-Whitney; Friedman + Holm), GAP | §IV-B | Alen | ✅ | programa: `jmetal/CompararReferencias`; falta la corrida completa (P23) |
 | P08 | Robustez del plan final con validación de 10.000 simulaciones | §IV-C | Alen | ✅ | `CompararReferencias.robustez` |
 | P09 | Límite de tiempo de reloj como segundo criterio de parada | §III-C | Alen | ✅ | `Config.segundosMax`, apagado por defecto (D-A11) |
-| P10 | Selección proporcional con escalado (a comparar contra torneo) | §III-C | — | ⬜ | |
-| P11 | Cruzamiento por bloques posicionales (a comparar contra uniforme) | §III-C | — | ⬜ | |
-| P12 | Escalado de fitness | §III-C | — | ⬜ | va junto con P10 |
-| P13 | Modelo de islas con migración en anillo + speedup al variar recursos | §III-C, §IV-C | — | ⬜ | Tema 11 |
-| P14 | Estudio del número de réplicas N (menor N que mantiene estable el ordenamiento) | §IV-A | — | ⬜ | |
+| P10 | Selección proporcional con escalado (a comparar contra torneo) | §III-C | Alen | ✅ | peor que torneo (−1,93, p Holm 0,0014) |
+| P11 | Cruzamiento por bloques posicionales (a comparar contra uniforme) | §III-C | Alen | ✅ | sin diferencia significativa (−0,58, p 0,076) |
+| P12 | Escalado de fitness | §III-C | Alen | ✅ | `Operadores.escalar` |
+| P13 | Modelo de islas con migración en anillo + speedup al variar recursos | §III-C, §IV-C | Alen | ✅ | `jmetal/IslasPlantel`, `jmetal/ExperimentoIslas`; speedup con más núcleos en ClusterUY (P23) |
+| P14 | Estudio del número de réplicas N (menor N que mantiene estable el ordenamiento) | §IV-A | Alen | ✅ | `jmetal/EstudioReplicas`, D-A13 |
 | P15 | Evaluaciones hasta alcanzar percentiles de la mejor solución | §IV-C | Alen | ✅ | `CompararReferencias.evaluacionesHasta` |
-| P16 | Micro-instancias más difíciles (statu quo a > 5% del óptimo) | §IV-B(2) | — | ⬜ | VALIDACION §7.1 |
+| P16 | Micro-instancias más difíciles (statu quo a > 5% del óptimo) | §IV-B(2) | Alen | ✅ | `jmetal/GapMicroInstancias`: óptimo en 30/30 con ≥ 8.000 evaluaciones (D-A15) |
 | P17 | Datos reales: cargar SoFIFA/Transfermarkt al esquema `JugadorBase`, recalibrar valor, salario y rivales | §IV-A | Juan | ⬜ | README "Lo que falta" §2 |
 | P18 | Reconstruir el **plan real del club** como individuo y evaluarlo | §IV-B(1) | Juan | ⬜ | depende de P17 |
 | P19 | Barrido factorial completo en ClusterUY (27 config × 2 inst × 30) | §IV-A | — | ⬜ | `Experimentos 40000 30 2`; ya usa `AGPlantel` (P24) |
@@ -53,12 +53,36 @@ final. Agregar acá cada vez que aparezca una.
 9. Patrimonio final **neto** (D5) y todas las decisiones de modelado D1–D11.
 10. Escenarios comunes y selección final en dos etapas: declararlas como metodología para fitness ruidoso (Tema 5 + Jin & Branke [3]).
 11. Con el plantel lleno, toda incorporación exige una salida (refuerza la epistasis de §II-A).
+12. **N = 10 réplicas y 120.000 evaluaciones** en los experimentos finales (mismo costo en simulaciones que 40.000 con N = 30), por el estudio de N (D-A13).
+13. GAP con la fórmula del Tema 12, [f(VT) − f(AE)] / f(AE), y el AE optimizando sobre los mismos escenarios fijos que la enumeración (D-A15). Micro-instancias de **5 jugadores** como dice el informe (Juan usaba 6).
+14. Selección proporcional con escalado: peor que el torneo; bloques posicionales: sin diferencia. Se queda torneo + uniforme.
+15. Comparación multiobjetivo contra agregación con barrido de β (D-A9), que el informe inicial no especificaba.
 
 ---
 
 ## Bitácora
 
 Entradas nuevas arriba. Formato: fecha · quién · qué se hizo · cómo se validó · qué sigue.
+
+### 22/11/2026 · Alen (con Claude) · compromisos pendientes del informe
+- Selección proporcional con escalado (truncamiento sigma + lineal, ruleta
+  con punteros equiespaciados) y cruzamiento por bloques posicionales;
+  validados en `ValidarOperadores`. Comparados (`CompararOperadores`, 20
+  semillas, 8.000 evaluaciones, Wilcoxon pareado + Holm): proporcional
+  −1,93 (p Holm 0,0014, peor); bloques −0,58 (p 0,076, sin diferencia).
+  Salida en `resultados/operadores_demo.txt`.
+- Micro-instancias de 5 jugadores con el statu quo lejos del óptimo
+  (semillas 55, 56, 57): `GapMicroInstancias`. Se detectó y corrigió un sesgo
+  en cómo se medía el GAP (D-A15). Con 8.000 evaluaciones el AE encuentra el
+  óptimo exacto en 30/30 en las tres. Salida en `resultados/gap_micro.txt`.
+- Estudio del número de réplicas (`EstudioReplicas`, D-A13): a igual costo
+  N = 10 es significativamente mejor que N = 30 → protocolo final N = 10 con
+  120.000 evaluaciones (`Config.protocoloFinal()`). Juan: mirá D-A13.
+- Modelo de islas con migración en anillo (`IslasPlantel`, D-A14) y su
+  experimento (`ExperimentoIslas`): determinismo con 1 y k hilos, speedup y
+  calidad contra el AE panmíctico.
+- `OptimoExacto` admite semilla/edad/presupuesto e informa el AE sobre jMetal.
+- Kendall y Spearman validados contra scipy en `ValidarEstadistica` (34 OK).
 
 ### 22/11/2026 · Alen (con Claude) · módulo jMetal (AE, NSGA-II, métricas, comparación)
 - Paquete `src/ae/plantel/jmetal/`: `Gen` + `SolucionPlantel` (Solution),

@@ -41,6 +41,9 @@ import java.util.concurrent.Future;
  * El paralelismo es maestro-esclavo sobre ejecuciones independientes: no altera
  * el comportamiento del algoritmo, solo el tiempo de reloj.
  *
+ * Protocolo (DECISIONES D-A13): N = 10 réplicas y 120.000 evaluaciones por
+ * defecto (mismo costo en simulaciones que 40.000 con N = 30).
+ *
  * Uso:  java -cp out ae.plantel.Experimentos [evaluaciones] [ejecuciones] [instancias]
  */
 public final class Experimentos {
@@ -61,7 +64,7 @@ public final class Experimentos {
                 new FileOutputStream(FileDescriptor.out), true, StandardCharsets.UTF_8));
         final String linea = "=".repeat(78);
 
-        int evaluaciones = args.length > 0 ? Integer.parseInt(args[0]) : 40_000;
+        int evaluaciones = args.length > 0 ? Integer.parseInt(args[0]) : AlgoritmoEvolutivo.EVALUACIONES_FINALES;
         int ejecuciones = args.length > 1 ? Integer.parseInt(args[1]) : 30;
         int nInstancias = args.length > 2 ? Integer.parseInt(args[2]) : 2;
 
@@ -73,7 +76,7 @@ public final class Experimentos {
         for (double pc : PC) {
             for (double pm : PM) {
                 for (int pob : POBLACION) {
-                    AlgoritmoEvolutivo.Config c = new AlgoritmoEvolutivo.Config();
+                    AlgoritmoEvolutivo.Config c = AlgoritmoEvolutivo.Config.protocoloFinal();   // N = 10 (D-A13)
                     c.pC = pc;
                     c.pM = pm;
                     c.poblacion = pob;
@@ -104,7 +107,7 @@ public final class Experimentos {
                     final int bloque = ii * ejecuciones + r;
                     final long semilla = r + 1L;
                     futuros.add(pool.submit((Callable<Celda>) () -> {
-                        AlgoritmoEvolutivo.Config cfg = new AlgoritmoEvolutivo.Config();
+                        AlgoritmoEvolutivo.Config cfg = AlgoritmoEvolutivo.Config.protocoloFinal();
                         AlgoritmoEvolutivo.Config base = grilla.get(configIdx);
                         cfg.pC = base.pC;
                         cfg.pM = base.pM;

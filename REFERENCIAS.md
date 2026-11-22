@@ -50,17 +50,17 @@ Todas las rutas son relativas a `src/ae/plantel/`.
 | §III-B N creciente | — | reemplazado | por la selección final en dos etapas (M3) |
 | §III-C inicialización | `Operadores.java` · `poblacionInicial` (usada también por `AGPlantel` y `NSGAIIPlantel`) | 🟨 | sin siembra golosa (D-A3) |
 | §III-C selección por torneo de tamaño 3 | `Operadores.java` · `torneo`; `jmetal/OperadoresJMetal.Torneo` | ✅ | |
-| §III-C selección proporcional con escalado | — | ⬜ | P10 |
+| §III-C selección proporcional con escalado | `jmetal/OperadoresJMetal.ProporcionalEscalada` (ruleta con punteros equiespaciados); `Config.seleccion` | ✅ | comparada en `jmetal/CompararOperadores`: peor que torneo |
 | §III-C cruzamiento uniforme a nivel de gen + reales | `Operadores.java` · `cruzar`; `jmetal/OperadoresJMetal.Cruzamiento` | ✅ | aritmético en lugar de BLX-α |
-| §III-C cruzamiento por bloques posicionales | — | ⬜ | P11 |
+| §III-C cruzamiento por bloques posicionales | `Operadores.cruzarPorBloques`; `Config.cruce` | ✅ | comparado en `jmetal/CompararOperadores`: sin diferencia significativa |
 | §III-C mutación (cinco operadores) | `Operadores.java` · `mutar`, `intercambiar`; `jmetal/OperadoresJMetal.Mutacion` | ✅ | |
 | §III-C reemplazo generacional con elitismo | `jmetal/AGPlantel.java` (motor de los experimentos); `AlgoritmoEvolutivo.java` · `bucleGeneracional` (referencia) | ✅ | equivalencia validada (`jmetal/ValidarEquivalenciaJMetal`) |
 | §III-C comparación con estado estacionario | `AlgoritmoEvolutivo.java` (gap = 2/P); `CompararVariantes.java` | ✅ | |
 | §III-C parada: 40.000 evaluaciones | `AlgoritmoEvolutivo.Config.maxEvaluaciones`; `jmetal/AGPlantel.isStoppingConditionReached` | ✅ | |
 | §III-C parada: límite de tiempo de reloj | `AlgoritmoEvolutivo.Config.segundosMax`; `AlgoritmoEvolutivo.Corrida.vencido`; `jmetal/AGPlantel` y `jmetal/NSGAIIPlantel` · `isStoppingConditionReached` | ✅ | apagado por defecto (rompe la reproducibilidad) |
 | §III-C diversidad (sharing) | `AlgoritmoEvolutivo.java` · `compartido`; `Operadores.distancia` | ✅ | |
-| §III-C escalado de fitness | — | ⬜ | P12 |
-| §III-C islas con migración en anillo | — | ⬜ | P13 |
+| §III-C escalado de fitness | `Operadores.escalar` (truncamiento sigma + escalado lineal, Tema 3) | ✅ | validado en `jmetal/ValidarOperadores` |
+| §III-C islas con migración en anillo | `jmetal/IslasPlantel.java` | ✅ | sincrónico, escenarios comunes entre islas (D-A14) |
 | §III-C NSGA-II (f₁ rendimiento, f₂ costo neto) | `jmetal/ProblemaPlantelMO.java`, `jmetal/NSGAIIPlantel.java` (clase `NSGAII` de jMetal) | ✅ | D-A6; validado en `jmetal/ValidarMO` |
 | §III-C extensión: clubes rivales reactivos | `Evaluador.java` · `moverOtrosClubes` | ✅ | |
 
@@ -72,9 +72,9 @@ Todas las rutas son relativas a `src/ae/plantel/`.
 | §IV-A instancias de configuración separadas | `GeneradorInstancias.java` · `configuracion` | ✅ | |
 | §IV-A diseño factorial 3×3×3, 30 corridas | `Experimentos.java` | 🟨 | hecho; falta correrlo (P19) |
 | §IV-A Shapiro-Wilk → ANOVA / Kruskal-Wallis, Friedman | `Estadistica.java` · `shapiroWilk`, `anova`, `kruskalWallis`, `friedman`; usado en `Experimentos.java` | ✅ | Lilliefors queda como control (D-A5) |
-| §IV-A estudio del número de réplicas N | — | ⬜ | P14 |
+| §IV-A estudio del número de réplicas N | `jmetal/EstudioReplicas.java` | ✅ | D-A13 |
 | §IV-B(1) plan real del club | — | ⬜ | P18 |
-| §IV-B(2) óptimo exacto en micro-instancias | `OptimoExacto.java`; `Operadores.proyectarAGrilla` | ✅ | micro-instancia fácil (P16) |
+| §IV-B(2) óptimo exacto en micro-instancias | `OptimoExacto.java` · `enumerar`; `Operadores.proyectarAGrilla`; `jmetal/GapMicroInstancias.java` (3 micro-instancias de 5 jugadores, 30 corridas) | ✅ | escenarios fijos para el GAP (D-A15) |
 | §IV-B(3) greedy miope | `GreedyMiope.java` | ✅ | |
 | §IV-B(4) búsqueda aleatoria con igual presupuesto | `AlgoritmoEvolutivo.java` · `busquedaAleatoria` | ✅ | |
 | §IV-B comparación NSGA-II vs agregación (Tema 10) | `jmetal/ExperimentoMO.java` | ✅ | no estaba en el informe: ver D-A9 |
@@ -87,7 +87,7 @@ Todas las rutas son relativas a `src/ae/plantel/`.
 | §IV-C hipervolumen, spread, GD; frente de referencia por unión | `jmetal/IndicadoresMO.java` (indicadores de jMetal), `jmetal/ExperimentoMO.java` | ✅ | HV validado contra cálculo a mano |
 | §IV-C tiempo de ejecución | `AlgoritmoEvolutivo.Resultado.segundos`; media y desvío en `jmetal/CompararReferencias` | ✅ | |
 | §IV-C evaluaciones hasta percentiles de la mejor | `jmetal/CompararReferencias.evaluacionesHasta` | ✅ | 50, 90 y 99% de la mejora |
-| §IV-C speedup del esquema paralelo | — | ⬜ | P13 |
+| §IV-C speedup del esquema paralelo | `jmetal/ExperimentoIslas.java` | ✅ | aquí con 2 núcleos; barrido completo en ClusterUY |
 | §IV-C documentar plataforma | `docs/VALIDACION.md` (entorno) | 🟨 | completar en el informe final |
 
 ## Validación (no está en el informe; sostiene los resultados)
@@ -100,4 +100,6 @@ Todas las rutas son relativas a `src/ae/plantel/`.
 | recálculo externo de la comparación de variantes | `herramientas/recalcular_variantes.py` |
 | equivalencia AE sobre jMetal vs AE de referencia | `jmetal/ValidarEquivalenciaJMetal.java` |
 | variante multiobjetivo: identidad de D-A6, HV, métricas, NSGA-II | `jmetal/ValidarMO.java` |
+| escalado, ruleta con punteros equiespaciados, cruzamiento por bloques | `jmetal/ValidarOperadores.java` |
+| determinismo del modelo de islas con 1 y k hilos | `jmetal/ExperimentoIslas.java` (parte 1) |
 | reporte de validación | `docs/VALIDACION.md` |

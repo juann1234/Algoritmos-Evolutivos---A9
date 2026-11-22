@@ -57,8 +57,36 @@ public final class AlgoritmoEvolutivo {
 
     public enum Modelo { GENERACIONAL, CHC }
 
+    /** Selección: torneo (base) o proporcional con escalado (Operadores.escalar). */
+    public enum Seleccion { TORNEO, PROPORCIONAL_ESCALADA }
+
+    /** Cruzamiento: uniforme a nivel de gen (base) o por bloques posicionales. */
+    public enum Cruce { UNIFORME, BLOQUES_POSICIONALES }
+
+    /**
+     * Réplicas N del simulador en los experimentos finales (DECISIONES D-A13,
+     * informe §IV-A "estudio del número de réplicas"). A igual número de
+     * simulaciones, N = 10 da planes significativamente mejores que N = 30.
+     */
+    public static final int N_FINAL = 10;
+    /**
+     * Presupuesto de los experimentos finales: 120.000 evaluaciones con N = 10
+     * = 1,2 millones de simulaciones, el mismo costo que las 40.000 evaluaciones
+     * con N = 30 del informe inicial (D-A13).
+     */
+    public static final int EVALUACIONES_FINALES = 120_000;
+
     /** Configuración del AE; es lo que barre el diseño factorial del informe. */
     public static final class Config {
+
+        /** Configuración base con el protocolo de los experimentos finales (D-A13). */
+        public static Config protocoloFinal() {
+            Config c = new Config();
+            c.replicas = N_FINAL;
+            c.maxEvaluaciones = EVALUACIONES_FINALES;
+            return c;
+        }
+
         public int poblacion = 100;
         public double pC = 0.75;
         public double pM = 0.05;
@@ -82,6 +110,30 @@ public final class AlgoritmoEvolutivo {
         /** Restringe la búsqueda a la grilla enumerable (ver OptimoExacto). */
         public boolean grilla = false;
 
+        /**
+         * Si no es null, búsqueda y selección final usan SIEMPRE estos
+         * escenarios (sin rotar) y la selección final remide con
+         * {@code replicasSeleccion} réplicas de esta misma semilla. Solo para
+         * medir GAP contra el óptimo exacto: el óptimo enumerado es el del
+         * promedio sobre N escenarios fijos, y para compararlo con justicia el
+         * AE tiene que optimizar ese mismo objetivo (solo lo usa
+         * {@code jmetal.AGPlantel}; DECISIONES D-A15).
+         */
+        public Long semillaEscenariosFija = null;
+
+        /**
+         * Operador de selección (solo lo usa {@code jmetal.AGPlantel}).
+         * [Informe §III-C: torneo de 3; "se evaluará también selección
+         * proporcional con escalado"]
+         */
+        public Seleccion seleccion = Seleccion.TORNEO;
+        /**
+         * Operador de cruzamiento (solo lo usa {@code jmetal.AGPlantel}).
+         * [Informe §III-C: uniforme a nivel de gen; "se comparará contra un
+         * cruzamiento por bloques posicionales"]
+         */
+        public Cruce cruce = Cruce.UNIFORME;
+
         // --- variantes ---
         public Modelo modelo = Modelo.GENERACIONAL;
         /** Fracción de la población reemplazada por generación (1 = generacional). */
@@ -103,7 +155,7 @@ public final class AlgoritmoEvolutivo {
         }
 
         long semillaSeleccion() {
-            return 900_000_000L + semilla * 10_000L;
+            return semillaEscenariosFija != null ? semillaEscenariosFija : 900_000_000L + semilla * 10_000L;
         }
 
         @Override

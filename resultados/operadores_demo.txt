@@ -1,0 +1,12 @@
+Instancia 'demo': 25 propios / 50 candidatos | edad media 26.0 | nivel medio 77.9 | masa salarial 35.2M de un tope de 44.0M | presupuesto 120.0M
+20 semillas por variante, 8000 evaluaciones, fitness revaluado con N=200
+
+variante           media   desvío  mediana    mejor  div.final     SW p
+base              229.76     1.41   229.58   232.90       15.3    0.138
+proporcional      227.83     1.38   227.94   230.25       24.8    0.832
+bloques           229.18     1.04   228.96   231.21       13.6    0.272
+
+Cada variante contra la base (Wilcoxon pareado por semilla, post-hoc de Holm):
+  proporcional   dif. media   -1.93  p = 0.0007  p Holm = 0.0014  -> PEOR que la base
+  bloques        dif. media   -0.58  p = 0.0759  p Holm = 0.0759  -> sin diferencia significativa
+  datos crudos en resultados/operadores_demo.csv

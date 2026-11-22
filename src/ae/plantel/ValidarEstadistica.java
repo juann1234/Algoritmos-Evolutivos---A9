@@ -76,6 +76,9 @@ public final class ValidarEstadistica {
   chequear("Holm p4", h[3], 0.025); chequear("Holm p5", h[4], 0.2);
   chequear("cuantil normal 0.975", Estadistica.cuantilNormal(0.975), 1.959964);
   chequear("Phi preciso(-3.5)", Estadistica.phiPreciso(-3.5) * 1e4, 2.326291);
+  double[] ka = {1,2,2,4,5,3,7,7,9}, kb = {2,1,3,3,6,4,8,7,7};
+  chequear("Kendall tau-b (empates)", ae.plantel.jmetal.EstudioReplicas.kendall(ka, kb), 0.764706);
+  chequear("Spearman rho (empates)", ae.plantel.jmetal.EstudioReplicas.spearman(ka, kb), 0.898305);
 
   System.out.println(fallas == 0 ? "Todos los tests coinciden con scipy." : fallas + " FALLAS");
   if (fallas > 0) {

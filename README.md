@@ -186,11 +186,15 @@ En la tabla de abajo, `java -cp out` se lee como `java -cp "$CP"`.
 | `java -cp out ae.plantel.SensibilidadBeta 6000` | barrido del peso del patrimonio |
 | `java -cp out ae.plantel.CompararVariantes correr <variante> <desde> <hasta> <evals>` | variantes: `base`, `gap50`, `estacionario`, `sharing`, `chc`, `memetico` |
 | `java -cp out ae.plantel.CompararVariantes analizar <evals>` | análisis estadístico de las variantes |
-| `java -cp out ae.plantel.Experimentos 40000 30 2` | barrido factorial completo (para ClusterUY), con `AGPlantel` |
+| `java -cp out ae.plantel.Experimentos 120000 30 2` | barrido factorial completo (para ClusterUY), con `AGPlantel` y N = 10 (D-A13) |
 | `java -cp out ae.plantel.jmetal.ValidarEquivalenciaJMetal 50 8000` | AE sobre jMetal vs AE de referencia (unos 11 min) |
 | `java -cp out ae.plantel.jmetal.ValidarMO` | validación de la variante multiobjetivo |
-| `java -cp out ae.plantel.jmetal.CompararReferencias 40000 30` | AE vs aleatoria, greedy y statu quo en las 3 instancias de evaluación |
-| `java -cp out ae.plantel.jmetal.ExperimentoMO 40000 30 eval-chica` | NSGA-II vs agregación con barrido de β, con métricas |
+| `java -cp out ae.plantel.jmetal.CompararReferencias 120000 30` | AE vs aleatoria, greedy y statu quo en las 3 instancias de evaluación |
+| `java -cp out ae.plantel.jmetal.ExperimentoMO 120000 30 eval-chica` | NSGA-II vs agregación con barrido de β, con métricas |
+| `java -cp out ae.plantel.jmetal.GapMicroInstancias 30` | GAP vs óptimo exacto en 3 micro-instancias difíciles |
+| `java -cp out ae.plantel.jmetal.CompararOperadores 20 8000` | torneo vs proporcional con escalado; uniforme vs bloques |
+| `java -cp out ae.plantel.jmetal.EstudioReplicas demo 10` | estudio del número de réplicas N (D-A13) |
+| `java -cp out ae.plantel.jmetal.ExperimentoIslas 20 24000 4` | islas: determinismo, speedup y calidad |
 
 Costo de referencia: 5 a 7 ms por evaluación con N=30, o sea unos 15 segundos
 por corrida de 8.000 evaluaciones y alrededor de un minuto por corrida de
@@ -289,7 +293,8 @@ Hoy las instancias son sintéticas. Hay que:
 
 ### 3. Barrido final en ClusterUY
 
-`Experimentos 40000 30 2`: 27 configuraciones × 2 instancias × 30 ejecuciones.
+`Experimentos 120000 30 2` (N = 10, mismo costo que 40.000 con N = 30; ver D-A13):
+27 configuraciones × 2 instancias × 30 ejecuciones.
 Son unas 100 horas-núcleo, unas 3 o 4 horas con 30 núcleos. El código ya
 paraleliza las corridas (maestro-esclavo sobre ejecuciones independientes) y
 deja un CSV con los datos crudos.

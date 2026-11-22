@@ -45,11 +45,22 @@ public final class OperadoresJMetal {
             this.grilla = grilla;
         }
 
+        /** Instancia para el cruzamiento por bloques; null = uniforme a nivel de gen. */
+        private Instancia bloques;
+
+        /** Pasa al cruzamiento por bloques posicionales (P11). */
+        public Cruzamiento porBloques(Instancia inst) {
+            this.bloques = inst;
+            return this;
+        }
+
         @Override
         public List<SolucionPlantel> execute(List<SolucionPlantel> padres) {
             SolucionPlantel a = padres.get(0);
             SolucionPlantel b = padres.get(1);
-            Cromosoma[] hijos = Operadores.cruzar(a.aCromosoma(), b.aCromosoma(), pC, rng);
+            Cromosoma[] hijos = bloques == null
+                    ? Operadores.cruzar(a.aCromosoma(), b.aCromosoma(), pC, rng)
+                    : Operadores.cruzarPorBloques(bloques, a.aCromosoma(), b.aCromosoma(), pC, rng);
             if (grilla) {
                 Operadores.proyectarAGrilla(hijos[0]);
                 Operadores.proyectarAGrilla(hijos[1]);
@@ -144,6 +155,64 @@ public final class OperadoresJMetal {
                 }
             }
             return mejor;
+        }
+    }
+
+    /**
+     * Selección proporcional al fitness escalado ({@link Operadores#escalar}),
+     * con la "ruleta con punteros equiespaciados" del Tema 3 (stochastic
+     * universal sampling): un solo giro y n punteros a distancia total/n, que
+     * reduce el error de muestreo de n giros independientes.
+     *
+     * [Informe §III-C: "selección proporcional con escalado"] (Alen, P10)
+     */
+    public static final class ProporcionalEscalada
+            implements SelectionOperator<List<SolucionPlantel>, SolucionPlantel> {
+        private static final long serialVersionUID = 1L;
+        private final Aleatorio rng;
+
+        public ProporcionalEscalada(Aleatorio rng) {
+            this.rng = rng;
+        }
+
+        /** Selecciona {@code cantidad} individuos de una sola vez (SUS). */
+        public List<SolucionPlantel> seleccionar(List<SolucionPlantel> pob, int cantidad) {
+            double[] w = pesos(pob);
+            double total = 0;
+            for (double x : w) {
+                total += x;
+            }
+            double paso = total / cantidad;
+            double puntero = rng.uniforme() * paso;
+            List<SolucionPlantel> out = new java.util.ArrayList<>(cantidad);
+            double acumulado = 0;
+            int i = 0;
+            for (int k = 0; k < cantidad; k++) {
+                double objetivo = puntero + k * paso;
+                while (i < w.length - 1 && acumulado + w[i] < objetivo) {
+                    acumulado += w[i];
+                    i++;
+                }
+                out.add(pob.get(i));
+            }
+            // SUS devuelve los elegidos en orden de la población; se mezclan
+            // para que los pares del cruzamiento no sean vecinos fijos.
+            rng.mezclar(out);
+            return out;
+        }
+
+        /** Un solo giro de ruleta (para cumplir la interfaz de jMetal). */
+        @Override
+        public SolucionPlantel execute(List<SolucionPlantel> pob) {
+            return pob.get(rng.elegir(pesos(pob)));
+        }
+
+        private static double[] pesos(List<SolucionPlantel> pob) {
+            double[] f = new double[pob.size()];
+            for (int i = 0; i < f.length; i++) {
+                f[i] = ProblemaPlantel.fitness(pob.get(i));
+            }
+            return Operadores.escalar(f);
         }
     }
 }

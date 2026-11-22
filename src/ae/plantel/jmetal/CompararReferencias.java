@@ -52,6 +52,8 @@ import java.util.concurrent.Future;
  * (§IV-B(2), ver OptimoExacto) no entran acá: la primera necesita datos reales
  * (PENDIENTES P18) y la segunda solo existe en micro-instancias.
  *
+ * Protocolo (D-A13): N = 10 réplicas, 120.000 evaluaciones por defecto.
+ *
  * Uso:  java -cp "$CP" ae.plantel.jmetal.CompararReferencias [evaluaciones] [corridas] [instancias...]
  *       instancias: eval-chica eval-media eval-grande demo  (por defecto las tres de evaluación)
  *
@@ -70,7 +72,7 @@ public final class CompararReferencias {
     public static void main(String[] args) throws Exception {
         System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out), true,
                 StandardCharsets.UTF_8));
-        int evaluaciones = args.length > 0 ? Integer.parseInt(args[0]) : 40_000;
+        int evaluaciones = args.length > 0 ? Integer.parseInt(args[0]) : AlgoritmoEvolutivo.EVALUACIONES_FINALES;
         int corridas = args.length > 1 ? Integer.parseInt(args[1]) : 30;
         List<String> nombres = args.length > 2 ? Arrays.asList(args).subList(2, args.length)
                 : List.of("eval-chica", "eval-media", "eval-grande");
@@ -86,8 +88,8 @@ public final class CompararReferencias {
         System.out.println();
         System.out.println(linea);
         System.out.println(inst.resumen());
-        System.out.printf("Presupuesto: %d evaluaciones por corrida, %d corridas por técnica estocástica%n",
-                evaluaciones, corridas);
+        System.out.printf("Presupuesto: %d evaluaciones por corrida con N = %d, %d corridas por técnica estocástica%n",
+                evaluaciones, AlgoritmoEvolutivo.N_FINAL, corridas);
         System.out.println(linea);
 
         // ---------------- corridas ----------------
@@ -95,7 +97,7 @@ public final class CompararReferencias {
         List<Future<AlgoritmoEvolutivo.Resultado>> fAe = new ArrayList<>();
         List<Future<AlgoritmoEvolutivo.Resultado>> fAz = new ArrayList<>();
         for (int s = 1; s <= corridas; s++) {
-            AlgoritmoEvolutivo.Config cfg = new AlgoritmoEvolutivo.Config();
+            AlgoritmoEvolutivo.Config cfg = AlgoritmoEvolutivo.Config.protocoloFinal();   // N = 10 (D-A13)
             cfg.semilla = s;
             cfg.maxEvaluaciones = evaluaciones;
             fAe.add(pool.submit((Callable<AlgoritmoEvolutivo.Resultado>) () -> AGPlantel.ejecutar(inst, cfg, p)));

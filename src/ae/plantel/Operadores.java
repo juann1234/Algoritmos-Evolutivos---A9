@@ -190,6 +190,120 @@ public final class Operadores {
         destino.clausula[i] = origen.clausula[i];
     }
 
+    /**
+     * Cruzamiento por bloques posicionales: el cromosoma se parte por puesto
+     * (POR, DEF, MED, DEL; cada bloque con los propios y los candidatos de ese
+     * puesto) y cada bloque se hereda ENTERO de uno de los padres. Los campos
+     * reales se combinan con el cruzamiento aritmético, como en
+     * {@link #cruzar}, cuando los dos padres hacen lo mismo con el jugador.
+     *
+     * La idea: las decisiones de un mismo puesto son las más epistáticas entre
+     * sí (comprar un delantero solo vale si no hay otro titular, informe §II-A),
+     * así que mantenerlas juntas preserva bloques constructivos (Tema 7). El
+     * costo es menos exploración: con 4 bloques hay solo 16 hijos posibles.
+     *
+     * [Informe §III-C: "se comparará contra un cruzamiento por bloques
+     * posicionales, donde el cromosoma se particiona por puesto y cada bloque se
+     * hereda entero"] (Alen, P11)
+     */
+    public static Cromosoma[] cruzarPorBloques(Instancia inst, Cromosoma p1, Cromosoma p2,
+                                               double pC, Aleatorio rng) {
+        Cromosoma h1 = p1.copia();
+        Cromosoma h2 = p2.copia();
+        if (rng.uniforme() >= pC) {
+            return new Cromosoma[] { h1, h2 };
+        }
+        Modelo.Puesto[] puestos = Modelo.Puesto.values();
+        boolean[] intercambiar = new boolean[puestos.length];
+        for (int b = 0; b < puestos.length; b++) {
+            intercambiar[b] = rng.uniforme() < 0.5;
+        }
+        for (int i = 0; i < p1.n; i++) {
+            if (intercambiar[inst.jugadores.get(i).puesto().ordinal()]) {
+                copiarGen(p2, h1, i);
+                copiarGen(p1, h2, i);
+            }
+            if (p1.accion[i] == p2.accion[i]) {
+                double l = rng.uniforme();
+                h1.salario[i] = l * p1.salario[i] + (1 - l) * p2.salario[i];
+                h2.salario[i] = (1 - l) * p1.salario[i] + l * p2.salario[i];
+                h1.clausula[i] = l * p1.clausula[i] + (1 - l) * p2.clausula[i];
+                h2.clausula[i] = (1 - l) * p1.clausula[i] + l * p2.clausula[i];
+            }
+        }
+        return new Cromosoma[] { h1, h2 };
+    }
+
+    // ----------------------------------------------------------------
+    // Escalado del fitness (para la selección proporcional)
+    // ----------------------------------------------------------------
+
+    /** Constante c del truncamiento sigma (Tema 3: "usualmente entre 1 y 3"). */
+    public static final double C_SIGMA = 2.0;
+    /** Copias esperadas del mejor tras el escalado lineal (Goldberg, C_mult). */
+    public static final double C_MULT = 2.0;
+
+    /**
+     * Escalado del fitness para la selección proporcional, en dos pasos, tal
+     * como lo presenta el Tema 3:
+     * <ol>
+     *   <li><b>truncamiento sigma</b> (Forrest): F' = F − (F̄ − c·σ), con los
+     *       negativos llevados a 0;</li>
+     *   <li><b>escalado lineal</b> F'' = a·F' + b, con a y b elegidos para que la
+     *       media no cambie y el mejor reciba C_MULT copias esperadas; si eso
+     *       volviera negativo al peor, se elige la recta que lo deja en 0.</li>
+     * </ol>
+     * Sin esto, con fitness del orden de 230 y diferencias de pocas unidades, la
+     * selección proporcional sería casi uniforme: la "caminata aleatoria" que
+     * describe el Tema 3.
+     *
+     * [Informe §III-C: "selección proporcional con escalado" y "escalado de
+     * fitness"] (Alen, P10 y P12)
+     *
+     * @return pesos de selección, no negativos
+     */
+    public static double[] escalar(double[] fitness) {
+        int n = fitness.length;
+        double media = 0;
+        for (double f : fitness) {
+            media += f;
+        }
+        media /= n;
+        double var = 0;
+        for (double f : fitness) {
+            var += (f - media) * (f - media);
+        }
+        double sigma = n > 1 ? Math.sqrt(var / (n - 1)) : 0;
+        double[] t = new double[n];
+        double tMedia = 0;
+        double tMax = 0;
+        double tMin = Double.POSITIVE_INFINITY;
+        for (int i = 0; i < n; i++) {
+            t[i] = Math.max(0.0, fitness[i] - (media - C_SIGMA * sigma));
+            tMedia += t[i] / n;
+            tMax = Math.max(tMax, t[i]);
+            tMin = Math.min(tMin, t[i]);
+        }
+        double[] w = new double[n];
+        if (tMax - tMedia <= 1e-12) {
+            java.util.Arrays.fill(w, 1.0);   // población uniforme: todos igual
+            return w;
+        }
+        double a;
+        double b;
+        if (tMin > (C_MULT * tMedia - tMax) / (C_MULT - 1.0)) {
+            a = (C_MULT - 1.0) * tMedia / (tMax - tMedia);
+            b = tMedia * (tMax - C_MULT * tMedia) / (tMax - tMedia);
+        } else {
+            a = tMedia / (tMedia - tMin);
+            b = -tMin * tMedia / (tMedia - tMin);
+        }
+        for (int i = 0; i < n; i++) {
+            w[i] = Math.max(0.0, a * t[i] + b);
+        }
+        return w;
+    }
+
     // ----------------------------------------------------------------
     // Mutación
     // ----------------------------------------------------------------

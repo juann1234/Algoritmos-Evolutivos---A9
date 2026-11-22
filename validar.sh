@@ -31,7 +31,8 @@ echo "== 6. Greedy miope (esperado: 219.35)"
 java -cp "$CP" ae.plantel.GreedyMiope 8000
 
 echo
-echo "== 7. Óptimo exacto en micro-instancia (esperado: GAP 0.00% el mejor de 10)"
+echo "== 7. Óptimo exacto en micro-instancia (esperado: GAP 0.00% el mejor de 10; las líneas \"AE jMetal\""
+echo "      se agregaron el 22/11; el estudio con escenarios fijos está en jmetal/GapMicroInstancias)"
 java -cp "$CP" ae.plantel.OptimoExacto 4 2
 
 echo
@@ -43,3 +44,7 @@ echo "== 9. Equivalencia AE sobre jMetal vs AE de referencia (corta: 10 semillas
 echo "      esperado: EQUIVALENCIA OK, t de Welch p = 0.1559; la versión larga de 50 semillas"
 echo "      está en resultados/equivalencia_jmetal_50semillas.txt)"
 java -cp "$CP" ae.plantel.jmetal.ValidarEquivalenciaJMetal 10 4000
+
+echo
+echo "== 10. Operadores nuevos: escalado, ruleta con punteros equiespaciados, bloques"
+java -cp "$CP" ae.plantel.jmetal.ValidarOperadores

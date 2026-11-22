@@ -32,7 +32,13 @@ import java.util.List;
  * N infinito. Por eso el AE se compara contra el óptimo sobre exactamente el
  * mismo conjunto de escenarios.
  *
- * Uso:  java -cp out ae.plantel.OptimoExacto [propios] [candidatos]
+ * Uso:  java -cp out ae.plantel.OptimoExacto [propios] [candidatos] [semilla] [edadMedia] [presupuesto]
+ *
+ * Los tres últimos argumentos (Alen, P16) permiten armar micro-instancias más
+ * difíciles que la original, donde el statu quo queda lejos del óptimo (con la
+ * original queda a 1%, y un GAP de 0% dice poco). Sin ellos la instancia es la
+ * de siempre (semilla 55, edad media 26,5, presupuesto 120) y la salida de las
+ * líneas "AE" no cambia; se agregan las líneas del AE sobre jMetal.
  */
 public final class OptimoExacto {
 
@@ -71,18 +77,23 @@ public final class OptimoExacto {
         return out;
     }
 
-    public static void main(String[] args) {
-        System.setOut(new PrintStream(
-                new FileOutputStream(FileDescriptor.out), true, StandardCharsets.UTF_8));
-        final String linea = "=".repeat(78);
-        final int N = 30;
-        final long SEMILLA = 424_242L;
+    /** Resultado de la enumeración exhaustiva. */
+    public record Optimo(Cromosoma plan, double valor, long planes, double segundos) {
+    }
 
-        int nPropios = args.length > 0 ? Integer.parseInt(args[0]) : 3;
-        int nMercado = args.length > 1 ? Integer.parseInt(args[1]) : 2;
-        Instancia inst = GeneradorInstancias.generar("micro", nPropios, nMercado, 55);
-        System.out.println(inst.resumen());
+    /** Escenarios con que se enumera (y con que se mide al AE para el GAP). */
+    public static final int N_ENUM = 30;
+    public static final long SEMILLA_ENUM = 424_242L;
 
+    /**
+     * Enumera todo el espacio reducido (ver {@link #opciones}) y devuelve el
+     * plan de mayor fitness muestral sobre los N escenarios de la semilla dada.
+     * Extraído de main para reutilizarlo en jmetal/GapMicroInstancias (Alen, P16);
+     * el recorrido es el mismo de antes.
+     *
+     * [Informe §IV-B(2) óptimo exacto en micro-instancias]
+     */
+    public static Optimo enumerar(Instancia inst, int N, long SEMILLA) {
         List<List<Opcion>> espacio = new ArrayList<>();
         long total = 1;
         for (int i = 0; i < inst.jugadores.size(); i++) {
@@ -90,8 +101,6 @@ public final class OptimoExacto {
             espacio.add(o);
             total *= o.size();
         }
-        System.out.printf("%nEspacio enumerado: %,d planes (N=%d escenarios por plan)%n",
-                total, N);
 
         // ---------------- enumeración ----------------
         Cromosoma c = Cromosoma.statuQuo(inst);
@@ -126,7 +135,36 @@ public final class OptimoExacto {
                 contador[i] = 0;
             }
         }
-        double dt = (System.nanoTime() - t0) / 1e9;
+        return new Optimo(mejor, mejorValor, total, (System.nanoTime() - t0) / 1e9);
+    }
+
+    public static void main(String[] args) {
+        System.setOut(new PrintStream(
+                new FileOutputStream(FileDescriptor.out), true, StandardCharsets.UTF_8));
+        final String linea = "=".repeat(78);
+        final int N = N_ENUM;
+        final long SEMILLA = SEMILLA_ENUM;
+
+        int nPropios = args.length > 0 ? Integer.parseInt(args[0]) : 3;
+        int nMercado = args.length > 1 ? Integer.parseInt(args[1]) : 2;
+        long semillaInst = args.length > 2 ? Long.parseLong(args[2]) : 55;
+        double edadMedia = args.length > 3 ? Double.parseDouble(args[3]) : 26.5;
+        double presupuesto = args.length > 4 ? Double.parseDouble(args[4]) : 120.0;
+        Instancia inst = GeneradorInstancias.generar("micro", nPropios, nMercado, semillaInst,
+                78.0, edadMedia, presupuesto, 1.25);
+        System.out.println(inst.resumen());
+
+        long espacioTotal = 1;
+        for (int i = 0; i < inst.jugadores.size(); i++) {
+            espacioTotal *= opciones(inst, i).size();
+        }
+        System.out.printf("%nEspacio enumerado: %,d planes (N=%d escenarios por plan)%n",
+                espacioTotal, N);
+        Optimo opt = enumerar(inst, N, SEMILLA);
+        long total = opt.planes();
+        double mejorValor = opt.valor();
+        Cromosoma mejor = opt.plan();
+        double dt = opt.segundos();
         System.out.printf("Enumeración completa en %.1f s (%.2f ms por plan)%n",
                 dt, dt * 1000 / total);
 
@@ -165,6 +203,24 @@ public final class OptimoExacto {
             System.out.printf("%-26s%12.2f%12d%9.2f%%%n",
                     "AE (mejor de " + corridas + ")", mejorAE, evals,
                     100.0 * (mejorValor - mejorAE) / Math.abs(mejorValor));
+
+            // Mismo experimento con el AE sobre jMetal (motor de los experimentos, D-A1).
+            double sumaJ = 0;
+            double mejorJ = Double.NEGATIVE_INFINITY;
+            int optimos = 0;
+            for (int r = 0; r < corridas; r++) {
+                cfg.semilla = r + 1;
+                AlgoritmoEvolutivo.Resultado res = ae.plantel.jmetal.AGPlantel.ejecutar(inst, cfg, P);
+                double v = Evaluador.evaluar(inst, res.mejor, N, SEMILLA, P).valor;
+                sumaJ += v;
+                mejorJ = Math.max(mejorJ, v);
+                if (v >= mejorValor - 1e-9) {
+                    optimos++;
+                }
+            }
+            System.out.printf("%-26s%12.2f%12d%9.2f%%   (óptimo en %d de %d)%n",
+                    "AE jMetal (media de " + corridas + ")", sumaJ / corridas, evals,
+                    100.0 * (mejorValor - sumaJ / corridas) / Math.abs(mejorValor), optimos, corridas);
         }
 
         System.out.printf("%-26s%12.2f%12s%9.2f%%%n", "ÓPTIMO EXACTO", mejorValor,

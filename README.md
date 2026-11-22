@@ -281,9 +281,13 @@ deja un CSV con los datos crudos.
 
 ### 4. Informe final: correcciones respecto del informe inicial
 
-- La implementación es en **Java**, no en Python/DEAP.
-- El test de normalidad es **Kolmogorov-Smirnov con corrección de Lilliefors**,
-  no Shapiro-Wilk.
+La lista completa y actualizada está en
+[`docs/PENDIENTES.md`](docs/PENDIENTES.md#correcciones-para-el-informe-final-acumuladas).
+Resumen:
+
+- La implementación es en **Java 21 con jMetal 5.10**, no en Python/DEAP.
+- ~~El test de normalidad es Lilliefors~~ → desde D-A5 el principal es
+  **Shapiro-Wilk**, como promete el informe (Lilliefors queda de control).
 - El "N creciente" se reemplazó por la **selección final en dos etapas**.
 - El cruzamiento de los campos reales pasó a **aritmético**.
 - Agregar las decisiones de modelado de arriba y la comparación de variantes.

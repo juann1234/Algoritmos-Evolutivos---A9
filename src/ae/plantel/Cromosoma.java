@@ -9,6 +9,8 @@ import ae.plantel.Modelo.PrioridadMinutos;
 /**
  * Cromosoma: largo fijo, un gen por jugador considerado.
  *
+ * [Informe §III-A representación y Cuadro I]
+ *
  * Cada gen es la tupla (a_i, w_i, d_i, s_i, c_i, mu_i) de la Sección III-A del
  * informe, con codificación mixta: entera para acción, ventana, duración y
  * prioridad de minutos; real para salario y cláusula.

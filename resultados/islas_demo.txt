@@ -1,0 +1,22 @@
+Instancia 'demo': 25 propios / 50 candidatos | edad media 26.0 | nivel medio 77.9 | masa salarial 35.2M de un tope de 44.0M | presupuesto 120.0M
+4 islas, migración en anillo cada 5 generaciones, 2 migrantes; 2 núcleos
+==============================================================================
+1. Determinismo: semilla 1 con 1 hilo y con 4 hilos
+==============================================================================
+  f = 221.5076 y 221.5076 -> IDÉNTICOS (OK)
+
+==============================================================================
+2. Speedup (una corrida de 24000 evaluaciones, mediana de 3)
+==============================================================================
+   hilos    segundos   speedup  eficiencia
+       1       12.62      1.00        1.00
+       2        6.56      1.92        0.96
+  (esta máquina tiene 2 núcleos: con más hilos no hay más paralelismo real; el barrido completo va en ClusterUY)
+
+==============================================================================
+3. Calidad: islas vs AE panmíctico, 20 semillas, 24000 evaluaciones
+==============================================================================
+  islas      : media 234.02  desvío 1.08  mejor 236.21
+  panmíctico : media 233.73  desvío 0.85  mejor 235.37
+  test: t Welch p = 0.3462
+  datos crudos en resultados/islas_*_demo.csv

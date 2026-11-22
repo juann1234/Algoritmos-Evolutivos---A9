@@ -19,6 +19,8 @@ import java.util.TreeMap;
 /**
  * Comparación de las variantes del AE contra la configuración base.
  *
+ * [Informe §III-C variantes del modelo evolutivo y diversidad; §IV-B análisis estadístico]
+ *
  * Todas las variantes corren con el mismo presupuesto de evaluaciones (que
  * incluye reevaluaciones y búsqueda local), las mismas semillas y la misma
  * selección final. El fitness que se compara es el revaluado con N=200 sobre
@@ -167,7 +169,7 @@ public final class CompararVariantes {
 
         System.out.println();
         System.out.println(linea);
-        System.out.println("Cada variante contra la base (Wilcoxon pareado por semilla, Bonferroni)");
+        System.out.println("Cada variante contra la base (Wilcoxon pareado por semilla, post-hoc de Holm)");
         System.out.println(linea);
         TreeMap<Integer, double[]> base = datos.get("base");
         int comparaciones = 0;
@@ -176,6 +178,10 @@ public final class CompararVariantes {
                 comparaciones++;
             }
         }
+        // Primero los p crudos de todas las comparaciones; después Holm sobre
+        // la familia completa (DECISIONES D-A5).
+        List<String> nombres = new ArrayList<>();
+        List<double[]> resultados = new ArrayList<>();
         for (Map.Entry<String, TreeMap<Integer, double[]>> e : datos.entrySet()) {
             if (e.getKey().equals("base") || e.getValue().isEmpty()) {
                 continue;
@@ -191,12 +197,24 @@ public final class CompararVariantes {
             double[] va = a.stream().mapToDouble(Double::doubleValue).toArray();
             double[] vb = b.stream().mapToDouble(Double::doubleValue).toArray();
             double[] w = Estadistica.wilcoxon(va, vb);
-            double pAj = Estadistica.bonferroni(w[1], comparaciones);
             double dif = Estadistica.media(va) - Estadistica.media(vb);
-            String veredicto = pAj >= 0.05 ? "sin diferencia significativa"
+            nombres.add(e.getKey());
+            resultados.add(new double[] { dif, w[0], w[1] });
+        }
+        double[] crudos = new double[resultados.size()];
+        for (int i = 0; i < crudos.length; i++) {
+            crudos[i] = resultados.get(i)[2];
+        }
+        double[] holm = Estadistica.holm(crudos);
+        for (int i = 0; i < crudos.length; i++) {
+            double dif = resultados.get(i)[0];
+            String veredicto = holm[i] >= 0.05 ? "sin diferencia significativa"
                     : (dif > 0 ? "MEJOR que la base" : "PEOR que la base");
-            System.out.printf("  %-14s dif. media %+7.2f  z = %6.2f  p ajustado = %.4f  -> %s%n",
-                    e.getKey(), dif, w[0], pAj, veredicto);
+            System.out.printf("  %-14s dif. media %+7.2f  z = %6.2f  p = %.4f  p Holm = %.4f  -> %s%n",
+                    nombres.get(i), dif, resultados.get(i)[1], crudos[i], holm[i], veredicto);
+        }
+        if (comparaciones != crudos.length) {
+            throw new IllegalStateException("cantidad de comparaciones inconsistente");
         }
     }
 

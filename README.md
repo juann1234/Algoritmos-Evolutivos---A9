@@ -7,6 +7,23 @@ Integrantes: Juan Ignacio Apolo y Alen Cukier.
 > tomaron y por qué, qué falta, y te pide algo concreto antes de seguir:
 > **validar todo** (sección [Lo primero: validación](#lo-primero-validación)).
 > No avances con lo pendiente hasta que la validación esté hecha y anotada.
+>
+> **Juan (22/11, Alen):** la validación está hecha y anotada en
+> [`docs/VALIDACION.md`](docs/VALIDACION.md): todo se reproduce exactamente.
+> Desde ahí el trabajo se coordina con estos archivos (leelos antes de seguir):
+>
+> | archivo | para qué |
+> |---|---|
+> | [`CLAUDE.md`](CLAUDE.md) | reglas para nuestros dos Claude (y para nosotros) |
+> | [`docs/PENDIENTES.md`](docs/PENDIENTES.md) | tablero de tareas con responsable + bitácora + correcciones para el informe final |
+> | [`docs/DECISIONES.md`](docs/DECISIONES.md) | tus decisiones D1–D11 y M1–M8, más las nuevas D-A* |
+> | [`REFERENCIAS.md`](REFERENCIAS.md) | qué parte del informe está en qué archivo |
+> | [`docs/RESULTADOS.md`](docs/RESULTADOS.md) | todos los resultados obtenidos, listos para el informe final |
+>
+> Cambio grande: **la biblioteca del proyecto es jMetal 5.10** (la del Tema 6).
+> Tu simulador y tus operadores siguen siendo el código del problema; jMetal
+> pone el motor. Tu `AlgoritmoEvolutivo` queda como implementación de
+> referencia para validar la versión jMetal (ver D-A1).
 
 ---
 
@@ -41,9 +58,13 @@ genes). El informe inicial está en `docs/Informe_Inicial_v2.pdf`.
 | Decodificador cronológico, reparación y función de fitness | hecho y validado |
 | AE generacional con elitismo, escenarios comunes y selección final en dos etapas | hecho y validado |
 | Referencias: statu quo, búsqueda aleatoria, greedy miope, óptimo exacto en micro-instancias | hechas |
-| Tests estadísticos: Lilliefors, ANOVA, Kruskal-Wallis, Friedman, Wilcoxon, Bonferroni | hechos y validados contra scipy |
+| Tests estadísticos: Shapiro-Wilk, Lilliefors, ANOVA, Kruskal-Wallis, Friedman, Wilcoxon (exacto), t de Welch, Mann-Whitney, Holm, Bonferroni | hechos y validados contra scipy (32 chequeos) |
 | Diseño factorial 3×3×3 de configuración paramétrica | hecho; **falta correrlo completo** |
 | Variantes del temario: gap generacional, estado estacionario, sharing, CHC, memético | hechas y comparadas |
+| **Adaptador jMetal 5.10** (`Problem`, `Solution`, operadores) y **AE generacional sobre jMetal** | hecho; equivalencia con el AE propio validada con 50 semillas (Alen) |
+| **NSGA-II** (jMetal) + hipervolumen relativo, spread, GD; comparación contra agregación | hecho y validado (Alen); falta la corrida completa |
+| Comparación AE vs referencias (30 corridas, tests, robustez 10.000, eficiencia) | programa hecho (Alen); falta la corrida completa |
+| Límite de tiempo de reloj | hecho, apagado por defecto (D-A11) |
 
 ### Resultados de referencia
 
@@ -69,20 +90,21 @@ la búsqueda.
 ### Comparación de variantes del temario
 
 10 semillas por variante, 8.000 evaluaciones (incluyen reevaluaciones y búsqueda
-local), Wilcoxon pareado por semilla contra la base con corrección de Bonferroni.
+local), Wilcoxon pareado por semilla contra la base con post-hoc de Holm (p exacto,
+ver DECISIONES D-A5; antes Bonferroni sobre la aproximación normal, que daba 0,025).
 Datos crudos en `resultados/resultados_variantes.csv`.
 
 | variante | media | dif. vs base | diversidad final | veredicto |
 |---|---|---|---|---|
 | **base** (generacional + elitismo) | **230,81** | — | 14,0 | — |
 | memético (búsqueda local cada 5 gen.) | 230,82 | +0,01 | 14,3 | sin diferencia |
-| sharing (σ = 6 genes) | 228,35 | −2,46 | 23,9 | peor (p = 0,025) |
-| gap generacional 50% | 228,05 | −2,76 | 7,4 | peor (p = 0,025) |
-| CHC | 218,34 | −12,47 | 31,2 | peor (p = 0,025) |
-| estado estacionario | 214,43 | −16,38 | 5,1 | peor (p = 0,025) |
+| sharing (σ = 6 genes) | 228,35 | −2,46 | 23,9 | peor (p Holm = 0,0098) |
+| gap generacional 50% | 228,05 | −2,76 | 7,4 | peor (p Holm = 0,0098) |
+| CHC | 218,34 | −12,47 | 31,2 | peor (p Holm = 0,0098) |
+| estado estacionario | 214,43 | −16,38 | 5,1 | peor (p Holm = 0,0098) |
 
 Con 24.000 evaluaciones, sharing contra base: −1,08, ya no significativo
-(p = 0,35). **Conclusión: el AE generacional con elitismo queda como algoritmo
+(p exacto = 0,44). **Conclusión: el AE generacional con elitismo queda como algoritmo
 definitivo.** La explicación de cada resultado está en los comentarios de
 `AlgoritmoEvolutivo.java` y es material directo para el informe final.
 
@@ -138,12 +160,20 @@ Casi todas existen porque el AE encontró y explotó un agujero del simulador.
 
 ## Cómo compilar y correr
 
-Java 21, sin dependencias externas.
+Java 21 y jMetal 5.10 (con sus dependencias de Apache Commons), declarados en
+`pom.xml`. Las fuentes siguen en `src/`.
 
 ```bash
-mkdir -p out && javac -d out $(find src -name '*.java')
-./validar.sh                                       # validación completa (unos minutos)
+./compilar.sh      # compila en out/; usa los .jar de lib/ o los baja con Maven
+./validar.sh       # compila y corre la validación completa (unos 4 minutos)
+CP="$(cat out/classpath.txt)"   # classpath para correr cualquier programa
 ```
+
+`lib/` no se commitea (la consigna prohíbe incluir el framework). Si no
+tenés Maven, poné ahí los `.jar` de `jmetal-core` y `jmetal-algorithm` 5.10
+y sus dependencias, o definí `JMETAL_CP`.
+
+En la tabla de abajo, `java -cp out` se lee como `java -cp "$CP"`.
 
 | comando | qué hace |
 |---|---|
@@ -157,7 +187,15 @@ mkdir -p out && javac -d out $(find src -name '*.java')
 | `java -cp out ae.plantel.SensibilidadBeta 6000` | barrido del peso del patrimonio |
 | `java -cp out ae.plantel.CompararVariantes correr <variante> <desde> <hasta> <evals>` | variantes: `base`, `gap50`, `estacionario`, `sharing`, `chc`, `memetico` |
 | `java -cp out ae.plantel.CompararVariantes analizar <evals>` | análisis estadístico de las variantes |
-| `java -cp out ae.plantel.Experimentos 40000 30 2` | barrido factorial completo (para ClusterUY) |
+| `java -cp out ae.plantel.Experimentos 120000 30 2` | barrido factorial completo (para ClusterUY), con `AGPlantel` y N = 10 (D-A13) |
+| `java -cp out ae.plantel.jmetal.ValidarEquivalenciaJMetal 50 8000` | AE sobre jMetal vs AE de referencia (unos 11 min) |
+| `java -cp out ae.plantel.jmetal.ValidarMO` | validación de la variante multiobjetivo |
+| `java -cp out ae.plantel.jmetal.CompararReferencias 120000 30` | AE vs aleatoria, greedy y statu quo en las 3 instancias de evaluación |
+| `java -cp out ae.plantel.jmetal.ExperimentoMO 120000 30 eval-chica` | NSGA-II vs agregación con barrido de β, con métricas |
+| `java -cp out ae.plantel.jmetal.GapMicroInstancias 30` | GAP vs óptimo exacto en 3 micro-instancias difíciles |
+| `java -cp out ae.plantel.jmetal.CompararOperadores 20 8000` | torneo vs proporcional con escalado; uniforme vs bloques |
+| `java -cp out ae.plantel.jmetal.EstudioReplicas demo 10` | estudio del número de réplicas N (D-A13) |
+| `java -cp out ae.plantel.jmetal.ExperimentoIslas 20 24000 4` | islas: determinismo, speedup y calidad |
 
 Costo de referencia: 5 a 7 ms por evaluación con N=30, o sea unos 15 segundos
 por corrida de 8.000 evaluaciones y alrededor de un minuto por corrida de
@@ -174,9 +212,16 @@ por corrida de 8.000 evaluaciones y alrededor de un minuto por corrida de
 | `Temporada.java` | reparto de minutos y fuerza del equipo |
 | `Evaluador.java` | decodificador, reparación, rivales, economía y fitness |
 | `Cromosoma.java`, `Operadores.java` | representación y operadores |
-| `AlgoritmoEvolutivo.java` | el AE y sus variantes |
+| `AlgoritmoEvolutivo.java` | el AE de referencia y sus variantes |
 | `Estadistica.java` | tests estadísticos sin dependencias |
 | `GeneradorInstancias.java` | instancias sintéticas |
+| `jmetal/Gen.java`, `jmetal/SolucionPlantel.java` | la representación como `Solution` de jMetal |
+| `jmetal/ProblemaPlantel.java`, `jmetal/ProblemaPlantelMO.java` | el problema como `Problem` de jMetal (mono y multiobjetivo) |
+| `jmetal/OperadoresJMetal.java` | cruzamiento, mutación y torneo con las interfaces de jMetal |
+| `jmetal/AGPlantel.java` | AE generacional sobre `AbstractGeneticAlgorithm` (motor de los experimentos) |
+| `jmetal/NSGAIIPlantel.java` | NSGA-II de jMetal con escenarios comunes |
+| `jmetal/IndicadoresMO.java` | hipervolumen relativo, spread y GD (indicadores de jMetal) |
+| `jmetal/CompararReferencias.java`, `jmetal/ExperimentoMO.java` | experimentos finales |
 | resto | programas de validación y de experimentos |
 
 ---
@@ -249,16 +294,21 @@ Hoy las instancias son sintéticas. Hay que:
 
 ### 3. Barrido final en ClusterUY
 
-`Experimentos 40000 30 2`: 27 configuraciones × 2 instancias × 30 ejecuciones.
+`Experimentos 120000 30 2` (N = 10, mismo costo que 40.000 con N = 30; ver D-A13):
+27 configuraciones × 2 instancias × 30 ejecuciones.
 Son unas 100 horas-núcleo, unas 3 o 4 horas con 30 núcleos. El código ya
 paraleliza las corridas (maestro-esclavo sobre ejecuciones independientes) y
 deja un CSV con los datos crudos.
 
 ### 4. Informe final: correcciones respecto del informe inicial
 
-- La implementación es en **Java**, no en Python/DEAP.
-- El test de normalidad es **Kolmogorov-Smirnov con corrección de Lilliefors**,
-  no Shapiro-Wilk.
+La lista completa y actualizada está en
+[`docs/PENDIENTES.md`](docs/PENDIENTES.md#correcciones-para-el-informe-final-acumuladas).
+Resumen:
+
+- La implementación es en **Java 21 con jMetal 5.10**, no en Python/DEAP.
+- ~~El test de normalidad es Lilliefors~~ → desde D-A5 el principal es
+  **Shapiro-Wilk**, como promete el informe (Lilliefors queda de control).
 - El "N creciente" se reemplazó por la **selección final en dos etapas**.
 - El cruzamiento de los campos reales pasó a **aritmético**.
 - Agregar las decisiones de modelado de arriba y la comparación de variantes.

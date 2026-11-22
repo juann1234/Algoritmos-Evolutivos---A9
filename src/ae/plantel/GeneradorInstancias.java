@@ -12,6 +12,8 @@ import java.util.List;
 /**
  * Generador sintético de instancias.
  *
+ * [Informe §IV-A instancias de configuración y de evaluación]
+ *
  * Sirve para desarrollar y validar el simulador antes de tener los datos
  * reales, y para construir las instancias de CONFIGURACIÓN paramétrica, que
  * según la metodología del curso deben ser distintas de las de evaluación.

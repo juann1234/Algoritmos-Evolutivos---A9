@@ -10,6 +10,8 @@ import java.nio.charset.StandardCharsets;
 /**
  * Sensibilidad al peso del patrimonio (beta).
  *
+ * [Informe §I-C peso β de la ec. (2); motivación de la variante NSGA-II de §III-C]
+ *
  * beta es el tipo de cambio entre millones y puntos de liga, y es el parámetro
  * que decide QUÉ optimiza el AE. Con beta alto el plan se vuelve un fondo de
  * inversión en pases; con beta bajo, quema patrimonio para ganar el campeonato

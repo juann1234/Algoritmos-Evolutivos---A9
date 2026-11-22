@@ -1,0 +1,22 @@
+Instancia 'conf-joven': 25 propios / 30 candidatos | edad media 22.0 | nivel medio 76.5 | masa salarial 31.4M de un tope de 39.2M | presupuesto 120.0M
+
+Parte 2: AE con distintos N y el mismo total de simulaciones (240,000), 10 semillas
+     N     evals     media   desvío    mejor  p Holm vs 30
+     5     48000    227.57     1.69   228.98        0.0078
+    10     24000    226.82     0.95   228.49        0.0078
+    20     12000    224.48     2.00   227.88        0.0273
+    30      8000    222.38     1.71   224.53  (referencia)
+    50      4800    217.95     1.23   219.50        0.0078
+
+Instancia 'conf-joven': 25 propios / 30 candidatos | edad media 22.0 | nivel medio 76.5 | masa salarial 31.4M de un tope de 39.2M | presupuesto 120.0M
+20 semillas por variante, 8000 evaluaciones, fitness revaluado con N=200
+
+variante           media   desvío  mediana    mejor  div.final     SW p
+base              221.99     1.52   221.91   224.53       12.4    0.195
+proporcional      218.20     1.29   218.37   220.24       22.2    0.457
+bloques           218.50     1.54   218.67   221.89       10.4    0.954
+
+Cada variante contra la base (Wilcoxon pareado por semilla, post-hoc de Holm):
+  proporcional   dif. media   -3.80  p = 0.0000  p Holm = 0.0000  -> PEOR que la base
+  bloques        dif. media   -3.49  p = 0.0000  p Holm = 0.0000  -> PEOR que la base
+  datos crudos en resultados/operadores_conf-joven.csv

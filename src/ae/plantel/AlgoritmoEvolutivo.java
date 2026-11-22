@@ -9,6 +9,8 @@ import java.util.List;
 
 /**
  * Algoritmo evolutivo sobre un fitness ruidoso, con las variantes del temario
+ *
+ * [Informe §III-B manejo del ruido; §III-C reemplazo, parada y diversidad; §IV-B(4) búsqueda aleatoria]
  * como opciones de configuración.
  *
  * Tres cuidados que el ruido del simulador obliga a tener, en todas las
@@ -55,8 +57,36 @@ public final class AlgoritmoEvolutivo {
 
     public enum Modelo { GENERACIONAL, CHC }
 
+    /** Selección: torneo (base) o proporcional con escalado (Operadores.escalar). */
+    public enum Seleccion { TORNEO, PROPORCIONAL_ESCALADA }
+
+    /** Cruzamiento: uniforme a nivel de gen (base) o por bloques posicionales. */
+    public enum Cruce { UNIFORME, BLOQUES_POSICIONALES }
+
+    /**
+     * Réplicas N del simulador en los experimentos finales (DECISIONES D-A13,
+     * informe §IV-A "estudio del número de réplicas"). A igual número de
+     * simulaciones, N = 10 da planes significativamente mejores que N = 30.
+     */
+    public static final int N_FINAL = 10;
+    /**
+     * Presupuesto de los experimentos finales: 120.000 evaluaciones con N = 10
+     * = 1,2 millones de simulaciones, el mismo costo que las 40.000 evaluaciones
+     * con N = 30 del informe inicial (D-A13).
+     */
+    public static final int EVALUACIONES_FINALES = 120_000;
+
     /** Configuración del AE; es lo que barre el diseño factorial del informe. */
     public static final class Config {
+
+        /** Configuración base con el protocolo de los experimentos finales (D-A13). */
+        public static Config protocoloFinal() {
+            Config c = new Config();
+            c.replicas = N_FINAL;
+            c.maxEvaluaciones = EVALUACIONES_FINALES;
+            return c;
+        }
+
         public int poblacion = 100;
         public double pC = 0.75;
         public double pM = 0.05;
@@ -64,12 +94,45 @@ public final class AlgoritmoEvolutivo {
         public int torneo = 3;
         public int replicas = 30;         // N del simulador durante la búsqueda
         public int maxEvaluaciones = 40000;
+        /**
+         * Límite de tiempo de reloj en segundos; 0 = sin límite. Es el segundo
+         * criterio de parada que promete el informe (§III-C: "40.000
+         * evaluaciones, más un límite de tiempo de reloj"). Se chequea entre
+         * generaciones. OJO: con límite de tiempo una corrida deja de ser
+         * reproducible (depende de la máquina), por eso por defecto está apagado
+         * y solo actúa como red de seguridad en ClusterUY.
+         */
+        public double segundosMax = 0;
         public long semilla = 1;
         /** Selección final: cuántos candidatos se remiden y con cuántas réplicas. */
         public int finalistas = 10;
         public int replicasSeleccion = 100;
         /** Restringe la búsqueda a la grilla enumerable (ver OptimoExacto). */
         public boolean grilla = false;
+
+        /**
+         * Si no es null, búsqueda y selección final usan SIEMPRE estos
+         * escenarios (sin rotar) y la selección final remide con
+         * {@code replicasSeleccion} réplicas de esta misma semilla. Solo para
+         * medir GAP contra el óptimo exacto: el óptimo enumerado es el del
+         * promedio sobre N escenarios fijos, y para compararlo con justicia el
+         * AE tiene que optimizar ese mismo objetivo (solo lo usa
+         * {@code jmetal.AGPlantel}; DECISIONES D-A15).
+         */
+        public Long semillaEscenariosFija = null;
+
+        /**
+         * Operador de selección (solo lo usa {@code jmetal.AGPlantel}).
+         * [Informe §III-C: torneo de 3; "se evaluará también selección
+         * proporcional con escalado"]
+         */
+        public Seleccion seleccion = Seleccion.TORNEO;
+        /**
+         * Operador de cruzamiento (solo lo usa {@code jmetal.AGPlantel}).
+         * [Informe §III-C: uniforme a nivel de gen; "se comparará contra un
+         * cruzamiento por bloques posicionales"]
+         */
+        public Cruce cruce = Cruce.UNIFORME;
 
         // --- variantes ---
         public Modelo modelo = Modelo.GENERACIONAL;
@@ -92,7 +155,7 @@ public final class AlgoritmoEvolutivo {
         }
 
         long semillaSeleccion() {
-            return 900_000_000L + semilla * 10_000L;
+            return semillaEscenariosFija != null ? semillaEscenariosFija : 900_000_000L + semilla * 10_000L;
         }
 
         @Override
@@ -120,7 +183,12 @@ public final class AlgoritmoEvolutivo {
         public double segundos;
     }
 
-    private record Candidato(Cromosoma plan, double fitness) {
+    /**
+     * Mejor plan de una generación y el fitness con que se lo midió. Es público
+     * porque el AE sobre jMetal (ae.plantel.jmetal.AGPlantel) reutiliza la misma
+     * selección final (DECISIONES D-A1).
+     */
+    public record Candidato(Cromosoma plan, double fitness) {
     }
 
     /** Estado compartido de una ejecución. */
@@ -151,6 +219,13 @@ public final class AlgoritmoEvolutivo {
 
         int restantes() {
             return presupuesto - out.evaluaciones;
+        }
+
+        final long t0 = System.nanoTime();
+
+        /** [Informe §III-C parada por límite de tiempo de reloj] */
+        boolean vencido() {
+            return cfg.segundosMax > 0 && (System.nanoTime() - t0) / 1e9 >= cfg.segundosMax;
         }
 
         void rotarEscenarios() {
@@ -208,7 +283,7 @@ public final class AlgoritmoEvolutivo {
                 : Math.max(2, (int) Math.round(cfg.gap * tam));
         int sobrevivientes = tam - hijosPorGeneracion;
 
-        while (c.restantes() >= tam) {
+        while (c.restantes() >= tam && !c.vencido()) {
             double[] fitSeleccion = cfg.sigmaSharing > 0 ? compartido(pob, fit, cfg.sigmaSharing) : fit;
             int[] mejores = mejoresIndices(fit, sobrevivientes);
 
@@ -257,6 +332,8 @@ public final class AlgoritmoEvolutivo {
      * Se desplaza por fmin porque el sharing divide: aplicado sobre valores
      * del orden de 200 con diferencias de pocas unidades, la división por el
      * tamaño del nicho borraría toda la presión selectiva.
+     *
+     * [Informe §III-C preservación de diversidad (sharing)]
      */
     private static double[] compartido(Cromosoma[] pob, double[] fit, double sigma) {
         int tam = pob.length;
@@ -350,7 +427,7 @@ public final class AlgoritmoEvolutivo {
         int umbralInicial = Math.max(1, pob[0].n / 4);
         int umbral = umbralInicial;
 
-        while (c.restantes() >= 2 * tam) {
+        while (c.restantes() >= 2 * tam && !c.vencido()) {
             // Emparejamiento al azar; solo se cruzan los suficientemente distintos.
             List<Integer> orden = new ArrayList<>();
             for (int i = 0; i < tam; i++) {
@@ -433,6 +510,8 @@ public final class AlgoritmoEvolutivo {
     /**
      * Búsqueda aleatoria con EXACTAMENTE el mismo presupuesto y la misma
      * selección final que el AE.
+     *
+     * [Informe §IV-B(4)]
      */
     public static Resultado busquedaAleatoria(Instancia inst, Config cfg, Parametros p) {
         long t0 = System.nanoTime();
@@ -442,6 +521,9 @@ public final class AlgoritmoEvolutivo {
         List<Candidato> candidatos = new ArrayList<>();
 
         for (int i = 0; i < presupuesto; i++) {
+            if (cfg.segundosMax > 0 && (System.nanoTime() - t0) / 1e9 >= cfg.segundosMax) {
+                break;
+            }
             Cromosoma c = i == 0 ? Cromosoma.statuQuo(inst) : Operadores.aleatorioSesgado(inst, rng);
             if (cfg.grilla) {
                 Operadores.proyectarAGrilla(c);
@@ -495,9 +577,11 @@ public final class AlgoritmoEvolutivo {
      * Segunda etapa: remide a los K mejores candidatos distintos sobre un mismo
      * conjunto de escenarios, que no se usó ni en la búsqueda ni se usa en la
      * validación, y devuelve al ganador.
+     *
+     * [Informe §III-B manejo del ruido: reemplaza al "N creciente" (DECISIONES M3)]
      */
-    private static Cromosoma seleccionFinal(Instancia inst, List<Candidato> candidatos,
-                                            Config cfg, Parametros p) {
+    public static Cromosoma seleccionFinal(Instancia inst, List<Candidato> candidatos,
+                                           Config cfg, Parametros p) {
         candidatos.sort(Comparator.comparingDouble((Candidato x) -> -x.fitness()));
         List<Cromosoma> finalistas = new ArrayList<>();
         for (Candidato c : candidatos) {

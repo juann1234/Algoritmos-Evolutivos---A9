@@ -3,6 +3,8 @@ package ae.plantel;
 /**
  * Evolución de atributos, lesiones, salario de referencia y valor de mercado.
  *
+ * [Informe §I-B ec. (1), modelo de lesiones y valor de mercado]
+ *
  * Implementa la ecuación (1) del informe:
  *
  *   theta(t+1) = theta(t) + gMas(edad) * h(minutos) + gMenos(edad) + eps
@@ -43,7 +45,11 @@ public final class Evolucion {
         return -p.decliveCoef * Math.pow(edad - p.edadInicioDeclive, p.decliveExp);
     }
 
-    /** Aplica la ecuación (1) y devuelve el nivel de la temporada siguiente. */
+    /**
+     * Aplica la ecuación (1) y devuelve el nivel de la temporada siguiente.
+     *
+     * [Informe §I-B ec. (1)]
+     */
     public static double evolucionarNivel(double theta, double edad, double minutos,
                                           double potencial, Aleatorio rng,
                                           Parametros.Evolucion p) {
@@ -65,7 +71,11 @@ public final class Evolucion {
         return 1.0 / (1.0 + Math.exp(-x));
     }
 
-    /** Probabilidad de sufrir al menos una lesión en una temporada completa. */
+    /**
+     * Probabilidad de sufrir al menos una lesión en una temporada completa.
+     *
+     * [Informe §I-B probabilidad logística de lesión]
+     */
     public static double probabilidadLesion(double edad, double historial,
                                             double minutosPrevios, Parametros.Lesion p) {
         double z = p.a0
@@ -120,7 +130,11 @@ public final class Evolucion {
         return p.salarioBase * Math.exp(p.salarioEscala * (theta - 60.0));
     }
 
-    /** Valor de mercado en millones: nivel, edad y contrato restante. */
+    /**
+     * Valor de mercado en millones: nivel, edad y contrato restante.
+     *
+     * [Informe §I-B valor de mercado V_j(t)]
+     */
     public static double valorMercado(double theta, double edad, double aniosContrato,
                                       Parametros.Valor p) {
         double base = p.valorBase * Math.exp(p.thetaEscala * (theta - p.thetaRef));
@@ -139,6 +153,8 @@ public final class Evolucion {
      * nivel, por los años que le quedan. Un contrato largo y caro firmado en la
      * última ventana ya no es patrimonio gratis: es una deuda. El piso es el
      * costo de rescindirlo, porque el club siempre puede liberar al jugador.
+     *
+     * [Informe §I-C término V₃ de la ec. (2)]
      */
     public static double valorNeto(double theta, double edad, int aniosContrato,
                                    double salario, Parametros p) {

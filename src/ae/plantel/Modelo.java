@@ -8,6 +8,8 @@ import java.util.Map;
 /**
  * Modelo de datos del problema.
  *
+ * [Informe §I-A dominio de acciones; §I-C restricciones; §III-A gen μ]
+ *
  * Se separa lo estructural de lo que evoluciona:
  *   JugadorBase   -> datos de entrada de la instancia, nunca se modifican
  *   EstadoJugador -> lo que cambia dentro de una simulación

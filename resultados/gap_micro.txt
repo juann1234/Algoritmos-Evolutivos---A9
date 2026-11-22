@@ -1,0 +1,29 @@
+
+Instancia 'micro-55': 3 propios / 2 candidatos | edad media 22.3 | nivel medio 78.6 | masa salarial 4.5M de un tope de 5.6M | presupuesto 120.0M
+óptimo 55.0636 (107,811 planes, 13.6 s); statu quo 52.0829 -> GAP del statu quo 5.72%
+ presupuesto     f media   GAP med    GAP sd  GAP peor     óptimo en
+         500     54.8496     0.40%     1.14%     5.72%        25 de 30
+        1000     54.8783     0.35%     1.12%     5.72%        26 de 30
+        2000     54.9776     0.16%     0.48%     1.59%        27 de 30
+        4000     55.0063     0.11%     0.40%     1.59%        28 de 30
+        8000     55.0636     0.00%     0.00%     0.00%        30 de 30
+
+Instancia 'micro-56': 3 propios / 2 candidatos | edad media 28.7 | nivel medio 74.9 | masa salarial 3.7M de un tope de 4.6M | presupuesto 120.0M
+óptimo 48.1875 (107,811 planes, 13.2 s); statu quo 42.3633 -> GAP del statu quo 13.75%
+ presupuesto     f media   GAP med    GAP sd  GAP peor     óptimo en
+         500     47.5151     1.45%     2.03%     6.92%        15 de 30
+        1000     47.9256     0.55%     0.90%     2.20%        21 de 30
+        2000     48.0842     0.22%     0.58%     2.20%        25 de 30
+        4000     48.1875     0.00%     0.00%     0.00%        30 de 30
+        8000     48.1875     0.00%     0.00%     0.00%        30 de 30
+
+Instancia 'micro-57': 3 propios / 2 candidatos | edad media 23.7 | nivel medio 79.9 | masa salarial 4.9M de un tope de 6.1M | presupuesto 120.0M
+óptimo 53.9332 (107,811 planes, 13.0 s); statu quo 50.9517 -> GAP del statu quo 5.85%
+ presupuesto     f media   GAP med    GAP sd  GAP peor     óptimo en
+         500     53.7707     0.31%     0.70%     1.84%        25 de 30
+        1000     53.8357     0.18%     0.56%     1.84%        27 de 30
+        2000     53.8682     0.12%     0.47%     1.84%        28 de 30
+        4000     53.9332     0.00%     0.00%     0.00%        30 de 30
+        8000     53.9332     0.00%     0.00%     0.00%        30 de 30
+
+  datos crudos en resultados/gap_micro.csv

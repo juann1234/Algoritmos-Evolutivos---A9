@@ -15,6 +15,8 @@ import java.util.Map;
 /**
  * Decodificador, operador de reparación y función de fitness.
  *
+ * [Informe §III-A decodificador, reparación y penalización; §III-B simulador y ec. (3); §I-C ec. (2)]
+ *
  * CALENDARIO. El horizonte son 3 temporadas de dos mitades. La ventana w
  * (1..6) se aplica ANTES del período w: las impares son de verano y las pares
  * de invierno. Las seis caen dentro del horizonte, y toda operación tiene por
@@ -85,6 +87,13 @@ public final class Evaluador {
         public double concretadasMedia;
         public double puntosMedios;      // suma de las tres temporadas
         public double costoNetoMedio;    // para la variante multiobjetivo
+        /**
+         * E[suma gamma^t R_t] - E[penalización]: el f1 de la variante
+         * multiobjetivo (DECISIONES D-A6). Cumple
+         * utilidadMedia = utilidadDeportivaMedia + beta * (presupuesto + temporadas * tope) - beta * costoNetoMedio
+         * (verificado en jmetal/ValidarMO). [Informe §III-C variante multiobjetivo]
+         */
+        public double utilidadDeportivaMedia;
 
         @Override
         public String toString() {
@@ -222,6 +231,8 @@ public final class Evaluador {
      * Probabilidad de que el jugador acepte: se compara lo ofrecido contra lo
      * que exige HOY, que depende de su nivel actual y no del salario que firmó
      * hace años.
+     *
+     * [Informe §III-B paso (iv): operaciones que fracasan según la oferta]
      */
     private static double probAcepta(double ofrecido, double exigido, Parametros p) {
         return sigmoide(p.mercado.pendienteNegociacion * (ofrecido / exigido - 1.0));
@@ -232,6 +243,8 @@ public final class Evaluador {
      * propone. Una cláusula baja le deja la puerta abierta para irse, así que
      * acepta cobrar menos; un blindaje alto se paga con salario. Es el
      * compromiso entre cláusula y salario que describe el informe.
+     *
+     * [Informe §I-A compromiso cláusula-salario]
      */
     private static double exigenciaPorClausula(double clausulaMult, Parametros p) {
         double t = (clausulaMult - Cromosoma.CLAUSULA_MIN)
@@ -438,6 +451,8 @@ public final class Evaluador {
      * incorporación se cancela y se devuelve lo pagado; una renovación vuelve
      * al contrato anterior. Si la violación persiste porque viene del plantel
      * heredado, queda como penalización.
+     *
+     * [Informe §III-A reparación de cupo y tope salarial]
      */
     private static void reparar(Instancia inst, Club club, List<Revertible> operaciones,
                                 Parametros p) {
@@ -613,6 +628,8 @@ public final class Evaluador {
      *     rival alcanza la cláusula, la ejecuta: el club cobra la cláusula y
      *     pierde al jugador, sin poder negarse. Es lo que hace que la cláusula
      *     sea una decisión y no un número decorativo.
+     *
+     * [Informe §III-C extensión: clubes rivales reactivos]
      */
     private static void moverOtrosClubes(Club club, int temporada, Escenario esc,
                                          Parametros p) {
@@ -716,6 +733,8 @@ public final class Evaluador {
      *
      * El escenario k usa la semilla semillaBase + k. Todos los individuos de
      * una generación comparten semillaBase (common random numbers).
+     *
+     * [Informe §III-B ec. (3)]
      */
     public static Fitness evaluar(Instancia inst, Cromosoma x, int nReplicas,
                                   long semillaBase, Parametros p) {
@@ -727,9 +746,11 @@ public final class Evaluador {
             f.penalizacionMedia += r.penalizacion / nReplicas;
             f.factibles += (r.factible ? 1.0 : 0.0) / nReplicas;
             f.concretadasMedia += r.concretadas / (double) nReplicas;
-            for (double pts : r.puntos) {
-                f.puntosMedios += pts / nReplicas;
+            for (int t = 0; t < r.puntos.length; t++) {
+                f.puntosMedios += r.puntos[t] / nReplicas;
+                f.utilidadDeportivaMedia += Math.pow(p.gamma, t + 1) * r.puntos[t] / nReplicas;
             }
+            f.utilidadDeportivaMedia -= r.penalizacion / nReplicas;
             // Costo neto del plan: lo que se gastó en pases y salarios menos
             // el patrimonio en jugadores con el que se termina.
             f.costoNetoMedio += (r.gastoPases + r.salariosPagados - r.valorPlantel) / nReplicas;

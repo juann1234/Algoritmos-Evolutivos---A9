@@ -10,6 +10,8 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * Heurística golosa miope: la referencia que encarna "decidir ventana por
+ *
+ * [Informe §IV-B(3) heurística golosa miope]
  * ventana en lugar de planificar el horizonte".
  *
  * Recorre las seis ventanas en orden cronológico y, en cada una, acepta la

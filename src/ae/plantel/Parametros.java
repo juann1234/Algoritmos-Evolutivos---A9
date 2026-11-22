@@ -3,6 +3,8 @@ package ae.plantel;
 /**
  * Parámetros del simulador.
  *
+ * [Informe §I-B ec. (1), lesiones y valor; §I-C γ y β; §III-B ρ]
+ *
  * Todos los coeficientes del modelo viven acá y en ningún otro lado. Eso permite
  * calibrarlos sin tocar la lógica, correr análisis de sensibilidad y dejar
  * documentado en el informe de dónde sale cada número.

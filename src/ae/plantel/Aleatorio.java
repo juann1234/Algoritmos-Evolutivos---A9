@@ -5,6 +5,8 @@ import java.util.List;
 /**
  * Generador pseudoaleatorio del proyecto (SplitMix64).
  *
+ * [Informe §III-B common random numbers; §IV-A reproducibilidad por semilla]
+ *
  * Reemplaza a java.util.Random por un motivo concreto y medido: con semillas
  * consecutivas, java.util.Random devuelve un primer sorteo casi idéntico
  * (0.3745, 0.3741, 0.3740, ... para las semillas 1000003, 1000004, 1000005).

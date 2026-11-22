@@ -87,6 +87,13 @@ public final class Evaluador {
         public double concretadasMedia;
         public double puntosMedios;      // suma de las tres temporadas
         public double costoNetoMedio;    // para la variante multiobjetivo
+        /**
+         * E[suma gamma^t R_t] - E[penalización]: el f1 de la variante
+         * multiobjetivo (DECISIONES D-A6). Cumple
+         * utilidadMedia = utilidadDeportivaMedia + beta * (presupuesto + temporadas * tope) - beta * costoNetoMedio
+         * (verificado en jmetal/ValidarMO). [Informe §III-C variante multiobjetivo]
+         */
+        public double utilidadDeportivaMedia;
 
         @Override
         public String toString() {
@@ -739,9 +746,11 @@ public final class Evaluador {
             f.penalizacionMedia += r.penalizacion / nReplicas;
             f.factibles += (r.factible ? 1.0 : 0.0) / nReplicas;
             f.concretadasMedia += r.concretadas / (double) nReplicas;
-            for (double pts : r.puntos) {
-                f.puntosMedios += pts / nReplicas;
+            for (int t = 0; t < r.puntos.length; t++) {
+                f.puntosMedios += r.puntos[t] / nReplicas;
+                f.utilidadDeportivaMedia += Math.pow(p.gamma, t + 1) * r.puntos[t] / nReplicas;
             }
+            f.utilidadDeportivaMedia -= r.penalizacion / nReplicas;
             // Costo neto del plan: lo que se gastó en pases y salarios menos
             // el patrimonio en jugadores con el que se termina.
             f.costoNetoMedio += (r.gastoPases + r.salariosPagados - r.valorPlantel) / nReplicas;

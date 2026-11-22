@@ -112,8 +112,10 @@ public final class Experimentos {
                         cfg.maxEvaluaciones = base.maxEvaluaciones;
                         cfg.semilla = semilla;
                         long s0 = System.nanoTime();
+                        // Motor: AE sobre jMetal (DECISIONES D-A1; equivalencia
+                        // validada en jmetal/ValidarEquivalenciaJMetal).
                         AlgoritmoEvolutivo.Resultado res =
-                                AlgoritmoEvolutivo.ejecutar(inst, cfg, P);
+                                ae.plantel.jmetal.AGPlantel.ejecutar(inst, cfg, P);
                         double f = Evaluador.evaluar(
                                 inst, res.mejor, N_VALIDACION, SEMILLA_VALIDACION, P).valor;
                         return new Celda(configIdx, bloque, f,

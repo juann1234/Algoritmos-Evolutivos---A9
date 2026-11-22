@@ -158,3 +158,52 @@ que se pueden incorporar). No hay nada que implementar por ese lado.
 Ramas por persona (`alen/...`), un commit por módulo validado, PR a `main`
 para que el otro revise. Commits de Alen sin línea de co-autoría (pedido
 explícito).
+
+### D-A9 · NSGA-II se compara contra "agregación con barrido de β"
+**Fecha:** 22/11/2026 · **Estado:** vigente · **No estaba en el informe inicial**
+
+El Tema 12 pide comparar las técnicas multiobjetivo por métrica, contra el
+frente de referencia. El informe no decía contra qué se compara NSGA-II. Se
+eligió el enfoque **no basado en Pareto** del Tema 10 ("agregación o
+combinación lineal de objetivos"): el mismo AE mono-objetivo (`AGPlantel`)
+corrido con β ∈ {0; 0,02; 0,05; 0,10; 0,20; 0,50}, cada uno con 1/6 del
+presupuesto, y su conjunto no dominado como frente. Es lo que haría quien no
+usa un MOEA, y por D-A6 es justo: el mono-objetivo ES una agregación lineal
+de f₁ y f₂. A igual presupuesto total se mide si NSGA-II aporta. Programa:
+`jmetal/ExperimentoMO`.
+
+### D-A10 · Reevaluación de padres en NSGA-II y revaluación del frente final
+**Fecha:** 22/11/2026 · **Estado:** vigente
+
+En NSGA-II el reemplazo es (μ+λ): padres e hijos compiten. Con escenarios que
+rotan (M1), los padres se reevalúan sobre los escenarios de los hijos antes
+de competir (M2); cuesta P evaluaciones por generación, que se descuentan del
+presupuesto (cada generación cuesta 2P). El frente que se reporta es el
+conjunto no dominado de la población final **revaluado con N = 200 sobre los
+escenarios de validación**, otra vez filtrado por no dominancia, y sin puntos
+repetidos: dos planes que difieren solo en genes que no se expresan (por
+ejemplo, la prioridad de un candidato que no se compra) dan los mismos
+objetivos y cuentan como un solo punto.
+
+### D-A11 · Límite de tiempo de reloj apagado por defecto
+**Fecha:** 22/11/2026 · **Estado:** vigente
+
+El informe promete "40.000 evaluaciones más un límite de tiempo de reloj"
+(§III-C). Está implementado (`Config.segundosMax`) en el AE de referencia, en
+`AGPlantel` y en `NSGAIIPlantel`, pero vale 0 (apagado) por defecto: con
+límite de tiempo, cuántas generaciones entran depende de la máquina y una
+semilla deja de reproducir su corrida. Se usa solo como red de seguridad en
+ClusterUY. El criterio que manda es el de evaluaciones.
+
+### D-A12 · Cómo se decide la equivalencia entre el AE propio y el de jMetal
+**Fecha:** 22/11/2026 · **Estado:** vigente
+
+Con la misma semilla las dos implementaciones arrancan de la misma población
+y usan los mismos escenarios, pero consumen el azar en otro orden (jMetal
+hace todas las selecciones de la generación antes de cruzar), así que no dan
+el mismo plan. Se valida en distribución, con el protocolo del curso
+(StatTests lámina 9): Shapiro-Wilk en las dos muestras; si son normales, t
+de Student (Welch); si no, Mann-Whitney; además el criterio del Tema 12
+(|diferencia de medias| ≤ máx. desvíos). Se exige además que la misma
+semilla reproduzca la misma corrida aunque se corra en paralelo, y que las
+dos gasten exactamente las mismas evaluaciones y generaciones.

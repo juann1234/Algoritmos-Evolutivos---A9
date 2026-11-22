@@ -60,6 +60,10 @@ genes). El informe inicial está en `docs/Informe_Inicial_v2.pdf`.
 | Tests estadísticos: Shapiro-Wilk, Lilliefors, ANOVA, Kruskal-Wallis, Friedman, Wilcoxon (exacto), t de Welch, Mann-Whitney, Holm, Bonferroni | hechos y validados contra scipy (32 chequeos) |
 | Diseño factorial 3×3×3 de configuración paramétrica | hecho; **falta correrlo completo** |
 | Variantes del temario: gap generacional, estado estacionario, sharing, CHC, memético | hechas y comparadas |
+| **Adaptador jMetal 5.10** (`Problem`, `Solution`, operadores) y **AE generacional sobre jMetal** | hecho; equivalencia con el AE propio validada con 50 semillas (Alen) |
+| **NSGA-II** (jMetal) + hipervolumen relativo, spread, GD; comparación contra agregación | hecho y validado (Alen); falta la corrida completa |
+| Comparación AE vs referencias (30 corridas, tests, robustez 10.000, eficiencia) | programa hecho (Alen); falta la corrida completa |
+| Límite de tiempo de reloj | hecho, apagado por defecto (D-A11) |
 
 ### Resultados de referencia
 
@@ -182,7 +186,11 @@ En la tabla de abajo, `java -cp out` se lee como `java -cp "$CP"`.
 | `java -cp out ae.plantel.SensibilidadBeta 6000` | barrido del peso del patrimonio |
 | `java -cp out ae.plantel.CompararVariantes correr <variante> <desde> <hasta> <evals>` | variantes: `base`, `gap50`, `estacionario`, `sharing`, `chc`, `memetico` |
 | `java -cp out ae.plantel.CompararVariantes analizar <evals>` | análisis estadístico de las variantes |
-| `java -cp out ae.plantel.Experimentos 40000 30 2` | barrido factorial completo (para ClusterUY) |
+| `java -cp out ae.plantel.Experimentos 40000 30 2` | barrido factorial completo (para ClusterUY), con `AGPlantel` |
+| `java -cp out ae.plantel.jmetal.ValidarEquivalenciaJMetal 50 8000` | AE sobre jMetal vs AE de referencia (unos 11 min) |
+| `java -cp out ae.plantel.jmetal.ValidarMO` | validación de la variante multiobjetivo |
+| `java -cp out ae.plantel.jmetal.CompararReferencias 40000 30` | AE vs aleatoria, greedy y statu quo en las 3 instancias de evaluación |
+| `java -cp out ae.plantel.jmetal.ExperimentoMO 40000 30 eval-chica` | NSGA-II vs agregación con barrido de β, con métricas |
 
 Costo de referencia: 5 a 7 ms por evaluación con N=30, o sea unos 15 segundos
 por corrida de 8.000 evaluaciones y alrededor de un minuto por corrida de
@@ -199,9 +207,16 @@ por corrida de 8.000 evaluaciones y alrededor de un minuto por corrida de
 | `Temporada.java` | reparto de minutos y fuerza del equipo |
 | `Evaluador.java` | decodificador, reparación, rivales, economía y fitness |
 | `Cromosoma.java`, `Operadores.java` | representación y operadores |
-| `AlgoritmoEvolutivo.java` | el AE y sus variantes |
+| `AlgoritmoEvolutivo.java` | el AE de referencia y sus variantes |
 | `Estadistica.java` | tests estadísticos sin dependencias |
 | `GeneradorInstancias.java` | instancias sintéticas |
+| `jmetal/Gen.java`, `jmetal/SolucionPlantel.java` | la representación como `Solution` de jMetal |
+| `jmetal/ProblemaPlantel.java`, `jmetal/ProblemaPlantelMO.java` | el problema como `Problem` de jMetal (mono y multiobjetivo) |
+| `jmetal/OperadoresJMetal.java` | cruzamiento, mutación y torneo con las interfaces de jMetal |
+| `jmetal/AGPlantel.java` | AE generacional sobre `AbstractGeneticAlgorithm` (motor de los experimentos) |
+| `jmetal/NSGAIIPlantel.java` | NSGA-II de jMetal con escenarios comunes |
+| `jmetal/IndicadoresMO.java` | hipervolumen relativo, spread y GD (indicadores de jMetal) |
+| `jmetal/CompararReferencias.java`, `jmetal/ExperimentoMO.java` | experimentos finales |
 | resto | programas de validación y de experimentos |
 
 ---

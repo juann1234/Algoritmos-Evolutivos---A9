@@ -33,3 +33,13 @@ java -cp "$CP" ae.plantel.GreedyMiope 8000
 echo
 echo "== 7. Óptimo exacto en micro-instancia (esperado: GAP 0.00% el mejor de 10)"
 java -cp "$CP" ae.plantel.OptimoExacto 4 2
+
+echo
+echo "== 8. Variante multiobjetivo: identidad de D-A6, hipervolumen, métricas y NSGA-II"
+java -cp "$CP" ae.plantel.jmetal.ValidarMO
+
+echo
+echo "== 9. Equivalencia AE sobre jMetal vs AE de referencia (corta: 10 semillas, 4.000 evals;"
+echo "      esperado: EQUIVALENCIA OK, t de Welch p = 0.1559; la versión larga de 50 semillas"
+echo "      está en resultados/equivalencia_jmetal_50semillas.txt)"
+java -cp "$CP" ae.plantel.jmetal.ValidarEquivalenciaJMetal 10 4000

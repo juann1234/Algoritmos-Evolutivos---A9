@@ -66,6 +66,15 @@ public final class AlgoritmoEvolutivo {
         public int torneo = 3;
         public int replicas = 30;         // N del simulador durante la búsqueda
         public int maxEvaluaciones = 40000;
+        /**
+         * Límite de tiempo de reloj en segundos; 0 = sin límite. Es el segundo
+         * criterio de parada que promete el informe (§III-C: "40.000
+         * evaluaciones, más un límite de tiempo de reloj"). Se chequea entre
+         * generaciones. OJO: con límite de tiempo una corrida deja de ser
+         * reproducible (depende de la máquina), por eso por defecto está apagado
+         * y solo actúa como red de seguridad en ClusterUY.
+         */
+        public double segundosMax = 0;
         public long semilla = 1;
         /** Selección final: cuántos candidatos se remiden y con cuántas réplicas. */
         public int finalistas = 10;
@@ -122,7 +131,12 @@ public final class AlgoritmoEvolutivo {
         public double segundos;
     }
 
-    private record Candidato(Cromosoma plan, double fitness) {
+    /**
+     * Mejor plan de una generación y el fitness con que se lo midió. Es público
+     * porque el AE sobre jMetal (ae.plantel.jmetal.AGPlantel) reutiliza la misma
+     * selección final (DECISIONES D-A1).
+     */
+    public record Candidato(Cromosoma plan, double fitness) {
     }
 
     /** Estado compartido de una ejecución. */
@@ -153,6 +167,13 @@ public final class AlgoritmoEvolutivo {
 
         int restantes() {
             return presupuesto - out.evaluaciones;
+        }
+
+        final long t0 = System.nanoTime();
+
+        /** [Informe §III-C parada por límite de tiempo de reloj] */
+        boolean vencido() {
+            return cfg.segundosMax > 0 && (System.nanoTime() - t0) / 1e9 >= cfg.segundosMax;
         }
 
         void rotarEscenarios() {
@@ -210,7 +231,7 @@ public final class AlgoritmoEvolutivo {
                 : Math.max(2, (int) Math.round(cfg.gap * tam));
         int sobrevivientes = tam - hijosPorGeneracion;
 
-        while (c.restantes() >= tam) {
+        while (c.restantes() >= tam && !c.vencido()) {
             double[] fitSeleccion = cfg.sigmaSharing > 0 ? compartido(pob, fit, cfg.sigmaSharing) : fit;
             int[] mejores = mejoresIndices(fit, sobrevivientes);
 
@@ -354,7 +375,7 @@ public final class AlgoritmoEvolutivo {
         int umbralInicial = Math.max(1, pob[0].n / 4);
         int umbral = umbralInicial;
 
-        while (c.restantes() >= 2 * tam) {
+        while (c.restantes() >= 2 * tam && !c.vencido()) {
             // Emparejamiento al azar; solo se cruzan los suficientemente distintos.
             List<Integer> orden = new ArrayList<>();
             for (int i = 0; i < tam; i++) {
@@ -448,6 +469,9 @@ public final class AlgoritmoEvolutivo {
         List<Candidato> candidatos = new ArrayList<>();
 
         for (int i = 0; i < presupuesto; i++) {
+            if (cfg.segundosMax > 0 && (System.nanoTime() - t0) / 1e9 >= cfg.segundosMax) {
+                break;
+            }
             Cromosoma c = i == 0 ? Cromosoma.statuQuo(inst) : Operadores.aleatorioSesgado(inst, rng);
             if (cfg.grilla) {
                 Operadores.proyectarAGrilla(c);
@@ -501,9 +525,11 @@ public final class AlgoritmoEvolutivo {
      * Segunda etapa: remide a los K mejores candidatos distintos sobre un mismo
      * conjunto de escenarios, que no se usó ni en la búsqueda ni se usa en la
      * validación, y devuelve al ganador.
+     *
+     * [Informe §III-B manejo del ruido: reemplaza al "N creciente" (DECISIONES M3)]
      */
-    private static Cromosoma seleccionFinal(Instancia inst, List<Candidato> candidatos,
-                                            Config cfg, Parametros p) {
+    public static Cromosoma seleccionFinal(Instancia inst, List<Candidato> candidatos,
+                                           Config cfg, Parametros p) {
         candidatos.sort(Comparator.comparingDouble((Candidato x) -> -x.fitness()));
         List<Cromosoma> finalistas = new ArrayList<>();
         for (Candidato c : candidatos) {

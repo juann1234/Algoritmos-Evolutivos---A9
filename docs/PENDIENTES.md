@@ -15,25 +15,27 @@ Estados: ⬜ pendiente · 🟨 en curso · ✅ hecho · ⛔ bloqueado
 | P01 | Validación del trabajo previo | — | Alen | ✅ | `docs/VALIDACION.md` |
 | P02 | Documentación de coordinación (CLAUDE.md, REFERENCIAS, DECISIONES, este archivo) | — | Alen | ✅ | |
 | P03 | Shapiro-Wilk, Mann-Whitney, Holm, Wilcoxon exacto, validados contra scipy | §IV-A, §IV-B | Alen | ✅ | D-A5; 32 chequeos en `ValidarEstadistica` |
-| P04 | Adaptador jMetal + AE generacional sobre jMetal + equivalencia con el AE propio | §III | Alen | ⬜ | D-A1, D-A2 |
-| P05 | NSGA-II con jMetal (f₁ utilidad deportiva, f₂ costo neto) | §III-C | Alen | ⬜ | D-A6 |
-| P06 | Métricas multiobjetivo: hipervolumen relativo, spread, GD; frente de referencia por unión de ≥ 30 corridas; estadística por métrica | §IV-C, Tema 12 | Alen | ⬜ | |
-| P07 | Comparación AE vs referencias en las 3 instancias de evaluación, ≥ 30 corridas, % de mejora, tests (Shapiro → t / Mann-Whitney; Friedman + Holm), GAP | §IV-B | Alen | ⬜ | |
-| P08 | Robustez del plan final con validación de 10.000 simulaciones | §IV-C | Alen | ⬜ | hoy se usa N=200 |
-| P09 | Límite de tiempo de reloj como segundo criterio de parada | §III-C | Alen | ⬜ | |
+| P04 | Adaptador jMetal + AE generacional sobre jMetal + equivalencia con el AE propio | §III | Alen | ✅ | D-A1, D-A2, D-A12; `jmetal/AGPlantel`, `jmetal/ValidarEquivalenciaJMetal` |
+| P05 | NSGA-II con jMetal (f₁ utilidad deportiva, f₂ costo neto) | §III-C | Alen | ✅ | D-A6, D-A10; `jmetal/NSGAIIPlantel`, validado en `jmetal/ValidarMO` |
+| P06 | Métricas multiobjetivo: hipervolumen relativo, spread, GD; frente de referencia por unión de ≥ 30 corridas; estadística por métrica | §IV-C, Tema 12 | Alen | ✅ | `jmetal/IndicadoresMO`, `jmetal/ExperimentoMO` (vs agregación, D-A9); falta la corrida completa (P23) |
+| P07 | Comparación AE vs referencias en las 3 instancias de evaluación, ≥ 30 corridas, % de mejora, tests (Shapiro → t / Mann-Whitney; Friedman + Holm), GAP | §IV-B | Alen | ✅ | programa: `jmetal/CompararReferencias`; falta la corrida completa (P23) |
+| P08 | Robustez del plan final con validación de 10.000 simulaciones | §IV-C | Alen | ✅ | `CompararReferencias.robustez` |
+| P09 | Límite de tiempo de reloj como segundo criterio de parada | §III-C | Alen | ✅ | `Config.segundosMax`, apagado por defecto (D-A11) |
 | P10 | Selección proporcional con escalado (a comparar contra torneo) | §III-C | — | ⬜ | |
 | P11 | Cruzamiento por bloques posicionales (a comparar contra uniforme) | §III-C | — | ⬜ | |
 | P12 | Escalado de fitness | §III-C | — | ⬜ | va junto con P10 |
 | P13 | Modelo de islas con migración en anillo + speedup al variar recursos | §III-C, §IV-C | — | ⬜ | Tema 11 |
 | P14 | Estudio del número de réplicas N (menor N que mantiene estable el ordenamiento) | §IV-A | — | ⬜ | |
-| P15 | Evaluaciones hasta alcanzar percentiles de la mejor solución | §IV-C | — | ⬜ | |
+| P15 | Evaluaciones hasta alcanzar percentiles de la mejor solución | §IV-C | Alen | ✅ | `CompararReferencias.evaluacionesHasta` |
 | P16 | Micro-instancias más difíciles (statu quo a > 5% del óptimo) | §IV-B(2) | — | ⬜ | VALIDACION §7.1 |
 | P17 | Datos reales: cargar SoFIFA/Transfermarkt al esquema `JugadorBase`, recalibrar valor, salario y rivales | §IV-A | Juan | ⬜ | README "Lo que falta" §2 |
 | P18 | Reconstruir el **plan real del club** como individuo y evaluarlo | §IV-B(1) | Juan | ⬜ | depende de P17 |
-| P19 | Barrido factorial completo en ClusterUY (27 config × 2 inst × 30) | §IV-A | — | ⬜ | `Experimentos 40000 30 2`; correr con la versión jMetal cuando esté P04 |
+| P19 | Barrido factorial completo en ClusterUY (27 config × 2 inst × 30) | §IV-A | — | ⬜ | `Experimentos 40000 30 2`; ya usa `AGPlantel` (P24) |
 | P20 | Verificar `mvn package` en una máquina con Maven Central | — | Juan o Alen | ⬜ | en el entorno del Claude de Alen Maven está bloqueado (D-A4) |
 | P21 | Informe final (IEEE, doble columna): ampliar con implementación, calibración, instancias, validación, resultados, conclusiones | todo | ambos | ⬜ | ver "Correcciones para el informe final" abajo |
 | P22 | Zip de entrega: fuentes + instancias, sin binarios ni framework | consigna | ambos | ⬜ | |
+| P23 | Corridas completas en ClusterUY: `CompararReferencias 40000 30` (3 instancias) y `ExperimentoMO 40000 30` por instancia | §IV-B, §IV-C | — | ⬜ | en el entorno del Claude de Alen solo hay 2 núcleos: ahí se corrieron versiones chicas |
+| P24 | Pasar `Experimentos` (factorial) a `AGPlantel` | §IV-A | Alen | ✅ | |
 
 ## Correcciones para el informe final (acumuladas)
 
@@ -57,6 +59,31 @@ final. Agregar acá cada vez que aparezca una.
 ## Bitácora
 
 Entradas nuevas arriba. Formato: fecha · quién · qué se hizo · cómo se validó · qué sigue.
+
+### 22/11/2026 · Alen (con Claude) · módulo jMetal (AE, NSGA-II, métricas, comparación)
+- Paquete `src/ae/plantel/jmetal/`: `Gen` + `SolucionPlantel` (Solution),
+  `ProblemaPlantel` / `ProblemaPlantelMO` (Problem), `OperadoresJMetal`
+  (CrossoverOperator, MutationOperator, SelectionOperator con el RNG de la
+  corrida, D-A2), `AGPlantel` (AbstractGeneticAlgorithm) y `NSGAIIPlantel`
+  (NSGAII de jMetal) con escenarios comunes y reevaluación (D-A10).
+- Validación de `AGPlantel` contra el AE de Juan
+  (`ValidarEquivalenciaJMetal`, D-A12): misma semilla → misma corrida aun en
+  paralelo; mismas evaluaciones (7.934) y generaciones (78); con 50 semillas
+  y 8.000 evaluaciones, diferencia de medias −0,13 (IC 95% [−0,61; +0,35]),
+  t de Welch p = 0,61, Mann-Whitney p = 0,54. Con 20 semillas Mann-Whitney
+  había dado p = 0,044 (t p = 0,095): era azar, lo confirma la de 50.
+  Salida completa en `resultados/equivalencia_jmetal_50semillas.txt`. Mismo
+  costo por corrida (5,6 s con 4.000 evaluaciones las dos).
+- `ValidarMO`: identidad f + ρσ = f₁ − βf₂ + C exacta (error 1e-13) en 30
+  planes; HV de jMetal = cálculo 2D a mano; RHV, GD y spread con las
+  propiedades esperadas; NSGA-II corto da frente no dominado, reproducible y
+  con planes mejores que el statu quo.
+- `CompararReferencias` (P07, P08, P15) y `ExperimentoMO` (P06, D-A9):
+  probados con corridas chicas. Las corridas completas quedan para
+  ClusterUY (P23).
+- Límite de tiempo de reloj (P09, D-A11). `Experimentos` usa `AGPlantel` (P24).
+- `validar.sh` suma los pasos 8 (ValidarMO) y 9 (equivalencia corta).
+  Validado: `./validar.sh` completo, todo OK, números de referencia sin cambios.
 
 ### 22/11/2026 · Alen (con Claude) · módulo de estadística
 - `Estadistica.java`: Shapiro-Wilk (AS R94 de Royston), t de Welch,

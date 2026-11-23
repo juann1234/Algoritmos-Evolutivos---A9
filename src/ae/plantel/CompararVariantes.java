@@ -46,6 +46,7 @@ import java.util.TreeMap;
  *   java -cp out ae.plantel.CompararVariantes correr conf-joven chc 1 10 8000
  *   ...
  *   java -cp out ae.plantel.CompararVariantes analizar conf-joven 8000
+ *   java -cp out ae.plantel.CompararVariantes analizar conf-joven 8000 n10   (otra referencia)
  *
  * La forma vieja, sin instancia (correr base 1 10 8000 / analizar 8000),
  * sigue funcionando sobre demo.
@@ -109,6 +110,15 @@ public final class CompararVariantes {
         AlgoritmoEvolutivo.Config n10 = new AlgoritmoEvolutivo.Config();
         n10.replicas = 10;
         v.put("n10", n10);
+
+        // N creciente de 5 a 30, con el mismo total de simulaciones (el N
+        // nominal 10 solo fija el presupuesto: evals x 30 / 10 evaluaciones de
+        // 10 réplicas = evals x 30 simulaciones, igual que todas).
+        AlgoritmoEvolutivo.Config nc = new AlgoritmoEvolutivo.Config();
+        nc.replicas = 10;
+        nc.replicasMin = 5;
+        nc.replicasMax = 30;
+        v.put("ncreciente", nc);
         return v;
     }
 
@@ -117,9 +127,9 @@ public final class CompararVariantes {
                 new FileOutputStream(FileDescriptor.out), true, StandardCharsets.UTF_8));
         if (args.length > 0 && args[0].equals("analizar")) {
             if (args.length > 2) {
-                analizar(args[1], Integer.parseInt(args[2]));
+                analizar(args[1], Integer.parseInt(args[2]), args.length > 3 ? args[3] : "base");
             } else {
-                analizar("demo", args.length > 1 ? Integer.parseInt(args[1]) : 8000);
+                analizar("demo", args.length > 1 ? Integer.parseInt(args[1]) : 8000, "base");
             }
             return;
         }
@@ -175,6 +185,8 @@ public final class CompararVariantes {
         c.sigmaSharing = o.sigmaSharing;
         c.memeticoCada = o.memeticoCada;
         c.memeticoUmbral = o.memeticoUmbral;
+        c.replicasMin = o.replicasMin;
+        c.replicasMax = o.replicasMax;
         return c;
     }
 
@@ -182,7 +194,8 @@ public final class CompararVariantes {
     // Análisis
     // ----------------------------------------------------------------
 
-    private static void analizar(String nombreInstancia, int presupuesto) throws IOException {
+    private static void analizar(String nombreInstancia, int presupuesto, String referencia)
+            throws IOException {
         Path CSV = csv(nombreInstancia);
         Map<String, TreeMap<Integer, double[]>> datos = new LinkedHashMap<>();
         for (String v : variantes().keySet()) {
@@ -224,12 +237,13 @@ public final class CompararVariantes {
 
         System.out.println();
         System.out.println(linea);
-        System.out.println("Cada variante contra la base (Wilcoxon pareado por semilla, post-hoc de Holm)");
+        System.out.println("Cada variante contra '" + referencia
+                + "' (Wilcoxon pareado por semilla, post-hoc de Holm)");
         System.out.println(linea);
-        TreeMap<Integer, double[]> base = datos.get("base");
+        TreeMap<Integer, double[]> base = datos.get(referencia);
         int comparaciones = 0;
         for (String v : datos.keySet()) {
-            if (!v.equals("base") && !datos.get(v).isEmpty()) {
+            if (!v.equals(referencia) && !datos.get(v).isEmpty()) {
                 comparaciones++;
             }
         }
@@ -238,7 +252,7 @@ public final class CompararVariantes {
         List<String> nombres = new ArrayList<>();
         List<double[]> resultados = new ArrayList<>();
         for (Map.Entry<String, TreeMap<Integer, double[]>> e : datos.entrySet()) {
-            if (e.getKey().equals("base") || e.getValue().isEmpty()) {
+            if (e.getKey().equals(referencia) || e.getValue().isEmpty()) {
                 continue;
             }
             List<Double> a = new ArrayList<>();
@@ -264,7 +278,7 @@ public final class CompararVariantes {
         for (int i = 0; i < crudos.length; i++) {
             double dif = resultados.get(i)[0];
             String veredicto = holm[i] >= 0.05 ? "sin diferencia significativa"
-                    : (dif > 0 ? "MEJOR que la base" : "PEOR que la base");
+                    : (dif > 0 ? "MEJOR que la referencia" : "PEOR que la referencia");
             System.out.printf("  %-14s dif. media %+7.2f  z = %6.2f  p = %.4f  p Holm = %.4f  -> %s%n",
                     nombres.get(i), dif, resultados.get(i)[1], crudos[i], holm[i], veredicto);
         }

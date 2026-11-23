@@ -122,6 +122,24 @@ public final class AlgoritmoEvolutivo {
         public Long semillaEscenariosFija = null;
 
         /**
+         * N creciente: si replicasMax &gt; 0, el número de réplicas crece
+         * linealmente de replicasMin a replicasMax a medida que se consume el
+         * presupuesto de simulaciones. Con poblaciones diversas alcanza con pocas
+         * réplicas para ordenar; con poblaciones convergidas el ruido pesa más
+         * (estudio de N, D-A13). El presupuesto total de simulaciones es el mismo
+         * que con N fijo = replicas: maxEvaluaciones x replicas.
+         * En 0 (por defecto) el AE usa N fijo = replicas, exactamente como antes.
+         *
+         * [Informe §III-B control del ruido: aumento progresivo de N a lo largo de la ejecución]
+         */
+        public int replicasMin = 0;
+        public int replicasMax = 0;
+
+        boolean nCreciente() {
+            return replicasMax > 0;
+        }
+
+        /**
          * Operador de selección (solo lo usa {@code jmetal.AGPlantel}).
          * [Informe §III-C: torneo de 3; "se evaluará también selección
          * proporcional con escalado"]
@@ -177,6 +195,8 @@ public final class AlgoritmoEvolutivo {
         /** Distancia media entre pares de la población, por generación. */
         public final List<Double> historialDiversidad = new ArrayList<>();
         public int evaluaciones;
+        /** Simulaciones consumidas en la búsqueda (evaluaciones x N de cada una). */
+        public long simulaciones;
         public int generaciones;
         public int cataclismos;
         public int mejorasLocales;
@@ -200,7 +220,11 @@ public final class AlgoritmoEvolutivo {
         final Resultado out = new Resultado();
         final List<Candidato> candidatos = new ArrayList<>();
         final int presupuesto;
+        /** Solo con N creciente: simulaciones disponibles para la búsqueda. */
+        final long presupuestoSimulaciones;
         long semillaEscenarios;
+        /** N con el que se evalúa la generación en curso. */
+        int nActual;
 
         Corrida(Instancia inst, Config cfg, Parametros p) {
             this.inst = inst;
@@ -209,16 +233,36 @@ public final class AlgoritmoEvolutivo {
             this.rng = new Aleatorio(cfg.semilla);
             this.presupuesto = Math.max(cfg.poblacion,
                     cfg.maxEvaluaciones - cfg.costoSeleccion());
+            this.presupuestoSimulaciones = (long) presupuesto * cfg.replicas;
             this.semillaEscenarios = cfg.semillaBusqueda();
+            this.nActual = cfg.nCreciente() ? cfg.replicasMin : cfg.replicas;
         }
 
         double evaluar(Cromosoma c) {
             out.evaluaciones++;
-            return Evaluador.evaluar(inst, c, cfg.replicas, semillaEscenarios, p).valor;
+            out.simulaciones += nActual;
+            return Evaluador.evaluar(inst, c, nActual, semillaEscenarios, p).valor;
         }
 
+        /**
+         * N que corresponde según la fracción del presupuesto ya consumida.
+         * Toda una generación se evalúa con el mismo N, así que la comparación
+         * dentro de la generación sigue siendo sobre los mismos escenarios.
+         */
+        int nSegunConsumo() {
+            if (!cfg.nCreciente()) {
+                return cfg.replicas;
+            }
+            double u = Math.min(1.0, out.simulaciones / (double) presupuestoSimulaciones);
+            return (int) Math.round(cfg.replicasMin + (cfg.replicasMax - cfg.replicasMin) * u);
+        }
+
+        /** Evaluaciones que todavía entran en el presupuesto, con el N que viene. */
         int restantes() {
-            return presupuesto - out.evaluaciones;
+            if (!cfg.nCreciente()) {
+                return presupuesto - out.evaluaciones;
+            }
+            return (int) ((presupuestoSimulaciones - out.simulaciones) / nSegunConsumo());
         }
 
         final long t0 = System.nanoTime();
@@ -228,8 +272,10 @@ public final class AlgoritmoEvolutivo {
             return cfg.segundosMax > 0 && (System.nanoTime() - t0) / 1e9 >= cfg.segundosMax;
         }
 
+        /** Escenarios nuevos para la generación que empieza; con N creciente, también su N. */
         void rotarEscenarios() {
-            semillaEscenarios += cfg.replicas;
+            semillaEscenarios += Math.max(cfg.replicas, cfg.replicasMax);
+            nActual = nSegunConsumo();
         }
     }
 

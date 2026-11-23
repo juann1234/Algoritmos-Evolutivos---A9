@@ -187,8 +187,8 @@ En la tabla de abajo, `java -cp out` se lee como `java -cp "$CP"`.
 | `java -cp out ae.plantel.GreedyMiope 8000` | referencia golosa miope |
 | `java -cp out ae.plantel.OptimoExacto 4 2` | GAP contra enumeración exhaustiva |
 | `java -cp out ae.plantel.SensibilidadBeta 6000` | barrido del peso del patrimonio |
-| `java -cp out ae.plantel.CompararVariantes correr <instancia> <variante> <desde> <hasta> <evals>` | variantes: `base`, `gap50`, `estacionario`, `sharing`, `chc`, `memetico`, `n10`; instancias: `demo`, `conf-joven`, `conf-veterano`, `eval-*` |
-| `java -cp out ae.plantel.CompararVariantes analizar <instancia> <evals>` | análisis estadístico de las variantes (Wilcoxon pareado + Holm) |
+| `java -cp out ae.plantel.CompararVariantes correr <instancia> <variante> <desde> <hasta> <evals>` | variantes: `base`, `gap50`, `estacionario`, `sharing`, `chc`, `memetico`, `n10`, `ncreciente`; instancias: `demo`, `conf-joven`, `conf-veterano`, `eval-*` |
+| `java -cp out ae.plantel.CompararVariantes analizar <instancia> <evals> [referencia]` | análisis estadístico de las variantes (Wilcoxon pareado + Holm), contra la base u otra variante |
 | `java -cp out ae.plantel.Experimentos 120000 30 2` | barrido factorial completo (para ClusterUY), con `AGPlantel` y N = 10 (D-A13) |
 | `java -cp out ae.plantel.jmetal.ValidarEquivalenciaJMetal 50 8000` | AE sobre jMetal vs AE de referencia (unos 11 min) |
 | `java -cp out ae.plantel.jmetal.ValidarMO` | validación de la variante multiobjetivo |

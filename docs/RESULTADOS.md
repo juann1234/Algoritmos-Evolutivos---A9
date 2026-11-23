@@ -85,6 +85,28 @@ N = 10 es significativamente mejor que N = 30 en las tres (p Holm 0,0078).
 Decisión D-A13: protocolo final N = 10 con 120.000 evaluaciones, el mismo
 costo que 40.000 con N = 30.
 
+### 4.1 N creciente (Juan, 23/11/2026)
+
+El informe inicial prometía un "aumento progresivo de N a lo largo de la
+ejecución" (§III-B). Se implementó en el AE original (`Config.replicasMin` y
+`replicasMax`): N crece linealmente de 5 a 30 a medida que se consume el
+presupuesto, con el mismo total de simulaciones que N fijo. La motivación sale
+del estudio de N: con poblaciones diversas alcanza con pocas réplicas para
+ordenar, y con poblaciones convergidas el orden se degrada (D-A13).
+Fuente: `resultados/n_creciente.txt`.
+
+| variante (mismas simulaciones) | conf-joven | conf-veterano |
+|---|---|---|
+| N = 30 fijo | 220,84 ± 2,02 | 217,42 ± 1,34 |
+| **N = 10 fijo** | **226,41 ± 1,33** | **220,57 ± 1,47** |
+| N creciente 5 → 30 | 225,74 ± 1,18 | 220,21 ± 1,25 |
+| creciente vs N = 10 (p Holm) | −0,67 (0,084) | −0,35 (0,28) |
+
+El N creciente **empata con N = 10 fijo** y le gana a N = 30 fijo. La
+precisión que suma en la etapa convergida no compensa las generaciones que
+pierde (171 contra 238): ese ruido ya lo absorbe la selección final en dos
+etapas. Se mantiene N = 10 fijo por ser más simple (D-J1).
+
 ## 5. Estudio de operadores (§III-C)
 
 `CompararOperadores 20 8000`, Wilcoxon pareado + Holm contra torneo +

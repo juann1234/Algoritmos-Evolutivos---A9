@@ -37,7 +37,8 @@ Estados: ⬜ pendiente · 🟨 en curso · ✅ hecho · ⛔ bloqueado
 | P23 | Corridas completas en ClusterUY: `CompararReferencias 40000 30` (3 instancias) y `ExperimentoMO 40000 30` por instancia | §IV-B, §IV-C | — | ⬜ | en el entorno del Claude de Alen solo hay 2 núcleos: ahí se corrieron versiones chicas |
 | P24 | Pasar `Experimentos` (factorial) a `AGPlantel` | §IV-A | Alen | ✅ | |
 | P25 | Repetir la comparación de variantes (gap, sharing, CHC, memético) sobre las instancias de configuración | §IV-A, Tema 12 | Juan | ✅ | la base se sostiene; sharing y memético neutros, el resto peor. `resultados/variantes_configuracion.txt`, RESULTADOS §6 |
-| P26 | Revisar y aprobar la decisión de N = 10 (D-A13) | §IV-A | Juan | 🟨 | verificada con el AE original: N = 10 a igual costo gana +5,56 (conf-joven) y +3,15 (conf-veterano), p Holm 0,0117. Falta el OK explícito de Juan |
+| P26 | Revisar y aprobar la decisión de N = 10 (D-A13) | §IV-A | Juan | ✅ | aprobada el 23/11, verificada con el AE original (+5,56 y +3,15, p Holm 0,0117) |
+| P28 | N creciente prometido por el informe (§III-B) | §III-B, §IV-A | Juan | ✅ | implementado y evaluado: empata con N = 10 fijo, que se mantiene (D-J1) |
 | P27 | Probar `herramientas/clusteruy.sh` en ClusterUY (partición, módulo de Java) | — | quien tenga cuenta | ⬜ | |
 
 ## Correcciones para el informe final (acumuladas)
@@ -47,7 +48,7 @@ final. Agregar acá cada vez que aparezca una.
 
 1. Implementación en **Java 21 con jMetal 5.10**, no Python/DEAP (D-A1).
 2. Normalidad: **Shapiro-Wilk** (se mantiene lo prometido, D-A5); post-hoc **Holm**.
-3. El "N creciente" se reemplazó por la **selección final en dos etapas** (M3).
+3. El **N creciente** se implementó y se evaluó: empata con N = 10 fijo, así que se usa N = 10 fijo más la **selección final en dos etapas** (D-J1, M3).
 4. Cruzamiento de los reales: **aritmético** (antes BLX-α, que no está en el temario).
 5. Inicialización: statu quo + perturbaciones, **sin sembrar soluciones golosas** (D-A3).
 6. Reparación: se usa el **proxy nivel/salario** del aporte marginal (el exacto exige simular).
@@ -68,6 +69,17 @@ final. Agregar acá cada vez que aparezca una.
 
 Entradas nuevas arriba. Formato: fecha · quién · qué se hizo · cómo se validó · qué sigue.
 
+### 23/11/2026 · Juan (con Claude) · N creciente y aprobación de D-A13
+- P26 aprobada: N = 10 con 120.000 evaluaciones como protocolo final.
+- P28: N creciente (5 → 30) en el AE original, `Config.replicasMin`/`replicasMax`.
+  Validación: con N fijo reproduce exactamente las filas guardadas (233,2831;
+  220,8239; 226,0096) y con N creciente usa el 99,3% del presupuesto de
+  simulaciones (la última generación no entra entera).
+- Resultado: empata con N = 10 fijo (−0,67 y −0,35, sin significancia) y le
+  gana a N = 30. Se mantiene N = 10 fijo (D-J1). `resultados/n_creciente.txt`.
+- `CompararVariantes analizar` acepta una variante de referencia distinta de la base.
+- Qué sigue: datos reales (P17, P18).
+
 ### 23/11/2026 · Juan (con Claude) · P25 variantes en configuración y verificación de D-A13
 - `CompararVariantes` ahora recibe la instancia (`correr <instancia> ...`,
   `analizar <instancia> <evals>`), guarda un CSV por instancia y expresa el
@@ -81,7 +93,7 @@ Entradas nuevas arriba. Formato: fecha · quién · qué se hizo · cómo se val
   peores. Se mantiene el AE generacional con elitismo (D-A16 actualizada).
 - P26: verificación independiente de D-A13 con el AE original. N = 10 a
   igual costo: +5,56 en conf-joven y +3,15 en conf-veterano (p Holm 0,0117),
-  del mismo orden que con jMetal. Queda en curso hasta el OK de Juan.
+  del mismo orden que con jMetal.
 - Corregido el texto de P11 y de la corrección 14: bloques posicionales es
   peor en las instancias de configuración, no "sin diferencia".
 - Qué sigue: OK de Juan a P26; datos reales (P17, P18).

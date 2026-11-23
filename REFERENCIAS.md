@@ -55,6 +55,7 @@ Todas las rutas son relativas a `src/ae/plantel/`.
 | §III-C cruzamiento por bloques posicionales | `Operadores.cruzarPorBloques`; `Config.cruce` | ✅ | comparado en `jmetal/CompararOperadores`: sin diferencia significativa |
 | §III-C mutación (cinco operadores) | `Operadores.java` · `mutar`, `intercambiar`; `jmetal/OperadoresJMetal.Mutacion` | ✅ | |
 | §III-C reemplazo generacional con elitismo | `jmetal/AGPlantel.java` (motor de los experimentos); `AlgoritmoEvolutivo.java` · `bucleGeneracional` (referencia) | ✅ | equivalencia validada (`jmetal/ValidarEquivalenciaJMetal`) |
+| §III-B aumento progresivo de N | `AlgoritmoEvolutivo.Config.replicasMin`/`replicasMax`; `CompararVariantes` (variante `ncreciente`) | ✅ | evaluado y no adoptado: empata con N = 10 fijo (D-J1) |
 | §III-C comparación con estado estacionario | `AlgoritmoEvolutivo.java` (gap = 2/P); `CompararVariantes.java` | ✅ | repetida en instancias de configuración (P25) |
 | §III-C parada: 40.000 evaluaciones | `AlgoritmoEvolutivo.Config.maxEvaluaciones`; `jmetal/AGPlantel.isStoppingConditionReached` | ✅ | |
 | §III-C parada: límite de tiempo de reloj | `AlgoritmoEvolutivo.Config.segundosMax`; `AlgoritmoEvolutivo.Corrida.vencido`; `jmetal/AGPlantel` y `jmetal/NSGAIIPlantel` · `isStoppingConditionReached` | ✅ | apagado por defecto (rompe la reproducibilidad) |

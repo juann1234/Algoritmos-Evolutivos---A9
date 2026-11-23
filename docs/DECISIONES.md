@@ -277,6 +277,9 @@ Estudio en `jmetal/EstudioReplicas` (salida en `resultados/replicas_demo.txt`):
    N = 30. Con 720.000 la dirección se mantiene en las 6 semillas, pero con
    n = 6 y 4 comparaciones el menor p de Holm posible es 0,125.
 
+**Aprobada por Juan el 23/11/2026 (PENDIENTES P26)**, después de verificarla
+con el AE original (+5,56 y +3,15 a igual costo, p Holm 0,0117).
+
 **Decisión:** los experimentos finales usan **N = 10 con 120.000
 evaluaciones** (`Config.protocoloFinal()`), que son las **mismas 1,2 millones
 de simulaciones** que las 40.000 evaluaciones con N = 30 del informe inicial:
@@ -318,3 +321,27 @@ estado estacionario, sharing, CHC, memético) también se repitió sobre
 conf-joven y conf-veterano (P25, `resultados/variantes_configuracion.txt`).
 Ninguna supera a la base; sharing y memético quedan neutros y el resto es
 peor. Se mantiene el AE generacional con elitismo.
+
+### D-J1 · N creciente: implementado, evaluado y no adoptado
+**Fecha:** 23/11/2026 · **Autor:** Juan · **Estado:** vigente · **Afecta al informe** (§III-B prometía "aumento progresivo de N")
+
+Se implementó en el AE original: `Config.replicasMin`/`replicasMax` hacen
+crecer N linealmente con la fracción del presupuesto de simulaciones
+consumida; toda una generación se evalúa con el mismo N, así que los
+escenarios comunes se mantienen. Con `replicasMax = 0` (por defecto) el AE se
+comporta exactamente como antes (verificado: reproduce las filas guardadas).
+
+Se comparó un N de 5 a 30 contra N = 10 fijo, a igual total de simulaciones,
+en las dos instancias de configuración (10 semillas, Wilcoxon pareado + Holm):
+−0,67 (p 0,084) y −0,35 (p 0,28), sin diferencia. Ambos le ganan a N = 30
+fijo.
+
+**Decisión:** se mantiene **N = 10 fijo** (D-A13), por ser más simple e igual
+de bueno. No se porta a `AGPlantel`. En el informe final: el N creciente se
+probó y no mejora a N = 10 fijo, porque la selección final en dos etapas ya
+resuelve el ruido de la etapa convergida.
+
+**Alternativas no probadas:** otros calendarios (por ejemplo 10 → 30 o
+5 → 15). No se probaron a propósito, para no elegir un calendario a fuerza de
+mirar muchos sobre las mismas instancias.
+

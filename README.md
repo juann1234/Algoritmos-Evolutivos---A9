@@ -92,7 +92,9 @@ la búsqueda.
 10 semillas por variante, 8.000 evaluaciones (incluyen reevaluaciones y búsqueda
 local), Wilcoxon pareado por semilla contra la base con post-hoc de Holm (p exacto,
 ver DECISIONES D-A5; antes Bonferroni sobre la aproximación normal, que daba 0,025).
-Datos crudos en `resultados/resultados_variantes.csv`.
+Datos crudos en `resultados/resultados_variantes.csv`. **Repetida en las
+instancias de configuración (P25)**: la conclusión se sostiene, con el matiz
+de que sharing y memético quedan neutros; ver `docs/RESULTADOS.md` §6.
 
 | variante | media | dif. vs base | diversidad final | veredicto |
 |---|---|---|---|---|
@@ -185,8 +187,8 @@ En la tabla de abajo, `java -cp out` se lee como `java -cp "$CP"`.
 | `java -cp out ae.plantel.GreedyMiope 8000` | referencia golosa miope |
 | `java -cp out ae.plantel.OptimoExacto 4 2` | GAP contra enumeración exhaustiva |
 | `java -cp out ae.plantel.SensibilidadBeta 6000` | barrido del peso del patrimonio |
-| `java -cp out ae.plantel.CompararVariantes correr <variante> <desde> <hasta> <evals>` | variantes: `base`, `gap50`, `estacionario`, `sharing`, `chc`, `memetico` |
-| `java -cp out ae.plantel.CompararVariantes analizar <evals>` | análisis estadístico de las variantes |
+| `java -cp out ae.plantel.CompararVariantes correr <instancia> <variante> <desde> <hasta> <evals>` | variantes: `base`, `gap50`, `estacionario`, `sharing`, `chc`, `memetico`, `n10`; instancias: `demo`, `conf-joven`, `conf-veterano`, `eval-*` |
+| `java -cp out ae.plantel.CompararVariantes analizar <instancia> <evals>` | análisis estadístico de las variantes (Wilcoxon pareado + Holm) |
 | `java -cp out ae.plantel.Experimentos 120000 30 2` | barrido factorial completo (para ClusterUY), con `AGPlantel` y N = 10 (D-A13) |
 | `java -cp out ae.plantel.jmetal.ValidarEquivalenciaJMetal 50 8000` | AE sobre jMetal vs AE de referencia (unos 11 min) |
 | `java -cp out ae.plantel.jmetal.ValidarMO` | validación de la variante multiobjetivo |
@@ -318,7 +320,8 @@ Resumen:
 - Los parámetros de los rivales y las curvas de valor y salario son supuestos
   hasta calibrarlos con datos reales.
 - Las instancias de configuración y evaluación son sintéticas.
-- La comparación de variantes se hizo sobre una sola instancia.
+- La comparación de variantes se repitió en las instancias de configuración
+  (P25) y la conclusión se sostiene; ver `docs/RESULTADOS.md` §6.
 - Cada evaluación cuesta unos 6 ms porque simula a todo el mercado en cada media
   temporada; es necesario para que los escenarios sean comparables entre planes
   y para modelar a los rivales.

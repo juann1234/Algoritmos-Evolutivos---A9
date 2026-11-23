@@ -1,0 +1,48 @@
+# P25: variantes del modelo evolutivo en las instancias de configuración
+# 10 semillas, 8.000 evaluaciones equivalentes con N=30, fitness revaluado con N=200
+# Generado con: CompararVariantes analizar conf-joven 8000 / analizar conf-veterano 8000
+# (correr desde la carpeta donde están los CSV resultados_variantes_conf-*.csv)
+
+==================================================================================================
+Variantes del AE (instancia conf-joven, 8000 evaluaciones equivalentes con N=30, fitness revaluado con N=200)
+==================================================================================================
+variante         n     media   desvío    mejor   puntos    gen. div.final catacl.    loc.    seg
+base            10    220.84     2.02   223.27    229.6      78      12.5     0.0     0.0    9.0
+gap50           10    218.50     1.95   221.91    227.7      78       6.3     0.0     0.0    8.4
+estacionario    10    197.33     1.52   199.46    206.4      78       4.7     0.0     0.0    7.7
+sharing         10    221.06     1.33   222.69    228.7      78      21.2     0.0     0.0    9.1
+chc             10    206.38     2.80   210.61    215.7      65      23.7     0.0     0.0    8.7
+memetico        10    221.78     1.29   223.74    230.6      69      11.6     0.0    23.2    8.6
+n10             10    226.41     1.33   228.18    233.0     238      16.9     0.0     0.0    9.3
+
+==================================================================================================
+Cada variante contra la base (Wilcoxon pareado por semilla, post-hoc de Holm)
+==================================================================================================
+  gap50          dif. media   -2.34  z =  -2.29  p = 0.0195  p Holm = 0.0586  -> sin diferencia significativa
+  estacionario   dif. media  -23.51  z =  -2.80  p = 0.0020  p Holm = 0.0117  -> PEOR que la base
+  sharing        dif. media   +0.22  z =   0.46  p = 0.6953  p Holm = 0.6953  -> sin diferencia significativa
+  chc            dif. media  -14.47  z =  -2.80  p = 0.0020  p Holm = 0.0117  -> PEOR que la base
+  memetico       dif. media   +0.93  z =   1.48  p = 0.1602  p Holm = 0.3203  -> sin diferencia significativa
+  n10            dif. media   +5.56  z =   2.80  p = 0.0020  p Holm = 0.0117  -> MEJOR que la base
+
+==================================================================================================
+Variantes del AE (instancia conf-veterano, 8000 evaluaciones equivalentes con N=30, fitness revaluado con N=200)
+==================================================================================================
+variante         n     media   desvío    mejor   puntos    gen. div.final catacl.    loc.    seg
+base            10    217.42     1.34   218.92    239.7      78      11.7     0.0     0.0    8.3
+gap50           10    213.84     1.16   216.70    238.4      78       5.9     0.0     0.0    8.2
+estacionario    10    202.39     0.85   203.82    227.2      78       4.5     0.0     0.0    7.7
+sharing         10    217.01     0.96   218.47    239.2      78      20.3     0.0     0.0    8.9
+chc             10    207.16     0.83   208.71    231.2      65      23.5     0.0     0.0    8.5
+memetico        10    216.85     1.05   218.80    239.0      69      11.6     0.0     9.9    8.7
+n10             10    220.57     1.47   222.63    241.3     238      16.1     0.0     0.0   10.1
+
+==================================================================================================
+Cada variante contra la base (Wilcoxon pareado por semilla, post-hoc de Holm)
+==================================================================================================
+  gap50          dif. media   -3.58  z =  -2.80  p = 0.0020  p Holm = 0.0117  -> PEOR que la base
+  estacionario   dif. media  -15.03  z =  -2.80  p = 0.0020  p Holm = 0.0117  -> PEOR que la base
+  sharing        dif. media   -0.41  z =  -0.97  p = 0.3750  p Holm = 0.3750  -> sin diferencia significativa
+  chc            dif. media  -10.26  z =  -2.80  p = 0.0020  p Holm = 0.0117  -> PEOR que la base
+  memetico       dif. media   -0.56  z =  -1.58  p = 0.1309  p Holm = 0.2617  -> sin diferencia significativa
+  n10            dif. media   +3.15  z =   2.80  p = 0.0020  p Holm = 0.0117  -> MEJOR que la base

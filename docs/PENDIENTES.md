@@ -22,7 +22,7 @@ Estados: ⬜ pendiente · 🟨 en curso · ✅ hecho · ⛔ bloqueado
 | P08 | Robustez del plan final con validación de 10.000 simulaciones | §IV-C | Alen | ✅ | `CompararReferencias.robustez` |
 | P09 | Límite de tiempo de reloj como segundo criterio de parada | §III-C | Alen | ✅ | `Config.segundosMax`, apagado por defecto (D-A11) |
 | P10 | Selección proporcional con escalado (a comparar contra torneo) | §III-C | Alen | ✅ | peor que torneo (−1,93, p Holm 0,0014) |
-| P11 | Cruzamiento por bloques posicionales (a comparar contra uniforme) | §III-C | Alen | ✅ | sin diferencia significativa (−0,58, p 0,076) |
+| P11 | Cruzamiento por bloques posicionales (a comparar contra uniforme) | §III-C | Alen | ✅ | en eval-chica sin diferencia (−0,58, p 0,076); en las dos de configuración **peor** (p Holm ≤ 0,0001), ver D-A16 |
 | P12 | Escalado de fitness | §III-C | Alen | ✅ | `Operadores.escalar` |
 | P13 | Modelo de islas con migración en anillo + speedup al variar recursos | §III-C, §IV-C | Alen | ✅ | `jmetal/IslasPlantel`, `jmetal/ExperimentoIslas`; speedup con más núcleos en ClusterUY (P23) |
 | P14 | Estudio del número de réplicas N (menor N que mantiene estable el ordenamiento) | §IV-A | Alen | ✅ | `jmetal/EstudioReplicas`, D-A13 |
@@ -36,8 +36,8 @@ Estados: ⬜ pendiente · 🟨 en curso · ✅ hecho · ⛔ bloqueado
 | P22 | Zip de entrega: fuentes + instancias, sin binarios ni framework | consigna | ambos | ⬜ | |
 | P23 | Corridas completas en ClusterUY: `CompararReferencias 40000 30` (3 instancias) y `ExperimentoMO 40000 30` por instancia | §IV-B, §IV-C | — | ⬜ | en el entorno del Claude de Alen solo hay 2 núcleos: ahí se corrieron versiones chicas |
 | P24 | Pasar `Experimentos` (factorial) a `AGPlantel` | §IV-A | Alen | ✅ | |
-| P25 | Repetir la comparación de variantes (gap, sharing, CHC, memético) sobre las instancias de configuración | §IV-A, Tema 12 | Juan (es su código) | ⬜ | `demo` = `eval-chica` (D-A16); agregar un argumento de instancia a `CompararVariantes` |
-| P26 | Revisar y aprobar la decisión de N = 10 (D-A13) | §IV-A | Juan | ⬜ | si no, cambiar `N_FINAL`/`EVALUACIONES_FINALES` |
+| P25 | Repetir la comparación de variantes (gap, sharing, CHC, memético) sobre las instancias de configuración | §IV-A, Tema 12 | Juan | ✅ | la base se sostiene; sharing y memético neutros, el resto peor. `resultados/variantes_configuracion.txt`, RESULTADOS §6 |
+| P26 | Revisar y aprobar la decisión de N = 10 (D-A13) | §IV-A | Juan | 🟨 | verificada con el AE original: N = 10 a igual costo gana +5,56 (conf-joven) y +3,15 (conf-veterano), p Holm 0,0117. Falta el OK explícito de Juan |
 | P27 | Probar `herramientas/clusteruy.sh` en ClusterUY (partición, módulo de Java) | — | quien tenga cuenta | ⬜ | |
 
 ## Correcciones para el informe final (acumuladas)
@@ -58,7 +58,8 @@ final. Agregar acá cada vez que aparezca una.
 11. Con el plantel lleno, toda incorporación exige una salida (refuerza la epistasis de §II-A).
 12. **N = 10 réplicas y 120.000 evaluaciones** en los experimentos finales (mismo costo en simulaciones que 40.000 con N = 30), por el estudio de N (D-A13).
 13. GAP con la fórmula del Tema 12, [f(VT) − f(AE)] / f(AE), y el AE optimizando sobre los mismos escenarios fijos que la enumeración (D-A15). Micro-instancias de **5 jugadores** como dice el informe (Juan usaba 6).
-14. Selección proporcional con escalado: peor que el torneo; bloques posicionales: sin diferencia. Se queda torneo + uniforme.
+14. Selección proporcional con escalado: peor que el torneo. Bloques posicionales: sin diferencia en eval-chica pero **peor** en las dos instancias de configuración, que son las que deciden (D-A16). Se queda torneo + uniforme.
+16. Variantes del modelo evolutivo: decididas sobre las instancias de configuración (P25). Sharing y memético **no aportan** (neutros); gap, estado estacionario y CHC son peores.
 15. Comparación multiobjetivo contra agregación con barrido de β (D-A9), que el informe inicial no especificaba.
 
 ---
@@ -66,6 +67,24 @@ final. Agregar acá cada vez que aparezca una.
 ## Bitácora
 
 Entradas nuevas arriba. Formato: fecha · quién · qué se hizo · cómo se validó · qué sigue.
+
+### 23/11/2026 · Juan (con Claude) · P25 variantes en configuración y verificación de D-A13
+- `CompararVariantes` ahora recibe la instancia (`correr <instancia> ...`,
+  `analizar <instancia> <evals>`), guarda un CSV por instancia y expresa el
+  presupuesto en evaluaciones equivalentes con N = 30, para comparar
+  variantes con otro N a igual total de simulaciones. La forma vieja sigue
+  andando sobre demo. Nueva variante `n10`.
+- Validación del cambio: la forma vieja reproduce exactamente la fila ya
+  guardada (base, semilla 1, demo: 233,2831).
+- P25: 7 variantes × 10 semillas × 2 instancias de configuración. Ninguna
+  supera a la base; sharing y memético neutros; gap, estacionario y CHC
+  peores. Se mantiene el AE generacional con elitismo (D-A16 actualizada).
+- P26: verificación independiente de D-A13 con el AE original. N = 10 a
+  igual costo: +5,56 en conf-joven y +3,15 en conf-veterano (p Holm 0,0117),
+  del mismo orden que con jMetal. Queda en curso hasta el OK de Juan.
+- Corregido el texto de P11 y de la corrección 14: bloques posicionales es
+  peor en las instancias de configuración, no "sin diferencia".
+- Qué sigue: OK de Juan a P26; datos reales (P17, P18).
 
 ### 22/11/2026 · Alen (con Claude) · corridas preliminares y control de sesgo
 - Corridas preliminares con el protocolo final reducido (N = 10, 24.000

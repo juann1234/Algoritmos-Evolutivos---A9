@@ -311,7 +311,10 @@ de operadores sobre **conf-joven** y **conf-veterano**
 | proporcional vs torneo | −3,80 (p Holm < 0,0001) | −2,03 (p Holm 0,0001) | sí, se queda torneo |
 | bloques vs uniforme | −3,49 (p Holm < 0,0001) | −1,97 (p Holm 0,0001) | sí, se queda uniforme (en demo no difería; acá es peor) |
 
-Las decisiones de diseño valen en instancias que la evaluación no usa. Queda
-pendiente repetir la comparación de variantes de Juan (gap, sharing, CHC,
-memético) sobre las de configuración (PENDIENTES P25); `CompararVariantes`
-tiene la instancia fija en demo.
+Las decisiones de diseño valen en instancias que la evaluación no usa.
+
+**Actualización 23/11/2026 (Juan):** la comparación de variantes (gap,
+estado estacionario, sharing, CHC, memético) también se repitió sobre
+conf-joven y conf-veterano (P25, `resultados/variantes_configuracion.txt`).
+Ninguna supera a la base; sharing y memético quedan neutros y el resto es
+peor. Se mantiene el AE generacional con elitismo.

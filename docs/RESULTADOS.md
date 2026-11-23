@@ -101,18 +101,36 @@ presión selectiva; los bloques exploran menos (16 hijos posibles).
 
 ## 6. Variantes del modelo evolutivo (Juan, §III-C)
 
-Fuente: README y `resultados/resultados_variantes.csv` (eval-chica, 10
-semillas, 8.000 evaluaciones; p exacto con Holm, D-A5).
+`CompararVariantes`, 10 semillas por variante, 8.000 evaluaciones equivalentes
+con N = 30, Wilcoxon pareado por semilla contra la base con Holm (D-A5).
+Fuentes: `resultados/resultados_variantes.csv` (demo = eval-chica) y
+`resultados/resultados_variantes_conf-*.csv` con su análisis en
+`resultados/variantes_configuracion.txt` (P25).
 
-| variante | dif. vs base | p Holm |
-|---|---|---|
-| memético | +0,01 | 0,85 |
-| sharing | −2,46 | 0,0098 |
-| gap generacional 50% | −2,76 | 0,0098 |
-| CHC | −12,47 | 0,0098 |
-| estado estacionario | −16,38 | 0,0098 |
+Diferencia de la media contra la base (p Holm entre paréntesis):
 
-Pendiente repetirla en instancias de configuración (P25).
+| variante | demo (eval-chica) | conf-joven | conf-veterano | lectura |
+|---|---|---|---|---|
+| memético | +0,01 (0,85) | +0,93 (0,32) | −0,56 (0,26) | no aporta |
+| sharing | −2,46 (0,0098) | +0,22 (0,70) | −0,41 (0,38) | no aporta; el "peor" de demo era propio de esa instancia |
+| gap generacional 50% | −2,76 (0,0098) | −2,34 (0,059) | −3,58 (0,0117) | peor o igual |
+| CHC | −12,47 (0,0098) | −14,47 (0,0117) | −10,26 (0,0117) | peor |
+| estado estacionario | −16,38 (0,0098) | −23,51 (0,0117) | −15,03 (0,0117) | peor |
+| **N = 10, mismas simulaciones** | — | **+5,56 (0,0117)** | **+3,15 (0,0117)** | **mejor**: confirma D-A13 |
+
+**En las instancias de configuración ninguna variante del modelo supera a
+la base generacional con elitismo**, así que la decisión se sostiene sin el
+sesgo de haberla tomado sobre una instancia de evaluación. El matiz: sharing
+y memético quedan *neutros* (no peores), así que en el informe hay que decir
+"no aportan", no "empeoran". Gap, CHC y estado estacionario son peores en
+las tres instancias por la misma razón: con escenarios rotativos cada
+generación reevalúa a todos, y producen menos hijos por evaluación gastada
+(estacionario y gap) o no exploran los campos reales sin mutación (CHC).
+
+La fila N = 10 es una verificación independiente de D-A13 hecha con el AE
+original (no con el de jMetal): a igual total de simulaciones, N = 10 le gana
+a N = 30 por +5,56 y +3,15, del mismo orden que lo medido por Alen (+4,44 y
++4,17).
 
 ## 7. Modelo de islas (§III-C, §IV-C)
 

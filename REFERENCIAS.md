@@ -55,6 +55,9 @@ Todas las rutas son relativas a `src/ae/plantel/`.
 | §III-C cruzamiento por bloques posicionales | `Operadores.cruzarPorBloques`; `Config.cruce` | ✅ | comparado en `jmetal/CompararOperadores`: sin diferencia significativa |
 | §III-C mutación (cinco operadores) | `Operadores.java` · `mutar`, `intercambiar`; `jmetal/OperadoresJMetal.Mutacion` | ✅ | |
 | §III-C reemplazo generacional con elitismo | `jmetal/AGPlantel.java` (motor de los experimentos); `AlgoritmoEvolutivo.java` · `bucleGeneracional` (referencia) | ✅ | equivalencia validada (`jmetal/ValidarEquivalenciaJMetal`) |
+| §IV-A instancias con datos públicos | `herramientas/preparar_instancias.py`; `InstanciasReales.cargar`; `instancias/barcelona-2020-*.csv` | ✅ | D-J4 |
+| §IV-A calibración de valor, salario y evolución | `herramientas/calibrar.py`; `Parametros.calibrados()` | ✅ | D-J2, D-J3, D-J6 |
+| §IV-B(1) plan real del club | `instancias/plan_real_barcelona.csv`; `InstanciasReales.planReal`; `EvaluarCasoReal` | ✅ | preliminar; falta integrarlo al protocolo final (P29) |
 | §III-B aumento progresivo de N | `AlgoritmoEvolutivo.Config.replicasMin`/`replicasMax`; `CompararVariantes` (variante `ncreciente`) | ✅ | evaluado y no adoptado: empata con N = 10 fijo (D-J1) |
 | §III-C comparación con estado estacionario | `AlgoritmoEvolutivo.java` (gap = 2/P); `CompararVariantes.java` | ✅ | repetida en instancias de configuración (P25) |
 | §III-C parada: 40.000 evaluaciones | `AlgoritmoEvolutivo.Config.maxEvaluaciones`; `jmetal/AGPlantel.isStoppingConditionReached` | ✅ | |

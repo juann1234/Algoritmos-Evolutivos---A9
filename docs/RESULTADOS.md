@@ -171,6 +171,42 @@ Ver `docs/VALIDACION.md`: el AE sobre jMetal es equivalente al de referencia
 identidad mono/multiobjetivo es exacta y no se encontraron agujeros nuevos
 en el simulador.
 
+## 9. Caso real: FC Barcelona 2020-2023 (Juan, §IV-B(1)) · preliminar
+
+`EvaluarCasoReal <instancia> 24000 5`, parámetros calibrados (D-J2, β = 0,01
+por D-J6), protocolo N = 10, 5 semillas, revaluación con N = 200. Fuente:
+`resultados/caso_real_barcelona_preliminar.txt`.
+
+| instancia | statu quo | plan real del club | AE media ± sd | AE vs plan real |
+|---|---|---|---|---|
+| chica (25 + 50) | 195,17 | 229,43 | 247,88 ± 0,28 | +8,0% |
+| media (25 + 150) | 195,17 | 229,43 | 244,63 ± 1,32 | +6,6% |
+| grande (25 + 400) | 195,17 | 229,43 | 243,84 ± 1,59 | +6,3% |
+
+Desglose en chica:
+
+| | statu quo | plan real | AE (media) |
+|---|---|---|---|
+| puntos T1 / T2 / T3 | 94,0 / 85,7 / 52,5 | 92,5 / 88,3 / 88,7 | 93,3 / 93,4 / 93,8 |
+| patrimonio final (caja + pases) | 692M | 667M | ≈ 1.190M |
+| jugadores al final | 6,0 | 14,8 | 20,5 |
+| perdidos libres por vencimiento | 17,2 | 9,4 | 3,5 |
+
+- El AE **domina al plan real en las dos dimensiones**: más puntos en las
+  tres temporadas y casi el doble de patrimonio. La diferencia con el plan
+  real (≈ 18 puntos de fitness) es diez veces mayor que el desvío del AE
+  (criterio del Tema 12: difieren). Con 5 semillas el Wilcoxon de una muestra
+  no puede bajar de p = 0,0625; con las 30 de ClusterUY sí.
+- El statu quo pierde 17 jugadores libres por vencimiento (Messi incluido) y
+  se desploma en T3: el problema real es de contratos, no solo de fichajes.
+- El simulador reproduce por su cuenta un hecho real: en 2022 al plan real le
+  falta caja para Raphinha, Koundé, Kessié y Christensen en hasta el 38% de los
+  escenarios, que es lo que el club resolvió con las "palancas".
+- El AE rinde **menos en la instancia grande que en la chica** aunque la chica
+  está contenida en ella: con el mismo presupuesto de 24.000 evaluaciones no
+  llega a converger con 425 genes. Es lo primero a mirar con las 120.000
+  evaluaciones del protocolo final.
+
 ## Plataforma (para el informe, Tema 12)
 
 Corridas preliminares: Intel Xeon 2,1 GHz, 2 núcleos, 8 GB, Linux, OpenJDK

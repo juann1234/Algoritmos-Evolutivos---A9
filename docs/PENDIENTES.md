@@ -28,8 +28,8 @@ Estados: ⬜ pendiente · 🟨 en curso · ✅ hecho · ⛔ bloqueado
 | P14 | Estudio del número de réplicas N (menor N que mantiene estable el ordenamiento) | §IV-A | Alen | ✅ | `jmetal/EstudioReplicas`, D-A13 |
 | P15 | Evaluaciones hasta alcanzar percentiles de la mejor solución | §IV-C | Alen | ✅ | `CompararReferencias.evaluacionesHasta` |
 | P16 | Micro-instancias más difíciles (statu quo a > 5% del óptimo) | §IV-B(2) | Alen | ✅ | `jmetal/GapMicroInstancias`: óptimo en 30/30 con ≥ 8.000 evaluaciones (D-A15) |
-| P17 | Datos reales: cargar SoFIFA/Transfermarkt al esquema `JugadorBase`, recalibrar valor, salario y rivales | §IV-A | Juan | ⬜ | README "Lo que falta" §2 |
-| P18 | Reconstruir el **plan real del club** como individuo y evaluarlo | §IV-B(1) | Juan | ⬜ | depende de P17 |
+| P17 | Datos reales: cargar SoFIFA/Transfermarkt al esquema `JugadorBase`, recalibrar valor, salario y rivales | §IV-A | Juan | ✅ | `herramientas/calibrar.py`, `Parametros.calibrados()`, instancias `barcelona-2020-*` (D-J2 a D-J6). Rivales y lesiones siguen siendo supuestos |
+| P18 | Reconstruir el **plan real del club** como individuo y evaluarlo | §IV-B(1) | Juan | ✅ | `instancias/plan_real_barcelona.csv`, `EvaluarCasoReal`. Preliminar: el AE le gana +6 a +8% y lo domina en puntos y patrimonio |
 | P19 | Barrido factorial completo en ClusterUY (27 config × 2 inst × 30) | §IV-A | — | ⬜ | `Experimentos 40000 30 2`; ya usa `AGPlantel` (P24) |
 | P20 | Verificar `mvn package` en una máquina con Maven Central | — | Juan o Alen | ⬜ | en el entorno del Claude de Alen Maven está bloqueado (D-A4) |
 | P21 | Informe final (IEEE, doble columna): ampliar con implementación, calibración, instancias, validación, resultados, conclusiones | todo | ambos | ⬜ | ver "Correcciones para el informe final" abajo |
@@ -39,6 +39,8 @@ Estados: ⬜ pendiente · 🟨 en curso · ✅ hecho · ⛔ bloqueado
 | P25 | Repetir la comparación de variantes (gap, sharing, CHC, memético) sobre las instancias de configuración | §IV-A, Tema 12 | Juan | ✅ | la base se sostiene; sharing y memético neutros, el resto peor. `resultados/variantes_configuracion.txt`, RESULTADOS §6 |
 | P26 | Revisar y aprobar la decisión de N = 10 (D-A13) | §IV-A | Juan | ✅ | aprobada el 23/11, verificada con el AE original (+5,56 y +3,15, p Holm 0,0117) |
 | P28 | N creciente prometido por el informe (§III-B) | §III-B, §IV-A | Juan | ✅ | implementado y evaluado: empata con N = 10 fijo, que se mantiene (D-J1) |
+| P29 | Protocolo final sobre instancias reales: `Parametros.calibrados()` + `barcelona-2020-{chica,media,grande}`, incluido el plan real como referencia, en `CompararReferencias` y `ExperimentoMO` | §IV-B, §IV-C | Alen | ⬜ | hoy esos programas usan las instancias sintéticas y los parámetros por defecto. `EvaluarCasoReal` muestra cómo cargar todo |
+| P30 | Instancias de configuración también reales (por ejemplo, otros clubes con el mismo script) para que configuración y evaluación tengan la misma distribución | §IV-A, Tema 12 | — | ⬜ | opcional; `preparar_instancias.py` ya está armado para un club, habría que parametrizar el club |
 | P27 | Probar `herramientas/clusteruy.sh` en ClusterUY (partición, módulo de Java) | — | quien tenga cuenta | ⬜ | |
 
 ## Correcciones para el informe final (acumuladas)
@@ -62,12 +64,34 @@ final. Agregar acá cada vez que aparezca una.
 14. Selección proporcional con escalado: peor que el torneo. Bloques posicionales: sin diferencia en eval-chica pero **peor** en las dos instancias de configuración, que son las que deciden (D-A16). Se queda torneo + uniforme.
 16. Variantes del modelo evolutivo: decididas sobre las instancias de configuración (P25). Sharing y memético **no aportan** (neutros); gap, estado estacionario y CHC son peores.
 15. Comparación multiobjetivo contra agregación con barrido de β (D-A9), que el informe inicial no especificaba.
+17. **Datos reales y calibración** (D-J2): salario, valor y evolución del nivel calibrados con FIFA y Transfermarkt; factor contractual validado con traspasos reales.
+18. **El efecto de los minutos no es identificable** con datos observacionales (simultaneidad, D-J3): se declara como supuesto.
+19. **Instancias reales y plan real del Barcelona 2020-2023** (D-J4), con sus limitaciones (canteranos, una acción por jugador, precios del modelo).
+20. **Correcciones del modelo de mercado** que aparecieron al evaluar el plan real (D-J5), y **β = 0,01** para la escala real (D-J6).
 
 ---
 
 ## Bitácora
 
 Entradas nuevas arriba. Formato: fecha · quién · qué se hizo · cómo se validó · qué sigue.
+
+### 23/11/2026 · Juan (con Claude) · P17 y P18: datos reales, calibración y plan real
+- Calibración reproducible con FIFA (FC 24 dataset) y Transfermarkt:
+  `herramientas/calibrar.py`. Salario, valor y evolución calibrados; factor
+  contractual validado con traspasos reales (D-J2). El efecto causal de los
+  minutos no es identificable (D-J3).
+- Instancias reales `barcelona-2020-{chica,media,grande}` y plan real de 37
+  operaciones con justificación: `herramientas/preparar_instancias.py` (D-J4).
+- Cuatro correcciones del modelo de mercado detrás de parámetros (D-J5) y
+  β = 0,01 para la escala real (D-J6), todo en `Parametros.calibrados()`.
+- Validación: con parámetros por defecto el modelo es idéntico (base,
+  semilla 1, demo: 233,2831; sondas S2 a S8 iguales).
+- Resultado preliminar (24.000 evaluaciones, N = 10, 5 semillas): plan real
+  +17,6% sobre el statu quo; AE +8,0 / +6,6 / +6,3% sobre el plan real en
+  chica / media / grande, con más puntos en las tres temporadas y más
+  patrimonio. `resultados/caso_real_barcelona_preliminar.txt`, RESULTADOS §9.
+- Qué sigue: P29 (protocolo final sobre instancias reales, Alen), corridas en
+  ClusterUY (Juan), informe.
 
 ### 23/11/2026 · Juan (con Claude) · N creciente y aprobación de D-A13
 - P26 aprobada: N = 10 con 120.000 evaluaciones como protocolo final.

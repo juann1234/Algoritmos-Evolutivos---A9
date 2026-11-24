@@ -160,6 +160,27 @@ Casi todas existen porque el AE encontró y explotó un agujero del simulador.
 
 ---
 
+## Datos reales
+
+Las instancias reales (`instancias/barcelona-2020-*.csv`) y el plan real del
+club (`instancias/plan_real_barcelona.csv`) ya están en el repo. Para
+regenerarlas o recalibrar, hacen falta dos datasets de Kaggle que no se
+versionan por tamaño y licencia:
+
+- *EA Sports FC 24 Complete Player Dataset* (Stefano Leone): `male_players.csv`.
+- *Football Data from Transfermarkt* (davidcariboo): `players.csv`,
+  `transfers.csv`, `appearances.csv`, `competitions.csv`.
+
+```bash
+python3 herramientas/calibrar.py <carpeta_con_los_csv>             # imprime los parámetros calibrados
+python3 herramientas/preparar_instancias.py <carpeta> instancias     # regenera instancias y plan real
+java -cp out ae.plantel.EvaluarCasoReal barcelona-2020-chica 24000 5 # statu quo vs plan real vs AE
+```
+
+Con las instancias reales se usa `Parametros.calibrados()`; con las
+sintéticas, los parámetros por defecto (así los números de referencia de
+`validar.sh` no cambian). Ver DECISIONES D-J2 a D-J6.
+
 ## Cómo compilar y correr
 
 Java 21 y jMetal 5.10 (con sus dependencias de Apache Commons), declarados en

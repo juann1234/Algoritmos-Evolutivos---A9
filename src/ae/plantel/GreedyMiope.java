@@ -40,18 +40,29 @@ public final class GreedyMiope {
     }
 
     /** Puntos esperados de la temporada t bajo el plan x. Nada más que eso. */
-    private static double puntosTemporada(Instancia inst, Cromosoma x, int t) {
+    private static double puntosTemporada(Instancia inst, Cromosoma x, int t, Parametros p) {
         double suma = 0;
         for (int k = 0; k < N_MIOPE; k++) {
             Evaluador.Resultado r =
-                    Evaluador.simular(inst, x, new Escenario(SEMILLA_MIOPE + k), P);
+                    Evaluador.simular(inst, x, new Escenario(SEMILLA_MIOPE + k), p);
             suma += r.puntos[t];
         }
         return suma / N_MIOPE;
     }
 
-    /** Construye el plan goloso. Devuelve también cuántas evaluaciones usó. */
+    /** Construye el plan goloso con los parámetros por defecto (instancias sintéticas). */
     public static Cromosoma construir(Instancia inst, int[] evaluaciones) {
+        return construir(inst, evaluaciones, P);
+    }
+
+    /**
+     * Construye el plan goloso con los parámetros dados (por ejemplo
+     * {@code Parametros.calibrados()} para las instancias reales; Alen, P29).
+     * Devuelve también cuántas evaluaciones usó.
+     *
+     * [Informe §IV-B(3) heurística golosa miope]
+     */
+    public static Cromosoma construir(Instancia inst, int[] evaluaciones, Parametros p) {
         Cromosoma plan = Cromosoma.statuQuo(inst);
         evaluaciones[0] = 0;
 
@@ -59,7 +70,7 @@ public final class GreedyMiope {
             int t = (ventana - 1) / 2;   // temporada que la ventana afecta
 
             for (int pasada = 0; pasada < MAX_PASADAS; pasada++) {
-                double actual = puntosTemporada(inst, plan, t);
+                double actual = puntosTemporada(inst, plan, t, p);
                 evaluaciones[0]++;
 
                 double mejorValor = actual;
@@ -78,7 +89,7 @@ public final class GreedyMiope {
                         c.duracion[i] = 4;
                         c.salario[i] = 1.10;
                         c.prioridad[i] = PrioridadMinutos.ROTACION.ordinal();
-                        double v = puntosTemporada(inst, c, t);
+                        double v = puntosTemporada(inst, c, t, p);
                         evaluaciones[0]++;
                         if (v > mejorValor) {
                             mejorValor = v;

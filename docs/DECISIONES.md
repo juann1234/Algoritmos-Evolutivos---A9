@@ -436,3 +436,40 @@ con 0,005 y 0,01 domina al plan real en puntos y en patrimonio; con 0,02 ya
 cede puntos; con 0,05 pierde frente al plan real en puntos. Se fija 0,01 en
 `Parametros.calibrados()`, que además coincide con el argumento de escala
 (valores reales unas cinco veces los sintéticos: 0,05 / 5).
+
+### D-A17 · El barrido de β de la agregación es relativo al β del modelo
+**Fecha:** 24/11/2026 · **Autor:** Alen · **Estado:** vigente
+
+Con los parámetros calibrados β = 0,01 (D-J6), y el barrido fijo de D-A9
+(hasta 0,50) habría puesto cuatro de los seis puntos en la zona donde el AE
+solo junta patrimonio. El barrido pasa a ser β × {0; 0,4; 1; 2; 4; 10}: con
+el β sintético (0,05) da exactamente el barrido original, así que los
+resultados sintéticos no cambian; con el calibrado da {0; 0,004; 0,01; 0,02;
+0,04; 0,10}, que cubre el mismo rango relativo en la escala monetaria real y
+coincide con el barrido que hizo Juan para elegir β (0 a 0,05).
+
+### D-A18 · Protocolo final sobre las instancias reales (P29)
+**Fecha:** 24/11/2026 · **Autor:** Alen · **Estado:** vigente
+
+`CompararReferencias` y `ExperimentoMO` aceptan las instancias reales por
+nombre (`barcelona-2020-{chica,media,grande}`) y en ese caso usan
+`Parametros.calibrados()`. Tres cambios para que la comparación sea justa:
+
+1. **El greedy usa los parámetros de la instancia.** Antes tenía fijos los
+   por defecto (`GreedyMiope.P`): sobre las reales habría optimizado otro
+   modelo. Se agregó `construir(inst, evals, p)`; la firma vieja sigue igual,
+   así que los números de referencia no cambian.
+2. **El plan real es una referencia más**: entra en el % de mejora, el
+   Wilcoxon de una muestra, el Friedman con Holm y la robustez con 10.000
+   simulaciones. Además se reporta el desglose f₁ (utilidad deportiva) y f₂
+   (costo neto) y en cuántas corridas el plan del AE **domina** al plan real
+   (más f₁ y menos f₂), que es lo que permite decir que el AE no gana solo
+   por cambiar puntos por plata.
+3. **En el multiobjetivo, el plan real y el statu quo se ubican respecto de
+   los frentes** (dominado o no por NSGA-II, por la agregación y por el frente
+   de referencia).
+
+Validación: la identidad de D-A6 sigue siendo exacta con los parámetros
+calibrados y las correcciones de mercado de D-J5 (error 1e-13 en
+barcelona-2020-chica y -grande, incluido el plan real); quedó como chequeo
+en `ValidarMO`.

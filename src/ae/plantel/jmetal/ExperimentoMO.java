@@ -44,26 +44,51 @@ import java.util.concurrent.Future;
  * por métrica, media, desvío, mejor, y el test que corresponde según
  * Shapiro-Wilk (t de Welch o Mann-Whitney).
  *
- * Además se ubica el plan mono-objetivo con el β del modelo (0,05) respecto del
- * frente de NSGA-II: por D-A6 debería quedar sobre el frente o muy cerca.
+ * Además se ubica el plan mono-objetivo con el β del modelo respecto del frente
+ * de NSGA-II (por D-A6 debería quedar sobre el frente o muy cerca), y el statu
+ * quo y, en las instancias reales, el plan real del club respecto de todos los
+ * frentes.
  *
  * Protocolo (D-A13): N = 10 réplicas, 120.000 evaluaciones por defecto.
  *
  * Uso:  java -cp "$CP" ae.plantel.jmetal.ExperimentoMO [evaluaciones] [corridas] [instancia]
- *       instancia: demo | eval-chica | eval-media | eval-grande   (por defecto demo)
+ *       instancia: demo | eval-chica | eval-media | eval-grande
+ *                  | barcelona-2020-chica | barcelona-2020-media | barcelona-2020-grande
+ *       (por defecto demo). Con las reales usa Parametros.calibrados() y ubica
+ *       además el plan real del club respecto de los frentes (P29).
  *
  * Deja resultados/mo_&lt;instancia&gt;_metricas.csv y resultados/mo_&lt;instancia&gt;_frentes.csv.
  */
 public final class ExperimentoMO {
 
-    /** Valores de β del barrido de la agregación (incluye el β del modelo). */
-    static final double[] BETAS = { 0.0, 0.02, 0.05, 0.10, 0.20, 0.50 };
+    /**
+     * Barrido de β de la agregación, como múltiplos del β del modelo (incluye
+     * el propio β). Con el β sintético (0,05) da {0; 0,02; 0,05; 0,10; 0,20;
+     * 0,50}, el barrido original; con el calibrado (0,01, D-J6) da {0; 0,004;
+     * 0,01; 0,02; 0,04; 0,10}, que cubre el mismo rango relativo en la escala
+     * monetaria real (DECISIONES D-A17).
+     */
+    static final double[] BETAS_RELATIVOS = { 0.0, 0.4, 1.0, 2.0, 4.0, 10.0 };
 
     private ExperimentoMO() {
     }
 
     private record Corrida(String algoritmo, int semilla, List<double[]> frente, double segundos,
                            double[] puntoBetaModelo) {
+    }
+
+    /** true si la instancia es una de las reales (datos del Barcelona, D-J4). */
+    public static boolean esReal(String nombre) {
+        return nombre.startsWith("barcelona-");
+    }
+
+    /**
+     * Parámetros que corresponden a la instancia: calibrados con datos reales
+     * para las reales (D-J2), los de siempre para las sintéticas. Devuelve un
+     * objeto nuevo en cada llamada, así se puede modificar (por ejemplo β).
+     */
+    public static Parametros parametros(String nombre) {
+        return esReal(nombre) ? Parametros.calibrados() : new Parametros();
     }
 
     public static void main(String[] args) throws Exception {
@@ -73,11 +98,13 @@ public final class ExperimentoMO {
         int corridas = args.length > 1 ? Integer.parseInt(args[1]) : 30;
         String nombre = args.length > 2 ? args[2] : "demo";
         Instancia inst = instancia(nombre);
-        Parametros base = new Parametros();
+        Parametros base = parametros(nombre);
+        double[] betas = betas(base);
         String linea = "=".repeat(86);
         System.out.println(inst.resumen());
-        System.out.printf("Presupuesto por corrida: %d evaluaciones | %d corridas por técnica | betas %s%n",
-                evaluaciones, corridas, java.util.Arrays.toString(BETAS));
+        System.out.printf("Parámetros %s | presupuesto por corrida: %d evaluaciones | %d corridas por técnica | betas %s%n",
+                esReal(nombre) ? "calibrados (D-J2)" : "por defecto", evaluaciones, corridas,
+                java.util.Arrays.toString(betas));
 
         int hilos = Runtime.getRuntime().availableProcessors();
         ExecutorService pool = Executors.newFixedThreadPool(hilos);
@@ -85,7 +112,7 @@ public final class ExperimentoMO {
         for (int s = 1; s <= corridas; s++) {
             final int sem = s;
             futuros.add(pool.submit((Callable<Corrida>) () -> correrNsga(inst, base, sem, evaluaciones)));
-            futuros.add(pool.submit((Callable<Corrida>) () -> correrAgregacion(inst, sem, evaluaciones)));
+            futuros.add(pool.submit((Callable<Corrida>) () -> correrAgregacion(inst, nombre, sem, evaluaciones)));
         }
         List<Corrida> nsga = new ArrayList<>();
         List<Corrida> agreg = new ArrayList<>();
@@ -134,7 +161,8 @@ public final class ExperimentoMO {
         // ---------------- el plan mono-objetivo respecto del frente ----------------
         System.out.println();
         System.out.println(linea);
-        System.out.println("Plan mono-objetivo (β = 0,05) respecto del frente de NSGA-II de la misma semilla");
+        System.out.printf("Plan mono-objetivo (β = %.3f, el del modelo) respecto del frente de NSGA-II de la misma semilla%n",
+                base.beta);
         System.out.println(linea);
         int dominados = 0;
         double gdMono = 0;
@@ -150,6 +178,34 @@ public final class ExperimentoMO {
         System.out.printf("  dominado por el frente de NSGA-II en %d de %d corridas; "
                 + "distancia media al frente de referencia (normalizada) %.4f%n", dominados, agreg.size(), gdMono);
 
+        // ---------------- plan real y statu quo respecto de los frentes ----------------
+        ProblemaPlantelMO val = new ProblemaPlantelMO(inst, base, AlgoritmoEvolutivo.N_VALIDACION,
+                AlgoritmoEvolutivo.SEMILLA_VALIDACION, new Aleatorio(0));
+        List<String[]> extras = new ArrayList<>();
+        extras.add(new String[] { "statu_quo", null });
+        if (esReal(nombre)) {
+            extras.add(new String[] { "plan_real", null });
+        }
+        System.out.println();
+        System.out.println(linea);
+        System.out.println("Planes de referencia respecto de los frentes (f1 utilidad deportiva, f2 costo neto)");
+        System.out.println(linea);
+        StringBuilder extrasCsv = new StringBuilder();
+        for (String[] e : extras) {
+            ae.plantel.Cromosoma x = e[0].equals("plan_real") ? ae.plantel.InstanciasReales.planReal(inst)
+                    : ae.plantel.Cromosoma.statuQuo(inst);
+            SolucionPlantel s = SolucionPlantel.desde(x, 2);
+            val.evaluate(s);
+            double[] q = s.getObjectives().clone();
+            long domNsga = nsga.stream().filter(c -> c.frente().stream().anyMatch(pt -> IndicadoresMO.domina(pt, q))).count();
+            long domAgreg = agreg.stream().filter(c -> c.frente().stream().anyMatch(pt -> IndicadoresMO.domina(pt, q))).count();
+            boolean domRef = ind.referencia().stream().anyMatch(pt -> IndicadoresMO.domina(pt, q));
+            System.out.printf("  %-10s f1 = %8.2f  f2 = %9.2f | dominado por el frente de NSGA-II en %d de %d corridas, "
+                    + "por el de la agregación en %d de %d; por el de referencia: %s%n", e[0], -q[0], q[1],
+                    domNsga, nsga.size(), domAgreg, agreg.size(), domRef ? "sí" : "no");
+            extrasCsv.append(String.format(Locale.ROOT, "%s,0,%.4f,%.4f%n", e[0], -q[0], q[1]));
+        }
+
         // ---------------- archivos ----------------
         StringBuilder frentes = new StringBuilder("algoritmo,semilla,f1_utilidad,f2_costo_neto\n");
         for (Corrida c : nsga) {
@@ -161,6 +217,7 @@ public final class ExperimentoMO {
         for (double[] p : ind.referencia()) {
             frentes.append(String.format(Locale.ROOT, "referencia,0,%.4f,%.4f%n", -p[0], p[1]));
         }
+        frentes.append(extrasCsv);
         escribir("resultados/mo_" + nombre + "_metricas.csv", csv.toString());
         escribir("resultados/mo_" + nombre + "_frentes.csv", frentes.toString());
     }
@@ -178,19 +235,29 @@ public final class ExperimentoMO {
                 (System.nanoTime() - t0) / 1e9, null);
     }
 
-    private static Corrida correrAgregacion(Instancia inst, int semilla, int evaluaciones) {
+    /** β absolutos del barrido para los parámetros dados (D-A17). */
+    static double[] betas(Parametros p) {
+        double[] b = new double[BETAS_RELATIVOS.length];
+        for (int i = 0; i < b.length; i++) {
+            b[i] = BETAS_RELATIVOS[i] * p.beta;
+        }
+        return b;
+    }
+
+    private static Corrida correrAgregacion(Instancia inst, String nombre, int semilla, int evaluaciones) {
         long t0 = System.nanoTime();
         List<double[]> puntos = new ArrayList<>();
         double[] puntoModelo = null;
-        Parametros modelo = new Parametros();
+        Parametros modelo = parametros(nombre);
         ProblemaPlantelMO val = new ProblemaPlantelMO(inst, modelo, AlgoritmoEvolutivo.N_VALIDACION,
                 AlgoritmoEvolutivo.SEMILLA_VALIDACION, new Aleatorio(0));
-        for (double beta : BETAS) {
-            Parametros p = new Parametros();
+        double[] betas = betas(modelo);
+        for (double beta : betas) {
+            Parametros p = parametros(nombre);
             p.beta = beta;
             AlgoritmoEvolutivo.Config cfg = AlgoritmoEvolutivo.Config.protocoloFinal();   // N = 10 (D-A13)
             cfg.semilla = semilla;
-            cfg.maxEvaluaciones = evaluaciones / BETAS.length;
+            cfg.maxEvaluaciones = evaluaciones / betas.length;
             AlgoritmoEvolutivo.Resultado r = AGPlantel.ejecutar(inst, cfg, p);
             // f1 y f2 no dependen de β: se miden siempre con los parámetros del modelo.
             SolucionPlantel s = SolucionPlantel.desde(r.mejor, 2);
@@ -257,8 +324,15 @@ public final class ExperimentoMO {
         System.out.println("  escrito " + destino);
     }
 
-    /** Instancia por nombre: la demo de desarrollo o una de las tres de evaluación. */
+    /**
+     * Instancia por nombre: la demo de desarrollo, una sintética de evaluación o
+     * de configuración, o una real ({@code barcelona-2020-chica|media|grande},
+     * D-J4, cargada de instancias/).
+     */
     public static Instancia instancia(String nombre) {
+        if (esReal(nombre)) {
+            return ae.plantel.InstanciasReales.cargar(nombre);
+        }
         if (nombre.equals("demo")) {
             return GeneradorInstancias.generar("demo", 25, 50, 101);
         }

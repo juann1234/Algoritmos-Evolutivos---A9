@@ -1,0 +1,25 @@
+Instancia 'barcelona-2020-chica': 25 propios / 50 candidatos | edad media 26.0 | nivel medio 81.8 | masa salarial 226.6M de un tope de 249.3M | presupuesto 150.0M
+Parámetros calibrados (D-J2) | presupuesto por corrida: 24000 evaluaciones | 10 corridas por técnica | betas [0.0, 0.004, 0.01, 0.02, 0.04, 0.1]
+
+======================================================================================
+Frente de referencia: 57 puntos no dominados (unión de 20 frentes)
+======================================================================================
+métrica     NSGA-II media±sdagregación media±sd    mejor NSGA  mejor agreg.  test (protocolo del curso)
+RHV            0.9169±0.0315     0.6809±0.0363        0.9766        0.7429  t Welch p = 0.0000 (significativa)
+spread         0.7637±0.0667     0.6859±0.0620        0.6428        0.5585  t Welch p = 0.0146 (significativa)
+GD             0.0063±0.0029     0.0498±0.0095        0.0032        0.0380  t Welch p = 0.0000 (significativa)
+puntos        30.6000±6.1680     5.1000±0.5676       39.0000        6.0000  Mann-Whitney p = 0.0001 (significativa)
+segundos      16.4276±0.7940    15.5023±0.8898       15.1956       14.6998  Mann-Whitney p = 0.0091 (significativa)
+
+======================================================================================
+Plan mono-objetivo (β = 0.010, el del modelo) respecto del frente de NSGA-II de la misma semilla
+======================================================================================
+  dominado por el frente de NSGA-II en 7 de 10 corridas; distancia media al frente de referencia (normalizada) 0.0771
+
+======================================================================================
+Planes de referencia respecto de los frentes (f1 utilidad deportiva, f2 costo neto)
+======================================================================================
+  statu_quo  f1 =   193.07  f2 =    205.78 | dominado por el frente de NSGA-II en 10 de 10 corridas, por el de la agregación en 10 de 10; por el de referencia: sí
+  plan_real  f1 =   224.94  f2 =    230.91 | dominado por el frente de NSGA-II en 10 de 10 corridas, por el de la agregación en 10 de 10; por el de referencia: sí
+  escrito resultados/mo_barcelona-2020-chica_metricas.csv
+  escrito resultados/mo_barcelona-2020-chica_frentes.csv

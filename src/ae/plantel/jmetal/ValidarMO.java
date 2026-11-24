@@ -22,7 +22,8 @@ import java.util.List;
  * [Informe §III-C NSGA-II y §IV-C métricas; DECISIONES D-A6]
  *
  *  1. IDENTIDAD f + ρσ = f₁ − β f₂ + C sobre planes al azar y sobre el statu
- *     quo: si falla, f₁ o f₂ no miden lo que dice D-A6.
+ *     quo, en la instancia sintética y en dos reales con parámetros calibrados
+ *     (incluido el plan real): si falla, f₁ o f₂ no miden lo que dice D-A6.
  *  2. HIPERVOLUMEN de jMetal contra un cálculo 2D a mano.
  *  3. GD = 0, RHV = 1 y spread finito cuando el frente evaluado ES la
  *     referencia; RHV &lt; 1 para un frente dominado.
@@ -68,6 +69,24 @@ public final class ValidarMO {
         }
         chequear("30 planes (statu quo + 29 al azar), N=30", peor < 1e-9,
                 String.format("máx |diferencia| = %.2e  (C = %.3f)", peor, c));
+        // Con datos reales y parámetros calibrados (P29): las correcciones de
+        // mercado de Juan (D-J5) no pueden romper la identidad.
+        for (String real : new String[] { "barcelona-2020-chica", "barcelona-2020-grande" }) {
+            Instancia ir = ExperimentoMO.instancia(real);
+            Parametros pc = ExperimentoMO.parametros(real);
+            double cr = ProblemaPlantelMO.constanteAgregacion(ir, pc);
+            Aleatorio rr = new Aleatorio(5);
+            double peorR = 0;
+            for (int k = 0; k < 15; k++) {
+                Cromosoma x = k == 0 ? ae.plantel.InstanciasReales.planReal(ir)
+                        : k == 1 ? Cromosoma.statuQuo(ir) : Operadores.aleatorioSesgado(ir, rr);
+                Evaluador.Fitness f = Evaluador.evaluar(ir, x, 20, 900 + k, pc);
+                peorR = Math.max(peorR, Math.abs(f.valor + pc.rho * f.desvio
+                        - (f.utilidadDeportivaMedia - pc.beta * f.costoNetoMedio + cr)));
+            }
+            chequear(real + " calibrada (plan real + 14), N=20", peorR < 1e-9,
+                    String.format("máx |diferencia| = %.2e", peorR));
+        }
 
         // ---------------- 2. hipervolumen ----------------
         System.out.println();

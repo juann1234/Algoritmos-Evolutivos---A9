@@ -39,7 +39,8 @@ Estados: ⬜ pendiente · 🟨 en curso · ✅ hecho · ⛔ bloqueado
 | P25 | Repetir la comparación de variantes (gap, sharing, CHC, memético) sobre las instancias de configuración | §IV-A, Tema 12 | Juan | ✅ | la base se sostiene; sharing y memético neutros, el resto peor. `resultados/variantes_configuracion.txt`, RESULTADOS §6 |
 | P26 | Revisar y aprobar la decisión de N = 10 (D-A13) | §IV-A | Juan | ✅ | aprobada el 23/11, verificada con el AE original (+5,56 y +3,15, p Holm 0,0117) |
 | P28 | N creciente prometido por el informe (§III-B) | §III-B, §IV-A | Juan | ✅ | implementado y evaluado: empata con N = 10 fijo, que se mantiene (D-J1) |
-| P29 | Protocolo final sobre instancias reales: `Parametros.calibrados()` + `barcelona-2020-{chica,media,grande}`, incluido el plan real como referencia, en `CompararReferencias` y `ExperimentoMO` | §IV-B, §IV-C | Alen | ⬜ | hoy esos programas usan las instancias sintéticas y los parámetros por defecto. `EvaluarCasoReal` muestra cómo cargar todo |
+| P29 | Protocolo final sobre instancias reales: `Parametros.calibrados()` + `barcelona-2020-{chica,media,grande}`, incluido el plan real como referencia, en `CompararReferencias` y `ExperimentoMO` | §IV-B, §IV-C | Alen | ✅ | D-A17, D-A18; preliminar en RESULTADOS §10. Corridas completas: `clusteruy.sh referencias-reales` y `mo-real-*` (P23) |
+| P31 | Revisar la magnitud de f₂ en las reales: el AE es casi indiferente entre planes con f₂ de −369 a +4 M (β = 0,01) y los extremos renuevan temprano a todo el plantel valioso; ¿la economía de la renovación (D4/D5) con el valor calibrado (D-J2) es razonable a esa escala? | §I-C, §IV-B | Juan (modelo) | ⬜ | RESULTADOS §10. No cambia la conclusión en f₁ (dominancia 26/26), pero sí cómo se reporta el patrimonio |
 | P30 | Instancias de configuración también reales (por ejemplo, otros clubes con el mismo script) para que configuración y evaluación tengan la misma distribución | §IV-A, Tema 12 | — | ⬜ | opcional; `preparar_instancias.py` ya está armado para un club, habría que parametrizar el club |
 | P27 | Probar `herramientas/clusteruy.sh` en ClusterUY (partición, módulo de Java) | — | quien tenga cuenta | ⬜ | |
 
@@ -62,18 +63,38 @@ final. Agregar acá cada vez que aparezca una.
 12. **N = 10 réplicas y 120.000 evaluaciones** en los experimentos finales (mismo costo en simulaciones que 40.000 con N = 30), por el estudio de N (D-A13).
 13. GAP con la fórmula del Tema 12, [f(VT) − f(AE)] / f(AE), y el AE optimizando sobre los mismos escenarios fijos que la enumeración (D-A15). Micro-instancias de **5 jugadores** como dice el informe (Juan usaba 6).
 14. Selección proporcional con escalado: peor que el torneo. Bloques posicionales: sin diferencia en eval-chica pero **peor** en las dos instancias de configuración, que son las que deciden (D-A16). Se queda torneo + uniforme.
-16. Variantes del modelo evolutivo: decididas sobre las instancias de configuración (P25). Sharing y memético **no aportan** (neutros); gap, estado estacionario y CHC son peores.
-15. Comparación multiobjetivo contra agregación con barrido de β (D-A9), que el informe inicial no especificaba.
+15. Variantes del modelo evolutivo: decididas sobre las instancias de configuración (P25). Sharing y memético **no aportan** (neutros); gap, estado estacionario y CHC son peores.
+16. Comparación multiobjetivo contra agregación con barrido de β (D-A9), que el informe inicial no especificaba; el barrido es relativo al β del modelo (D-A17).
 17. **Datos reales y calibración** (D-J2): salario, valor y evolución del nivel calibrados con FIFA y Transfermarkt; factor contractual validado con traspasos reales.
 18. **El efecto de los minutos no es identificable** con datos observacionales (simultaneidad, D-J3): se declara como supuesto.
 19. **Instancias reales y plan real del Barcelona 2020-2023** (D-J4), con sus limitaciones (canteranos, una acción por jugador, precios del modelo).
 20. **Correcciones del modelo de mercado** que aparecieron al evaluar el plan real (D-J5), y **β = 0,01** para la escala real (D-J6).
+21. Sobre las instancias reales, el greedy usa los parámetros calibrados y el plan real entra como referencia en todos los tests (D-A18). Reportar la dominancia en f₁ y f₂, y el frente de Pareto, además del % de mejora.
 
 ---
 
 ## Bitácora
 
 Entradas nuevas arriba. Formato: fecha · quién · qué se hizo · cómo se validó · qué sigue.
+
+### 24/11/2026 · Alen (con Claude) · P29: protocolo final sobre las instancias reales
+- Partí de `juan/p17-p18-datos-reales` (sus PRs #2 y #3 siguen abiertos;
+  esta rama los contiene). `validar.sh` pasó entero antes de tocar nada.
+- `CompararReferencias` y `ExperimentoMO` cargan las reales por nombre y
+  usan `Parametros.calibrados()`; el plan real es una referencia más, con
+  desglose f₁/f₂ y dominancia (D-A18). El greedy ahora usa los parámetros de
+  la instancia (antes tenía fijos los por defecto). Barrido de β relativo al
+  β del modelo (D-A17).
+- Validación: la identidad de D-A6 sigue siendo exacta con los parámetros
+  calibrados y las correcciones D-J5 (1e-13, incluido el plan real); quedó
+  en `ValidarMO`. `validar.sh` completo OK, números de referencia sin cambios.
+- Preliminar (24.000 evaluaciones, N = 10): AE +7,8 / +6,5 / +6,8% sobre el
+  plan real en chica / media / grande y lo domina en f₁ y f₂ en 26 de 26
+  corridas; NSGA-II domina al plan real en 10/10 y le gana a la agregación
+  en RHV (0,92 vs 0,68). RESULTADOS §10; figura
+  `frente_pareto_barcelona-2020-chica.png`.
+- Observación para Juan (P31): la magnitud de f₂ en las reales.
+- Qué sigue: corridas completas en ClusterUY (P23), informe (P21), zip (P22).
 
 ### 23/11/2026 · Juan (con Claude) · P17 y P18: datos reales, calibración y plan real
 - Calibración reproducible con FIFA (FC 24 dataset) y Transfermarkt:

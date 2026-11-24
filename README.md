@@ -174,7 +174,10 @@ versionan por tamaño y licencia:
 ```bash
 python3 herramientas/calibrar.py <carpeta_con_los_csv>             # imprime los parámetros calibrados
 python3 herramientas/preparar_instancias.py <carpeta> instancias     # regenera instancias y plan real
-java -cp out ae.plantel.EvaluarCasoReal barcelona-2020-chica 24000 5 # statu quo vs plan real vs AE
+java -cp out ae.plantel.EvaluarCasoReal barcelona-2020-chica 24000 5 # statu quo vs plan real vs AE (AE original)
+# Protocolo final sobre jMetal con las reales (P29, D-A18):
+java -cp out ae.plantel.jmetal.CompararReferencias 120000 30 barcelona-2020-chica barcelona-2020-media barcelona-2020-grande
+java -cp out ae.plantel.jmetal.ExperimentoMO 120000 30 barcelona-2020-chica
 ```
 
 Con las instancias reales se usa `Parametros.calibrados()`; con las

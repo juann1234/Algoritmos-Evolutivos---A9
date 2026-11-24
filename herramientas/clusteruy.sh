@@ -10,6 +10,7 @@
 #   2. Copiar el repo entero (con out/ y lib/) al cluster.
 #   3. sbatch herramientas/clusteruy.sh <experimento>
 #      experimento: factorial | referencias | mo-chica | mo-media | mo-grande | islas
+#                   | referencias-reales | mo-real-chica | mo-real-media | mo-real-grande
 #
 # Costos estimados con el protocolo final (N = 10, 120.000 evaluaciones; D-A13),
 # medidos en un Xeon de 2,1 GHz: 1,2 / 1,9 / 3,6 ms por evaluación en las
@@ -39,5 +40,10 @@ case "${1:-referencias}" in
     mo-media)    $JAVA ae.plantel.jmetal.ExperimentoMO 120000 30 eval-media ;;
     mo-grande)   $JAVA ae.plantel.jmetal.ExperimentoMO 120000 30 eval-grande ;;
     islas)       $JAVA ae.plantel.jmetal.ExperimentoIslas 30 120000 8 eval-chica ;;
+    # Instancias reales del Barcelona con parámetros calibrados y el plan real (P29, D-A18)
+    referencias-reales) $JAVA ae.plantel.jmetal.CompararReferencias 120000 30 barcelona-2020-chica barcelona-2020-media barcelona-2020-grande ;;
+    mo-real-chica)  $JAVA ae.plantel.jmetal.ExperimentoMO 120000 30 barcelona-2020-chica ;;
+    mo-real-media)  $JAVA ae.plantel.jmetal.ExperimentoMO 120000 30 barcelona-2020-media ;;
+    mo-real-grande) $JAVA ae.plantel.jmetal.ExperimentoMO 120000 30 barcelona-2020-grande ;;
     *) echo "experimento desconocido: $1" >&2; exit 1 ;;
 esac

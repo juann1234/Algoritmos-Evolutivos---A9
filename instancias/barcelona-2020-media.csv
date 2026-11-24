@@ -1,0 +1,181 @@
+# nombre=barcelona-2020-media
+# fuente=EA Sports FC 24 Complete Player Dataset (FIFA 21) + Transfermarkt; ver herramientas/preparar_instancias.py
+# presupuesto=150.0
+# tope_masa_salarial=249.28
+# cupo_fichas=25
+id,nombre,puesto,pertenencia,edad,theta,potencial,anios_contrato,salario,clausula,historial_lesiones,club_origen
+158023,L. Messi,DEL,PROPIO,33,93.0,93.0,1,29.12,138.4,0.0,FC Barcelona
+192448,M. ter Stegen,POR,PROPIO,28,90.0,93.0,2,13.52,147.7,0.0,FC Barcelona
+176580,L. Suárez,DEL,PROPIO,33,87.0,87.0,1,14.56,64.6,0.0,FC Barcelona
+189511,Sergio Busquets,MED,PROPIO,31,87.0,87.0,3,12.48,77.9,0.0,FC Barcelona
+194765,A. Griezmann,DEL,PROPIO,29,87.0,87.0,4,15.08,103.5,0.0,FC Barcelona
+152729,Piqué,DEF,PROPIO,33,86.0,86.0,2,11.44,43.1,0.0,FC Barcelona
+189332,Jordi Alba,DEF,PROPIO,31,86.0,86.0,4,11.44,65.6,0.0,FC Barcelona
+228702,F. de Jong,MED,PROPIO,23,85.0,90.0,4,9.88,107.3,0.0,FC Barcelona
+220440,C. Lenglet,DEF,PROPIO,25,85.0,89.0,3,9.88,94.6,0.0,FC Barcelona
+180206,M. Pjanić,MED,PROPIO,30,85.0,85.0,4,11.44,72.8,0.0,FC Barcelona
+231443,O. Dembélé,DEL,PROPIO,23,83.0,89.0,2,9.1,79.9,0.0,FC Barcelona
+205600,S. Umtiti,DEF,PROPIO,26,83.0,86.0,3,8.84,60.6,0.0,FC Barcelona
+227928,Nélson Semedo,DEF,PROPIO,26,83.0,86.0,2,8.84,59.5,0.0,FC Barcelona
+189242,Coutinho,MED,PROPIO,28,83.0,83.0,3,9.88,53.3,0.0,FC Barcelona
+199564,Sergi Roberto,DEF,PROPIO,28,83.0,83.0,2,9.1,45.1,0.0,FC Barcelona
+194404,Neto,POR,PROPIO,30,82.0,82.0,3,6.5,30.8,0.0,FC Barcelona
+241184,Junior Firpo,DEF,PROPIO,23,79.0,85.0,4,5.72,34.9,0.0,FC Barcelona
+201400,Rafinha,MED,PROPIO,27,79.0,80.0,1,7.28,29.8,0.0,FC Barcelona
+244778,Trincão,DEL,PROPIO,20,78.0,91.0,5,5.46,53.5,0.0,FC Barcelona
+253004,Ansu Fati,DEL,PROPIO,17,76.0,90.0,2,1.248,40.1,0.0,FC Barcelona
+193290,M. Braithwaite,DEL,PROPIO,29,76.0,76.0,4,6.5,15.4,0.0,FC Barcelona
+242816,Riqui Puig,MED,PROPIO,20,75.0,88.0,1,4.004,33.4,0.0,FC Barcelona
+245388,J. Todibo,DEF,PROPIO,20,75.0,86.0,3,3.536,23.6,0.0,FC Barcelona
+251854,Pedri,MED,PROPIO,17,72.0,88.0,2,0.52,16.1,0.0,FC Barcelona
+253163,R. Araujo,DEF,PROPIO,21,67.0,81.0,3,1.248,4.3,0.0,FC Barcelona
+251804,S. Dest,DEF,MERCADO,19,75.0,86.0,2,0.416,0.0,0.0,Ajax
+153079,S. Agüero,DEL,MERCADO,32,89.0,89.0,1,15.6,0.0,0.0,Manchester City
+202556,M. Depay,DEL,MERCADO,26,85.0,88.0,1,5.98,0.0,0.0,Olympique Lyonnais
+245037,Eric García,DEF,MERCADO,19,72.0,85.0,2,1.664,0.0,0.0,Manchester City
+189805,L. de Jong,DEL,MERCADO,29,80.0,80.0,3,1.976,0.0,0.0,Sevilla
+251873,Y. Demir,MED,MERCADO,17,64.0,85.0,2,0.0442,0.0,0.0,Rapid Wien
+241461,Ferran Torres,MED,MERCADO,20,81.0,89.0,5,4.94,0.0,0.0,Manchester City
+213956,Adama Traoré,DEL,MERCADO,24,79.0,85.0,3,4.16,0.0,0.0,Wolverhampton Wanderers
+188567,P. Aubameyang,DEL,MERCADO,31,87.0,87.0,1,8.84,0.0,0.0,Arsenal
+188545,R. Lewandowski,DEL,MERCADO,31,91.0,91.0,3,12.48,0.0,0.0,FC Bayern München
+241486,J. Koundé,DEF,MERCADO,21,79.0,86.0,4,1.092,0.0,0.0,Sevilla
+230938,F. Kessié,MED,MERCADO,23,77.0,82.0,2,1.716,0.0,0.0,Milan
+233419,Raphinha,MED,MERCADO,23,81.0,85.0,4,2.652,0.0,0.0,Rennes
+213661,A. Christensen,DEF,MERCADO,24,79.0,84.0,2,3.64,0.0,0.0,Chelsea
+203747,Héctor Bellerín,DEF,MERCADO,25,80.0,85.0,3,4.004,0.0,0.0,Arsenal
+192638,Marcos Alonso,DEF,MERCADO,29,81.0,81.0,3,4.94,0.0,0.0,Chelsea
+204638,W. Orban,DEF,MERCADO,27,79.0,81.0,2,2.6,0.0,0.0,RB Leipzig
+193011,S. Cook,DEF,MERCADO,29,75.0,75.0,1,0.728,0.0,0.0,AFC Bournemouth
+202695,J. Tarkowski,DEF,MERCADO,27,80.0,81.0,2,3.068,0.0,0.0,Burnley
+236311,M. Rog,MED,MERCADO,24,75.0,79.0,4,1.3,0.0,0.0,Cagliari
+189712,K. Strootman,MED,MERCADO,30,77.0,77.0,3,1.768,0.0,0.0,Olympique de Marseille
+202646,Álex Martínez,DEF,MERCADO,29,74.0,74.0,1,1.092,0.0,0.0,Granada
+244193,Jovane Cabral,DEL,MERCADO,22,77.0,87.0,3,0.728,0.0,0.0,Sporting CP
+173306,C. Ansaldi,MED,MERCADO,33,78.0,78.0,1,2.34,0.0,0.0,Torino
+190666,M. Gulde,DEF,MERCADO,29,74.0,74.0,2,1.092,0.0,0.0,SC Freiburg
+210537,R. Steffen,MED,MERCADO,28,78.0,78.0,3,2.496,0.0,0.0,VfL Wolfsburg
+184606,Fábio Pacheco,MED,MERCADO,32,75.0,75.0,1,0.676,0.0,0.0,Moreirense
+200353,A. Soumaoro,DEF,MERCADO,28,76.0,77.0,1,1.612,0.0,0.0,Lille
+204401,Diogo Figueiras,DEF,MERCADO,29,74.0,74.0,2,0.676,0.0,0.0,Sporting Braga
+230498,Luimo Boas Santos,DEL,MERCADO,20,79.0,79.0,3,1.404,0.0,0.0,Santos
+244621,Vinícius,DEL,MERCADO,25,79.0,84.0,4,0.936,0.0,0.0,Benfica
+162347,João Moutinho,MED,MERCADO,33,83.0,83.0,2,5.72,0.0,0.0,Wolverhampton Wanderers
+199914,Allan,MED,MERCADO,29,83.0,83.0,3,5.98,0.0,0.0,Everton
+210665,M. Halstenberg,DEF,MERCADO,28,82.0,82.0,2,3.38,0.0,0.0,RB Leipzig
+193474,I. Gueye,MED,MERCADO,30,84.0,84.0,3,5.46,0.0,0.0,Paris Saint Germain
+235883,R. Sessegnon,MED,MERCADO,20,75.0,86.0,5,2.6,0.0,0.0,Tottenham Hotspur
+211408,K. Linetty,MED,MERCADO,25,74.0,78.0,4,1.716,0.0,0.0,Torino
+210881,J. McGinn,MED,MERCADO,25,76.0,81.0,4,2.548,0.0,0.0,Aston Villa
+231410,Brahim,DEL,MERCADO,20,74.0,86.0,1,4.16,0.0,0.0,Milan
+207894,T. Strobl,MED,MERCADO,30,76.0,76.0,3,1.3,0.0,0.0,FC Augsburg
+231691,A. Lafont,POR,MERCADO,21,78.0,84.0,1,1.3,0.0,0.0,Nantes
+204760,C. Taylor,DEF,MERCADO,26,77.0,78.0,4,2.496,0.0,0.0,Burnley
+186589,I. Radovanović,MED,MERCADO,31,74.0,74.0,1,0.728,0.0,0.0,Genoa
+207439,L. Paredes,MED,MERCADO,26,79.0,82.0,3,4.056,0.0,0.0,Paris Saint Germain
+238744,W. McKennie,MED,MERCADO,21,75.0,84.0,4,2.236,0.0,0.0,Juventus
+225507,Pol Llonch,MED,MERCADO,27,74.0,75.0,4,0.52,0.0,0.0,Willem II
+204311,K. Zouma,DEF,MERCADO,25,80.0,83.0,3,4.264,0.0,0.0,Chelsea
+226078,Trezeguet,DEL,MERCADO,25,75.0,78.0,3,2.652,0.0,0.0,Aston Villa
+230658,Arthur,MED,MERCADO,23,84.0,89.0,4,5.2,0.0,0.0,Juventus
+229391,Palhinha,MED,MERCADO,24,78.0,84.0,3,0.624,0.0,0.0,Sporting CP
+215245,A. Hunou,DEL,MERCADO,26,75.0,77.0,3,2.184,0.0,0.0,Rennes
+215353,L. Alario,DEL,MERCADO,27,77.0,78.0,2,3.068,0.0,0.0,Bayer 04 Leverkusen
+219145,G. Maripán,DEF,MERCADO,26,75.0,77.0,4,1.976,0.0,0.0,Monaco
+210985,B. Osborn,DEF,MERCADO,25,74.0,77.0,2,1.352,0.0,0.0,Sheffield United
+230349,Rodrigo Vuarte,MED,MERCADO,28,77.0,77.0,3,1.872,0.0,0.0,São Paulo
+210385,Rui Silva,POR,MERCADO,26,79.0,83.0,1,1.196,0.0,0.0,Granada
+235634,G. Konan,DEF,MERCADO,24,76.0,81.0,2,1.04,0.0,0.0,Stade de Reims
+230336,Danisco Fachini,MED,MERCADO,32,75.0,75.0,3,1.56,0.0,0.0,Flamengo
+209547,S. Mitrović,DEF,MERCADO,30,74.0,74.0,2,1.196,0.0,0.0,Strasbourg
+211300,A. Martial,DEL,MERCADO,24,84.0,88.0,4,8.06,0.0,0.0,Manchester United
+243780,Lee Kang In,MED,MERCADO,19,74.0,84.0,2,0.832,0.0,0.0,Valencia
+214092,A. Miranchuk,MED,MERCADO,24,79.0,84.0,5,2.6,0.0,0.0,Atalanta
+216201,Iñaki Williams,DEL,MERCADO,26,81.0,84.0,8,1.82,0.0,0.0,Athletic Club
+228579,B. Henrichs,DEF,MERCADO,23,76.0,80.0,1,1.768,0.0,0.0,RB Leipzig
+212811,M. Lemina,MED,MERCADO,26,77.0,78.0,1,2.704,0.0,0.0,Fulham
+223273,M. Pašalić,MED,MERCADO,25,77.0,81.0,2,2.444,0.0,0.0,Atalanta
+222509,Dani Ceballos,MED,MERCADO,23,80.0,85.0,1,6.5,0.0,0.0,Arsenal
+212212,D. Kohr,MED,MERCADO,26,75.0,77.0,4,1.196,0.0,0.0,Eintracht Frankfurt
+211591,M. Dembélé,DEL,MERCADO,23,81.0,85.0,3,3.744,0.0,0.0,Olympique Lyonnais
+234045,H. Onyekuru,MED,MERCADO,23,77.0,84.0,4,2.132,0.0,0.0,Monaco
+206545,Manu Trigueros,MED,MERCADO,28,78.0,78.0,2,1.82,0.0,0.0,Villarreal
+190507,Etxeita,DEF,MERCADO,32,74.0,74.0,1,1.092,0.0,0.0,Getafe
+236108,Elieser Baldeiro,DEF,MERCADO,24,74.0,74.0,3,1.248,0.0,0.0,Flamengo
+220414,Diego Rico,DEF,MERCADO,27,77.0,78.0,2,0.78,0.0,0.0,AFC Bournemouth
+232099,M. Grujić,MED,MERCADO,24,75.0,81.0,3,3.016,0.0,0.0,Liverpool
+215522,A. Schlager,POR,MERCADO,24,75.0,79.0,3,0.832,0.0,0.0,LASK Linz
+178086,Adán,POR,MERCADO,33,80.0,80.0,2,0.676,0.0,0.0,Sporting CP
+216150,D. Zappacosta,DEF,MERCADO,28,78.0,78.0,1,4.004,0.0,0.0,Genoa
+203574,J. Stones,DEF,MERCADO,26,80.0,83.0,2,5.72,0.0,0.0,Manchester City
+224263,J. Kenny,DEF,MERCADO,23,76.0,83.0,2,2.704,0.0,0.0,Everton
+204884,B. Mendy,DEF,MERCADO,25,81.0,84.0,2,5.98,0.0,0.0,Manchester City
+233195,X. Schlager,MED,MERCADO,22,76.0,83.0,3,1.82,0.0,0.0,VfL Wolfsburg
+186347,M. Rybus,DEF,MERCADO,30,74.0,74.0,1,1.82,0.0,0.0,Lokomotiv Moskva
+201858,N. Sansone,MED,MERCADO,28,76.0,76.0,3,1.664,0.0,0.0,Bologna
+230213,Kaíqundo Calado,DEF,MERCADO,24,75.0,75.0,3,1.352,0.0,0.0,São Paulo
+230360,Hediselton,DEF,MERCADO,20,78.0,78.0,3,1.092,0.0,0.0,Grêmio
+235790,K. Havertz,MED,MERCADO,21,85.0,93.0,5,5.46,0.0,0.0,Chelsea
+231113,Z. Bakaev,MED,MERCADO,24,75.0,80.0,2,2.132,0.0,0.0,Spartak Moskva
+208334,J. Hector,MED,MERCADO,30,77.0,77.0,3,1.352,0.0,0.0,FC Köln
+230199,Vinicius Cardenha,DEF,MERCADO,28,74.0,74.0,3,1.04,0.0,0.0,Fluminense
+224271,T. Goiginger,DEL,MERCADO,27,74.0,74.0,2,1.352,0.0,0.0,LASK Linz
+221491,N. Elvedi,DEF,MERCADO,23,78.0,84.0,2,1.56,0.0,0.0,Borussia Mönchengladbach
+194644,Montoya,DEF,MERCADO,29,77.0,77.0,4,1.196,0.0,0.0,Real Betis
+228736,W. Faríñez,POR,MERCADO,22,75.0,85.0,2,1.144,0.0,0.0,Lens
+205201,O. Yokuşlu,MED,MERCADO,26,77.0,82.0,3,1.144,0.0,0.0,Celta de Vigo
+224490,Z. Çelik,DEF,MERCADO,23,77.0,83.0,3,1.404,0.0,0.0,Lille
+219571,Camarasa,MED,MERCADO,26,75.0,78.0,2,1.144,0.0,0.0,Real Betis
+177457,L. Bender,DEF,MERCADO,31,82.0,82.0,1,3.744,0.0,0.0,Bayer 04 Leverkusen
+224179,Borja Iglesias,DEL,MERCADO,27,79.0,80.0,4,1.612,0.0,0.0,Real Betis
+241497,C. Dagba,DEF,MERCADO,21,75.0,80.0,4,2.028,0.0,0.0,Paris Saint Germain
+235173,I. Sangaré,MED,MERCADO,22,74.0,84.0,2,0.312,0.0,0.0,Toulouse
+199561,Nolito,DEL,MERCADO,33,76.0,76.0,2,1.3,0.0,0.0,Celta de Vigo
+184432,Azpilicueta,DEF,MERCADO,30,84.0,84.0,2,6.24,0.0,0.0,Chelsea
+212678,L. Augustinsson,DEF,MERCADO,26,76.0,77.0,2,1.3,0.0,0.0,Werder Bremen
+176772,A. Oukidja,POR,MERCADO,31,76.0,76.0,3,0.78,0.0,0.0,Metz
+171018,Mario Suárez,MED,MERCADO,33,74.0,74.0,2,0.364,0.0,0.0,Rayo Vallecano
+190584,Illarramendi,MED,MERCADO,30,80.0,80.0,3,1.664,0.0,0.0,Real Sociedad
+232363,M. Škriniar,DEF,MERCADO,25,85.0,89.0,3,6.76,0.0,0.0,Inter
+230379,Vieirundinho,DEF,MERCADO,32,77.0,77.0,3,1.352,0.0,0.0,Santos
+193301,A. Lacazette,DEL,MERCADO,29,83.0,83.0,2,6.5,0.0,0.0,Arsenal
+230440,Fredditinho,DEL,MERCADO,32,78.0,78.0,3,2.236,0.0,0.0,Palmeiras
+183394,M. Sissoko,MED,MERCADO,30,79.0,79.0,3,4.628,0.0,0.0,Tottenham Hotspur
+226229,T. Kehrer,DEF,MERCADO,23,77.0,82.0,3,2.704,0.0,0.0,Paris Saint Germain
+189575,Muniain,DEL,MERCADO,27,83.0,83.0,4,2.132,0.0,0.0,Athletic Club
+230384,Nailton Suzuki,MED,MERCADO,24,81.0,81.0,3,2.236,0.0,0.0,Palmeiras
+236699,S. Lukić,MED,MERCADO,23,74.0,81.0,3,1.56,0.0,0.0,Torino
+234060,Y. Herrera,MED,MERCADO,22,75.0,84.0,1,3.952,0.0,0.0,Granada
+230323,Kaíquão Castro,POR,MERCADO,24,75.0,75.0,3,0.728,0.0,0.0,Fluminense
+201931,Gabriel,POR,MERCADO,27,76.0,80.0,1,0.208,0.0,0.0,Lecce
+212187,P. Max,DEF,MERCADO,26,79.0,80.0,4,1.04,0.0,0.0,PSV
+232411,C. Nkunku,MED,MERCADO,22,80.0,86.0,4,2.652,0.0,0.0,RB Leipzig
+206198,D. Heintz,DEF,MERCADO,26,75.0,77.0,2,1.092,0.0,0.0,SC Freiburg
+204485,R. Mahrez,DEL,MERCADO,29,85.0,85.0,3,10.92,0.0,0.0,Manchester City
+232999,T. Adams,MED,MERCADO,21,76.0,85.0,5,1.508,0.0,0.0,RB Leipzig
+192565,Y. Mallı,MED,MERCADO,28,74.0,74.0,1,1.924,0.0,0.0,VfL Wolfsburg
+194222,Laguardia,DEF,MERCADO,30,78.0,78.0,2,1.3,0.0,0.0,Deportivo Alavés
+236477,A. Claude-Maurice,MED,MERCADO,22,75.0,82.0,4,1.404,0.0,0.0,Nice
+225663,A. Golovin,MED,MERCADO,24,79.0,83.0,4,2.496,0.0,0.0,Monaco
+213565,T. Lemar,MED,MERCADO,24,81.0,85.0,3,2.808,0.0,0.0,Atlético Madrid
+235663,G. Til,MED,MERCADO,22,74.0,81.0,3,0.988,0.0,0.0,SC Freiburg
+234568,Gedson Fernandes,MED,MERCADO,21,75.0,84.0,1,0.52,0.0,0.0,Tottenham Hotspur
+155946,R. Snodgrass,MED,MERCADO,32,77.0,77.0,1,2.08,0.0,0.0,West Ham United
+235805,F. Chiesa,DEL,MERCADO,22,78.0,84.0,2,2.6,0.0,0.0,Fiorentina
+201922,M. Hinteregger,DEF,MERCADO,27,80.0,82.0,4,1.716,0.0,0.0,Eintracht Frankfurt
+173521,Marcano,DEF,MERCADO,33,81.0,81.0,3,0.936,0.0,0.0,Porto
+220932,L. Kalinić,POR,MERCADO,30,75.0,75.0,3,1.872,0.0,0.0,Aston Villa
+205705,Z. Feddal,DEF,MERCADO,30,78.0,78.0,2,0.728,0.0,0.0,Sporting CP
+187735,A. Dzagoev,MED,MERCADO,30,76.0,76.0,1,2.08,0.0,0.0,CSKA Moskva
+211688,Gayà,DEF,MERCADO,25,83.0,88.0,3,2.392,0.0,0.0,Valencia
+219809,T. Bakayoko,MED,MERCADO,25,79.0,81.0,2,4.004,0.0,0.0,Chelsea
+189472,Aridane,DEF,MERCADO,31,77.0,77.0,3,1.508,0.0,0.0,Osasuna
+219911,T. Hlatshwayo,DEF,MERCADO,30,74.0,74.0,4,0.0442,0.0,0.0,Orlando Pirates
+215449,R. Skov,DEF,MERCADO,24,75.0,81.0,4,1.248,0.0,0.0,TSG Hoffenheim
+220018,A. Rebić,DEL,MERCADO,26,79.0,80.0,5,2.496,0.0,0.0,Milan
+234906,H. Aouar,MED,MERCADO,22,81.0,89.0,3,3.38,0.0,0.0,Olympique Lyonnais
+209889,R. Guerreiro,MED,MERCADO,26,84.0,85.0,3,4.472,0.0,0.0,Borussia Dortmund
+231292,J. Lewis,DEF,MERCADO,22,74.0,84.0,5,1.352,0.0,0.0,Newcastle United
+216643,L. Dubois,DEF,MERCADO,25,79.0,82.0,4,2.964,0.0,0.0,Olympique Lyonnais
+190264,Iago Falqué,DEL,MERCADO,30,77.0,77.0,2,2.392,0.0,0.0,Torino
+205175,A. Milik,DEL,MERCADO,26,81.0,84.0,1,4.212,0.0,0.0,Napoli

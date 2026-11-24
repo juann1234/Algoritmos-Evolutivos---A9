@@ -16,3 +16,7 @@ lib/
 .vscode/
 *.iml
 .DS_Store
+
+# datos crudos de Kaggle (tamaño y licencia): ver README, "Datos reales"
+datos/
+*.zip

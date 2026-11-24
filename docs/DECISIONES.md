@@ -277,6 +277,9 @@ Estudio en `jmetal/EstudioReplicas` (salida en `resultados/replicas_demo.txt`):
    N = 30. Con 720.000 la dirección se mantiene en las 6 semillas, pero con
    n = 6 y 4 comparaciones el menor p de Holm posible es 0,125.
 
+**Aprobada por Juan el 23/11/2026 (PENDIENTES P26)**, después de verificarla
+con el AE original (+5,56 y +3,15 a igual costo, p Holm 0,0117).
+
 **Decisión:** los experimentos finales usan **N = 10 con 120.000
 evaluaciones** (`Config.protocoloFinal()`), que son las **mismas 1,2 millones
 de simulaciones** que las 40.000 evaluaciones con N = 30 del informe inicial:
@@ -311,7 +314,162 @@ de operadores sobre **conf-joven** y **conf-veterano**
 | proporcional vs torneo | −3,80 (p Holm < 0,0001) | −2,03 (p Holm 0,0001) | sí, se queda torneo |
 | bloques vs uniforme | −3,49 (p Holm < 0,0001) | −1,97 (p Holm 0,0001) | sí, se queda uniforme (en demo no difería; acá es peor) |
 
-Las decisiones de diseño valen en instancias que la evaluación no usa. Queda
-pendiente repetir la comparación de variantes de Juan (gap, sharing, CHC,
-memético) sobre las de configuración (PENDIENTES P25); `CompararVariantes`
-tiene la instancia fija en demo.
+Las decisiones de diseño valen en instancias que la evaluación no usa.
+
+**Actualización 23/11/2026 (Juan):** la comparación de variantes (gap,
+estado estacionario, sharing, CHC, memético) también se repitió sobre
+conf-joven y conf-veterano (P25, `resultados/variantes_configuracion.txt`).
+Ninguna supera a la base; sharing y memético quedan neutros y el resto es
+peor. Se mantiene el AE generacional con elitismo.
+
+### D-J1 · N creciente: implementado, evaluado y no adoptado
+**Fecha:** 23/11/2026 · **Autor:** Juan · **Estado:** vigente · **Afecta al informe** (§III-B prometía "aumento progresivo de N")
+
+Se implementó en el AE original: `Config.replicasMin`/`replicasMax` hacen
+crecer N linealmente con la fracción del presupuesto de simulaciones
+consumida; toda una generación se evalúa con el mismo N, así que los
+escenarios comunes se mantienen. Con `replicasMax = 0` (por defecto) el AE se
+comporta exactamente como antes (verificado: reproduce las filas guardadas).
+
+Se comparó un N de 5 a 30 contra N = 10 fijo, a igual total de simulaciones,
+en las dos instancias de configuración (10 semillas, Wilcoxon pareado + Holm):
+−0,67 (p 0,084) y −0,35 (p 0,28), sin diferencia. Ambos le ganan a N = 30
+fijo.
+
+**Decisión:** se mantiene **N = 10 fijo** (D-A13), por ser más simple e igual
+de bueno. No se porta a `AGPlantel`. En el informe final: el N creciente se
+probó y no mejora a N = 10 fijo, porque la selección final en dos etapas ya
+resuelve el ruido de la etapa convergida.
+
+**Alternativas no probadas:** otros calendarios (por ejemplo 10 → 30 o
+5 → 15). No se probaron a propósito, para no elegir un calendario a fuerza de
+mirar muchos sobre las mismas instancias.
+
+### D-J2 · Calibración del simulador con datos reales
+**Fecha:** 23/11/2026 · **Autor:** Juan · **Estado:** vigente · **Afecta al informe** (§IV-A: instancias y parámetros con datos públicos)
+
+Fuentes: *EA Sports FC 24 Complete Player Dataset* (Kaggle, una foto por
+edición de FIFA 15 a FC 24) y *Football Data from Transfermarkt* (Kaggle).
+Script reproducible: `herramientas/calibrar.py <carpeta>`. Resultados en
+`Parametros.calibrados()`; los valores por defecto quedan para las
+instancias sintéticas, así que ningún número de referencia cambia.
+
+| parte | contra qué | resultado |
+|---|---|---|
+| salario de referencia | FIFA 21, 5 grandes ligas, nivel ≥ 65 (n = 2.968) | base 0,0888, escala 0,1727 (R² 0,60). El modelo original subestimaba mucho a las estrellas: nivel 90 cobraba 3,3M y el dato es 13M |
+| valor de mercado (nivel, edad) | FIFA 21, contratos de 3+ años (n = 1.569) | R² 0,95 (los coeficientes originales daban 0,57 sobre los mismos datos) |
+| factor contractual | **validado** con 1.617 traspasos reales de Transfermarkt | precio/valor con 1 año de contrato 0,67 (modelo 0,63); con 2 años 0,79 (modelo 0,82) |
+| evolución del nivel | 35.146 cambios de rating entre ediciones con minutos de liga de Transfermarkt | crecimientoMax 9,30, declive mucho más suave (−0,9 en tres temporadas desde los 30, contra −3,8), ruido 2,25 |
+
+Lesiones y parámetros de los rivales siguen siendo supuestos (no hay datos).
+
+### D-J3 · El efecto de los minutos sobre el nivel no es identificable con estos datos
+**Fecha:** 23/11/2026 · **Autor:** Juan · **Estado:** vigente · **Afecta al informe**
+
+Los minutos se asocian con la mejora del rating a todas las edades (un
+jugador de 30 con pocos minutos baja 1,1; con muchos sube 0,6), pero la
+asociación no es causal: el rating de septiembre resume la temporada que
+terminó, así que una buena temporada sube a la vez minutos y rating
+(simultaneidad). Con efectos fijos por jugador el efecto no baja sino que
+sube (+3,9 → +5,0 en jóvenes), lo que confirma que el problema no es la
+heterogeneidad entre jugadores. Por eso:
+- se calibran con datos el nivel medio de crecimiento y declive por edad y el ruido;
+- la sensibilidad a los minutos (`minutosMediaSaturacion` = 1200) queda como supuesto;
+- se mantiene que el declive no depende de los minutos (D1): cierra el agujero
+  de "congelar veteranos en el banco" y los datos no dan un efecto causal que lo contradiga.
+
+### D-J4 · Instancias reales: FC Barcelona 2020-2023 y su plan real
+**Fecha:** 23/11/2026 · **Autor:** Juan · **Estado:** vigente · **Afecta al informe** (§IV-A, §IV-B(1))
+
+Script: `herramientas/preparar_instancias.py <carpeta>` → `instancias/`.
+- **Punto de partida:** foto de FIFA 21 (23/09/2020). Horizonte 2020-21,
+  2021-22 y 2022-23. Caso elegido porque el modelo tiene que poder
+  representarlo: Messi se va libre en 2021 al no poder renovar por el tope
+  salarial, y en 2022 el club ficha con dinero que no tenía.
+- **Plantel propio (25):** el primer equipo de FIFA 21 más Pedri y Araujo.
+- **Mercado:** los 16 fichajes reales que están en FIFA 21 más una muestra
+  aleatoria con semilla fija de nivel 74 a 92 y hasta 33 años de siete ligas;
+  instancias anidadas de 50, 150 y 400 candidatos.
+- **Economía:** tope salarial = masa del plantel × 1,10 (el club estaba en el
+  límite); presupuesto de traspasos 150M.
+- **Plan real** (`plan_real_barcelona.csv`): 37 operaciones reconstruidas de
+  Transfermarkt y de las fotos de FIFA 22 y 23, cada una con su justificación.
+  Condiciones contractuales leídas de la foto posterior. Regla para jugadores
+  con varias operaciones: un cedido que no volvió a jugar cuenta como venta o
+  liberación en la ventana en que salió.
+- **Limitaciones:** los canteranos que subieron después (Gavi, Balde, Nico
+  González) no están en FIFA 21 y no los puede usar ni el plan real ni el AE;
+  el plan real se evalúa con los precios y la incertidumbre del simulador, no
+  con los montos reales.
+
+### D-J5 · Correcciones del modelo de mercado que aparecieron con los datos reales
+**Fecha:** 23/11/2026 · **Autor:** Juan · **Estado:** vigente
+
+Al evaluar el plan real se caían 12 de 37 operaciones. El diagnóstico
+(`Evaluador.traza`, `EvaluarCasoReal`) mostró cuatro problemas del modelo,
+corregidos detrás de parámetros que solo activa `Parametros.calibrados()`:
+1. **El multiplicador salarial se aplicaba sobre el salario actual** del
+   jugador y no sobre el de referencia de su nivel, como define el informe
+   (§I-A). Fichar a quien viene de una liga que paga poco era casi imposible
+   (Dest: 90% de rechazo). → `ofertaSobreReferencia`.
+2. **Un agente libre pagaba traspaso** (el 45% de su valor). → `agenteLibreSinTraspaso`.
+3. **Una oferta a precio de mercado se aceptaba solo el 50% de las veces.**
+   Se centra la aceptación en el percentil 10 del cociente salario real /
+   referencia de 4.952 fichajes reales (0,61): una oferta a precio de mercado
+   se acepta el 91% de las veces. → `umbralAceptacion`.
+4. **El riesgo de que otro club fiche al candidato crecía con el nivel**; en
+   los datos baja (35% anual a nivel 72, 12% a nivel 92) y el jugador sigue en
+   el mercado con contrato nuevo. → `fichajeExternoReubica`.
+Además, Riqui Puig renueva en V2 y no en V3 (su contrato vencía antes).
+Después de las correcciones se caen 4,4 operaciones, por motivos legítimos:
+sobre todo falta de caja para el mercado del verano de 2022, que el club real
+financió con las "palancas" que el modelo no tiene.
+
+### D-J6 · beta = 0,01 para la escala monetaria real
+**Fecha:** 23/11/2026 · **Autor:** Juan · **Estado:** vigente · **Afecta al informe**
+
+β = 0,05 se calibró sobre la escala sintética. Con valores reales el AE
+volvía a cambiar partidos por patrimonio (+25% de fitness sobre el plan real,
+pero con menos puntos). Barrido sobre barcelona-2020-chica (12.000
+evaluaciones, 2 semillas): con β = 0 el AE gasta todo (patrimonio 324M);
+con 0,005 y 0,01 domina al plan real en puntos y en patrimonio; con 0,02 ya
+cede puntos; con 0,05 pierde frente al plan real en puntos. Se fija 0,01 en
+`Parametros.calibrados()`, que además coincide con el argumento de escala
+(valores reales unas cinco veces los sintéticos: 0,05 / 5).
+
+### D-A17 · El barrido de β de la agregación es relativo al β del modelo
+**Fecha:** 24/11/2026 · **Autor:** Alen · **Estado:** vigente
+
+Con los parámetros calibrados β = 0,01 (D-J6), y el barrido fijo de D-A9
+(hasta 0,50) habría puesto cuatro de los seis puntos en la zona donde el AE
+solo junta patrimonio. El barrido pasa a ser β × {0; 0,4; 1; 2; 4; 10}: con
+el β sintético (0,05) da exactamente el barrido original, así que los
+resultados sintéticos no cambian; con el calibrado da {0; 0,004; 0,01; 0,02;
+0,04; 0,10}, que cubre el mismo rango relativo en la escala monetaria real y
+coincide con el barrido que hizo Juan para elegir β (0 a 0,05).
+
+### D-A18 · Protocolo final sobre las instancias reales (P29)
+**Fecha:** 24/11/2026 · **Autor:** Alen · **Estado:** vigente
+
+`CompararReferencias` y `ExperimentoMO` aceptan las instancias reales por
+nombre (`barcelona-2020-{chica,media,grande}`) y en ese caso usan
+`Parametros.calibrados()`. Tres cambios para que la comparación sea justa:
+
+1. **El greedy usa los parámetros de la instancia.** Antes tenía fijos los
+   por defecto (`GreedyMiope.P`): sobre las reales habría optimizado otro
+   modelo. Se agregó `construir(inst, evals, p)`; la firma vieja sigue igual,
+   así que los números de referencia no cambian.
+2. **El plan real es una referencia más**: entra en el % de mejora, el
+   Wilcoxon de una muestra, el Friedman con Holm y la robustez con 10.000
+   simulaciones. Además se reporta el desglose f₁ (utilidad deportiva) y f₂
+   (costo neto) y en cuántas corridas el plan del AE **domina** al plan real
+   (más f₁ y menos f₂), que es lo que permite decir que el AE no gana solo
+   por cambiar puntos por plata.
+3. **En el multiobjetivo, el plan real y el statu quo se ubican respecto de
+   los frentes** (dominado o no por NSGA-II, por la agregación y por el frente
+   de referencia).
+
+Validación: la identidad de D-A6 sigue siendo exacta con los parámetros
+calibrados y las correcciones de mercado de D-J5 (error 1e-13 en
+barcelona-2020-chica y -grande, incluido el plan real); quedó como chequeo
+en `ValidarMO`.

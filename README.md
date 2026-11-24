@@ -92,7 +92,9 @@ la búsqueda.
 10 semillas por variante, 8.000 evaluaciones (incluyen reevaluaciones y búsqueda
 local), Wilcoxon pareado por semilla contra la base con post-hoc de Holm (p exacto,
 ver DECISIONES D-A5; antes Bonferroni sobre la aproximación normal, que daba 0,025).
-Datos crudos en `resultados/resultados_variantes.csv`.
+Datos crudos en `resultados/resultados_variantes.csv`. **Repetida en las
+instancias de configuración (P25)**: la conclusión se sostiene, con el matiz
+de que sharing y memético quedan neutros; ver `docs/RESULTADOS.md` §6.
 
 | variante | media | dif. vs base | diversidad final | veredicto |
 |---|---|---|---|---|
@@ -158,6 +160,30 @@ Casi todas existen porque el AE encontró y explotó un agujero del simulador.
 
 ---
 
+## Datos reales
+
+Las instancias reales (`instancias/barcelona-2020-*.csv`) y el plan real del
+club (`instancias/plan_real_barcelona.csv`) ya están en el repo. Para
+regenerarlas o recalibrar, hacen falta dos datasets de Kaggle que no se
+versionan por tamaño y licencia:
+
+- *EA Sports FC 24 Complete Player Dataset* (Stefano Leone): `male_players.csv`.
+- *Football Data from Transfermarkt* (davidcariboo): `players.csv`,
+  `transfers.csv`, `appearances.csv`, `competitions.csv`.
+
+```bash
+python3 herramientas/calibrar.py <carpeta_con_los_csv>             # imprime los parámetros calibrados
+python3 herramientas/preparar_instancias.py <carpeta> instancias     # regenera instancias y plan real
+java -cp out ae.plantel.EvaluarCasoReal barcelona-2020-chica 24000 5 # statu quo vs plan real vs AE (AE original)
+# Protocolo final sobre jMetal con las reales (P29, D-A18):
+java -cp out ae.plantel.jmetal.CompararReferencias 120000 30 barcelona-2020-chica barcelona-2020-media barcelona-2020-grande
+java -cp out ae.plantel.jmetal.ExperimentoMO 120000 30 barcelona-2020-chica
+```
+
+Con las instancias reales se usa `Parametros.calibrados()`; con las
+sintéticas, los parámetros por defecto (así los números de referencia de
+`validar.sh` no cambian). Ver DECISIONES D-J2 a D-J6.
+
 ## Cómo compilar y correr
 
 Java 21 y jMetal 5.10 (con sus dependencias de Apache Commons), declarados en
@@ -185,8 +211,8 @@ En la tabla de abajo, `java -cp out` se lee como `java -cp "$CP"`.
 | `java -cp out ae.plantel.GreedyMiope 8000` | referencia golosa miope |
 | `java -cp out ae.plantel.OptimoExacto 4 2` | GAP contra enumeración exhaustiva |
 | `java -cp out ae.plantel.SensibilidadBeta 6000` | barrido del peso del patrimonio |
-| `java -cp out ae.plantel.CompararVariantes correr <variante> <desde> <hasta> <evals>` | variantes: `base`, `gap50`, `estacionario`, `sharing`, `chc`, `memetico` |
-| `java -cp out ae.plantel.CompararVariantes analizar <evals>` | análisis estadístico de las variantes |
+| `java -cp out ae.plantel.CompararVariantes correr <instancia> <variante> <desde> <hasta> <evals>` | variantes: `base`, `gap50`, `estacionario`, `sharing`, `chc`, `memetico`, `n10`, `ncreciente`; instancias: `demo`, `conf-joven`, `conf-veterano`, `eval-*` |
+| `java -cp out ae.plantel.CompararVariantes analizar <instancia> <evals> [referencia]` | análisis estadístico de las variantes (Wilcoxon pareado + Holm), contra la base u otra variante |
 | `java -cp out ae.plantel.Experimentos 120000 30 2` | barrido factorial completo (para ClusterUY), con `AGPlantel` y N = 10 (D-A13) |
 | `java -cp out ae.plantel.jmetal.ValidarEquivalenciaJMetal 50 8000` | AE sobre jMetal vs AE de referencia (unos 11 min) |
 | `java -cp out ae.plantel.jmetal.ValidarMO` | validación de la variante multiobjetivo |
@@ -318,7 +344,8 @@ Resumen:
 - Los parámetros de los rivales y las curvas de valor y salario son supuestos
   hasta calibrarlos con datos reales.
 - Las instancias de configuración y evaluación son sintéticas.
-- La comparación de variantes se hizo sobre una sola instancia.
+- La comparación de variantes se repitió en las instancias de configuración
+  (P25) y la conclusión se sostiene; ver `docs/RESULTADOS.md` §6.
 - Cada evaluación cuesta unos 6 ms porque simula a todo el mercado en cada media
   temporada; es necesario para que los escenarios sean comparables entre planes
   y para modelar a los rivales.

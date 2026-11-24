@@ -1,0 +1,141 @@
+
+============================================================================================
+Instancia 'barcelona-2020-chica': 25 propios / 50 candidatos | edad media 26.0 | nivel medio 81.8 | masa salarial 226.6M de un tope de 249.3M | presupuesto 150.0M
+Presupuesto: 24000 evaluaciones por corrida con N = 10, 10 corridas por técnica estocástica
+Parámetros: calibrados con datos reales (D-J2) (β = 0.010)
+============================================================================================
+técnica                  mejor     media   mediana   desvío seg (media)    seg (sd)
+AE (jMetal)             248.41    247.23    247.02     0.85        16.7         1.2
+búsqueda aleatoria      227.45    225.79    226.10     1.54        15.1         1.1
+plan real               229.43         —         —        —           —           —
+greedy                  234.63         —         —        —         6.3           —   (6770 evaluaciones)
+statu quo               195.17         —         —        —           —           —
+
+  % de mejora del AE (media) = [f(AE) - f(OT)] / f(OT):
+    sobre la aleatoria:     +9.49%
+    sobre plan real:        +7.76%
+    sobre greedy:           +5.37%
+    sobre statu quo:       +26.68%
+
+  Desglose (f1 = utilidad deportiva, a maximizar; f2 = costo neto en M, a minimizar):
+    plan                          f1          f2 puntos (3 t.)
+    AE (jMetal)               237.60     -218.17         280.5   (media de 10 corridas)
+    plan real                 224.94      230.91         269.5
+    greedy                    231.80      471.37         275.8
+    statu quo                 193.07      205.78         232.2
+    el plan del AE domina al plan real (más f1 y menos f2) en 10 de 10 corridas
+
+  Tests (alfa = 0,05):
+    AE vs aleatoria: t Welch p = 0.0000 (significativa)
+    AE vs plan real: Wilcoxon de una muestra p = 0.001953; criterio Tema 12: difieren
+    AE vs greedy:    Wilcoxon de una muestra p = 0.001953; criterio Tema 12: difieren
+    AE vs statu quo: Wilcoxon de una muestra p = 0.001953; criterio Tema 12: difieren
+    Friedman (AE, aleatoria, plan real, greedy, statu quo): chi2 = 40.00, p = 4.33e-08; rangos medios 1.00 / 4.00 / 3.00 / 2.00 / 5.00
+    post-hoc de Holm (Wilcoxon pareado por semilla): AE-aleatoria 0.007813, AE-plan real 0.007813, AE-greedy 0.007813, AE-statu quo 0.007813
+
+  Robustez con 10000 simulaciones (escenarios nuevos):
+    plan                     U media  U desvío      U P5     U P95
+    mejor plan del AE         249.90      3.20    244.52    254.92
+    plan real                 231.64      4.72    223.07    238.51
+    greedy                    236.25      2.85    231.32    240.45
+    statu quo                 200.62      9.65    183.85    215.17
+
+  Evaluaciones hasta alcanzar una fracción de la mejora final del AE (mejor de la generación, escenarios de búsqueda):
+     50%: media     1105  desvío     402
+     90%: media    10333  desvío    2372
+     99%: media    19240  desvío    3267
+  datos crudos en resultados/comparacion_barcelona-2020-chica.csv
+
+============================================================================================
+Instancia 'barcelona-2020-media': 25 propios / 150 candidatos | edad media 26.0 | nivel medio 81.8 | masa salarial 226.6M de un tope de 249.3M | presupuesto 150.0M
+Presupuesto: 24000 evaluaciones por corrida con N = 10, 10 corridas por técnica estocástica
+Parámetros: calibrados con datos reales (D-J2) (β = 0.010)
+============================================================================================
+técnica                  mejor     media   mediana   desvío seg (media)    seg (sd)
+AE (jMetal)             245.75    244.30    244.32     0.81        37.0         3.4
+búsqueda aleatoria      229.56    227.62    227.19     1.11        33.7         3.0
+plan real               229.43         —         —        —           —           —
+greedy                  235.78         —         —        —        25.8           —   (14741 evaluaciones)
+statu quo               195.17         —         —        —           —           —
+
+  % de mejora del AE (media) = [f(AE) - f(OT)] / f(OT):
+    sobre la aleatoria:     +7.33%
+    sobre plan real:        +6.48%
+    sobre greedy:           +3.61%
+    sobre statu quo:       +25.17%
+
+  Desglose (f1 = utilidad deportiva, a maximizar; f2 = costo neto en M, a minimizar):
+    plan                          f1          f2 puntos (3 t.)
+    AE (jMetal)               234.88     -216.92         277.4   (media de 10 corridas)
+    plan real                 224.94      230.91         269.5
+    greedy                    232.95      486.47         276.7
+    statu quo                 193.07      205.78         232.2
+    el plan del AE domina al plan real (más f1 y menos f2) en 10 de 10 corridas
+
+  Tests (alfa = 0,05):
+    AE vs aleatoria: t Welch p = 0.0000 (significativa)
+    AE vs plan real: Wilcoxon de una muestra p = 0.001953; criterio Tema 12: difieren
+    AE vs greedy:    Wilcoxon de una muestra p = 0.001953; criterio Tema 12: difieren
+    AE vs statu quo: Wilcoxon de una muestra p = 0.001953; criterio Tema 12: difieren
+    Friedman (AE, aleatoria, plan real, greedy, statu quo): chi2 = 39.28, p = 6.10e-08; rangos medios 1.00 / 3.90 / 3.10 / 2.00 / 5.00
+    post-hoc de Holm (Wilcoxon pareado por semilla): AE-aleatoria 0.007813, AE-plan real 0.007813, AE-greedy 0.007813, AE-statu quo 0.007813
+
+  Robustez con 10000 simulaciones (escenarios nuevos):
+    plan                     U media  U desvío      U P5     U P95
+    mejor plan del AE         247.55      3.65    241.46    253.37
+    plan real                 231.64      4.72    223.07    238.51
+    greedy                    237.17      2.60    232.76    241.04
+    statu quo                 200.62      9.65    183.85    215.17
+
+  Evaluaciones hasta alcanzar una fracción de la mejora final del AE (mejor de la generación, escenarios de búsqueda):
+     50%: media     1436  desvío     335
+     90%: media    13797  desvío    3363
+     99%: media    20013  desvío    2653
+  datos crudos en resultados/comparacion_barcelona-2020-media.csv
+
+============================================================================================
+Instancia 'barcelona-2020-grande': 25 propios / 400 candidatos | edad media 26.0 | nivel medio 81.8 | masa salarial 226.6M de un tope de 249.3M | presupuesto 150.0M
+Presupuesto: 24000 evaluaciones por corrida con N = 10, 6 corridas por técnica estocástica
+Parámetros: calibrados con datos reales (D-J2) (β = 0.010)
+============================================================================================
+técnica                  mejor     media   mediana   desvío seg (media)    seg (sd)
+AE (jMetal)             246.75    244.96    244.82     1.27        90.7        18.8
+búsqueda aleatoria      229.54    228.95    228.91     0.46        84.6        16.6
+plan real               229.43         —         —        —           —           —
+greedy                  237.16         —         —        —       138.8           —   (33991 evaluaciones)
+statu quo               195.17         —         —        —           —           —
+
+  % de mejora del AE (media) = [f(AE) - f(OT)] / f(OT):
+    sobre la aleatoria:     +6.99%
+    sobre plan real:        +6.77%
+    sobre greedy:           +3.29%
+    sobre statu quo:       +25.51%
+
+  Desglose (f1 = utilidad deportiva, a maximizar; f2 = costo neto en M, a minimizar):
+    plan                          f1          f2 puntos (3 t.)
+    AE (jMetal)               234.90     -298.73         277.4   (media de 6 corridas)
+    plan real                 224.94      230.91         269.5
+    greedy                    234.53      475.61         279.2
+    statu quo                 193.07      205.78         232.2
+    el plan del AE domina al plan real (más f1 y menos f2) en 6 de 6 corridas
+
+  Tests (alfa = 0,05):
+    AE vs aleatoria: t Welch p = 0.0000 (significativa)
+    AE vs plan real: Wilcoxon de una muestra p = 0.03125; criterio Tema 12: difieren
+    AE vs greedy:    Wilcoxon de una muestra p = 0.03125; criterio Tema 12: difieren
+    AE vs statu quo: Wilcoxon de una muestra p = 0.03125; criterio Tema 12: difieren
+    Friedman (AE, aleatoria, plan real, greedy, statu quo): chi2 = 23.33, p = 0.000109; rangos medios 1.00 / 3.83 / 3.17 / 2.00 / 5.00
+    post-hoc de Holm (Wilcoxon pareado por semilla): AE-aleatoria 0.1250, AE-plan real 0.1250, AE-greedy 0.1250, AE-statu quo 0.1250
+
+  Robustez con 10000 simulaciones (escenarios nuevos):
+    plan                     U media  U desvío      U P5     U P95
+    mejor plan del AE         248.79      3.98    242.04    255.13
+    plan real                 231.64      4.72    223.07    238.51
+    greedy                    238.70      2.79    233.86    242.77
+    statu quo                 200.62      9.65    183.85    215.17
+
+  Evaluaciones hasta alcanzar una fracción de la mejora final del AE (mejor de la generación, escenarios de búsqueda):
+     50%: media     1439  desvío     296
+     90%: media    13038  desvío    3613
+     99%: media    21054  desvío    4070
+  datos crudos en resultados/comparacion_barcelona-2020-grande.csv

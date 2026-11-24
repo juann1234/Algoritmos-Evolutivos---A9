@@ -26,20 +26,59 @@ import java.util.TreeMap;
  * selección final. El fitness que se compara es el revaluado con N=200 sobre
  * escenarios de validación. La semilla s de una variante y la de la base
  * comparten la población inicial, así que las muestras son PAREADAS: se
- * comparan con Wilcoxon de rangos con signo y corrección de Bonferroni.
+ * comparan con Wilcoxon de rangos con signo y post-hoc de Holm (D-A5).
  *
- * Se corre por partes (el contenedor corta los procesos largos) y los
- * resultados se acumulan en un CSV:
+ * INSTANCIA. La comparación original se hizo sobre "demo", que es la misma
+ * instancia que eval-chica (DECISIONES D-A16). El Tema 12 pide decidir el
+ * diseño sobre instancias de configuración distintas de las de evaluación,
+ * así que la instancia es un argumento (PENDIENTES P25). Cada instancia
+ * acumula sus resultados en su propio CSV.
  *
- *   java -cp out ae.plantel.CompararVariantes correr base 1 10 8000
- *   java -cp out ae.plantel.CompararVariantes correr chc 1 10 8000
+ * PRESUPUESTO. El argumento de evaluaciones está expresado con N = 30
+ * réplicas. Una variante con otro N recibe la cantidad de evaluaciones que
+ * da el mismo total de simulaciones (evaluaciones x 30 / N). Así la variante
+ * "n10" verifica, con este motor y no con el de jMetal, la decisión D-A13
+ * (N = 10 a igual costo).
+ *
+ * Se corre por partes (el contenedor corta los procesos largos):
+ *
+ *   java -cp out ae.plantel.CompararVariantes correr conf-joven base 1 10 8000
+ *   java -cp out ae.plantel.CompararVariantes correr conf-joven chc 1 10 8000
  *   ...
- *   java -cp out ae.plantel.CompararVariantes analizar 8000
+ *   java -cp out ae.plantel.CompararVariantes analizar conf-joven 8000
+ *   java -cp out ae.plantel.CompararVariantes analizar conf-joven 8000 n10   (otra referencia)
+ *
+ * La forma vieja, sin instancia (correr base 1 10 8000 / analizar 8000),
+ * sigue funcionando sobre demo.
  */
 public final class CompararVariantes {
 
     private static final Parametros P = new Parametros();
-    private static final Path CSV = Path.of("resultados_variantes.csv");
+
+    /** N con el que se expresa el presupuesto de evaluaciones. */
+    private static final int N_REFERENCIA = new AlgoritmoEvolutivo.Config().replicas;
+
+    /** Cada instancia acumula en su CSV; demo conserva el nombre original. */
+    private static Path csv(String instancia) {
+        return Path.of(instancia.equals("demo")
+                ? "resultados_variantes.csv"
+                : "resultados_variantes_" + instancia + ".csv");
+    }
+
+    /** Instancias disponibles por nombre. */
+    private static Instancia instancia(String nombre) {
+        if (nombre.equals("demo")) {
+            return GeneradorInstancias.generar("demo", 25, 50, 101);
+        }
+        List<Instancia> todas = new ArrayList<>(GeneradorInstancias.configuracion());
+        todas.addAll(GeneradorInstancias.evaluacion());
+        for (Instancia i : todas) {
+            if (i.nombre.equals(nombre)) {
+                return i;
+            }
+        }
+        throw new IllegalArgumentException("instancia desconocida: " + nombre);
+    }
 
     /** Variantes del temario, todas sobre la configuración base. */
     static Map<String, AlgoritmoEvolutivo.Config> variantes() {
@@ -65,6 +104,21 @@ public final class CompararVariantes {
         AlgoritmoEvolutivo.Config mem = new AlgoritmoEvolutivo.Config();
         mem.memeticoCada = 5;
         v.put("memetico", mem);
+
+        // Verificación independiente de D-A13: N = 10 con el mismo total de
+        // simulaciones que la base (el triple de evaluaciones).
+        AlgoritmoEvolutivo.Config n10 = new AlgoritmoEvolutivo.Config();
+        n10.replicas = 10;
+        v.put("n10", n10);
+
+        // N creciente de 5 a 30, con el mismo total de simulaciones (el N
+        // nominal 10 solo fija el presupuesto: evals x 30 / 10 evaluaciones de
+        // 10 réplicas = evals x 30 simulaciones, igual que todas).
+        AlgoritmoEvolutivo.Config nc = new AlgoritmoEvolutivo.Config();
+        nc.replicas = 10;
+        nc.replicasMin = 5;
+        nc.replicasMax = 30;
+        v.put("ncreciente", nc);
         return v;
     }
 
@@ -72,15 +126,24 @@ public final class CompararVariantes {
         System.setOut(new PrintStream(
                 new FileOutputStream(FileDescriptor.out), true, StandardCharsets.UTF_8));
         if (args.length > 0 && args[0].equals("analizar")) {
-            analizar(args.length > 1 ? Integer.parseInt(args[1]) : 8000);
+            if (args.length > 2) {
+                analizar(args[1], Integer.parseInt(args[2]), args.length > 3 ? args[3] : "base");
+            } else {
+                analizar("demo", args.length > 1 ? Integer.parseInt(args[1]) : 8000, "base");
+            }
             return;
         }
-        String nombre = args[1];
-        int desde = Integer.parseInt(args[2]);
-        int hasta = Integer.parseInt(args[3]);
-        int evaluaciones = Integer.parseInt(args[4]);
+        // Forma nueva: correr <instancia> <variante> <desde> <hasta> <evals>.
+        // Forma vieja (5 argumentos): correr <variante> <desde> <hasta> <evals>, sobre demo.
+        int k = args.length == 6 ? 2 : 1;
+        String nombreInstancia = args.length == 6 ? args[1] : "demo";
+        String nombre = args[k];
+        int desde = Integer.parseInt(args[k + 1]);
+        int hasta = Integer.parseInt(args[k + 2]);
+        int evaluaciones = Integer.parseInt(args[k + 3]);
+        Path CSV = csv(nombreInstancia);
 
-        Instancia inst = GeneradorInstancias.generar("demo", 25, 50, 101);
+        Instancia inst = instancia(nombreInstancia);
         AlgoritmoEvolutivo.Config base = variantes().get(nombre);
         if (base == null) {
             throw new IllegalArgumentException("variante desconocida: " + nombre
@@ -90,7 +153,8 @@ public final class CompararVariantes {
         for (int s = desde; s <= hasta; s++) {
             AlgoritmoEvolutivo.Config cfg = copiar(base);
             cfg.semilla = s;
-            cfg.maxEvaluaciones = evaluaciones;
+            // Mismo total de simulaciones para todas las variantes.
+            cfg.maxEvaluaciones = (int) ((long) evaluaciones * N_REFERENCIA / cfg.replicas);
             AlgoritmoEvolutivo.Resultado r = AlgoritmoEvolutivo.ejecutar(inst, cfg, P);
             List<Double> div = r.historialDiversidad;
             String linea = String.format(java.util.Locale.ROOT,
@@ -121,6 +185,8 @@ public final class CompararVariantes {
         c.sigmaSharing = o.sigmaSharing;
         c.memeticoCada = o.memeticoCada;
         c.memeticoUmbral = o.memeticoUmbral;
+        c.replicasMin = o.replicasMin;
+        c.replicasMax = o.replicasMax;
         return c;
     }
 
@@ -128,7 +194,9 @@ public final class CompararVariantes {
     // Análisis
     // ----------------------------------------------------------------
 
-    private static void analizar(int presupuesto) throws IOException {
+    private static void analizar(String nombreInstancia, int presupuesto, String referencia)
+            throws IOException {
+        Path CSV = csv(nombreInstancia);
         Map<String, TreeMap<Integer, double[]>> datos = new LinkedHashMap<>();
         for (String v : variantes().keySet()) {
             datos.put(v, new TreeMap<>());
@@ -148,8 +216,8 @@ public final class CompararVariantes {
 
         final String linea = "=".repeat(98);
         System.out.println(linea);
-        System.out.println("Variantes del AE (instancia demo, " + presupuesto
-                + " evaluaciones, fitness revaluado con N=200)");
+        System.out.println("Variantes del AE (instancia " + nombreInstancia + ", " + presupuesto
+                + " evaluaciones equivalentes con N=30, fitness revaluado con N=200)");
         System.out.println(linea);
         System.out.printf("%-14s%4s%10s%9s%9s%9s%8s%10s%8s%8s%7s%n", "variante", "n", "media",
                 "desvío", "mejor", "puntos", "gen.", "div.final", "catacl.", "loc.", "seg");
@@ -169,12 +237,13 @@ public final class CompararVariantes {
 
         System.out.println();
         System.out.println(linea);
-        System.out.println("Cada variante contra la base (Wilcoxon pareado por semilla, post-hoc de Holm)");
+        System.out.println("Cada variante contra '" + referencia
+                + "' (Wilcoxon pareado por semilla, post-hoc de Holm)");
         System.out.println(linea);
-        TreeMap<Integer, double[]> base = datos.get("base");
+        TreeMap<Integer, double[]> base = datos.get(referencia);
         int comparaciones = 0;
         for (String v : datos.keySet()) {
-            if (!v.equals("base") && !datos.get(v).isEmpty()) {
+            if (!v.equals(referencia) && !datos.get(v).isEmpty()) {
                 comparaciones++;
             }
         }
@@ -183,7 +252,7 @@ public final class CompararVariantes {
         List<String> nombres = new ArrayList<>();
         List<double[]> resultados = new ArrayList<>();
         for (Map.Entry<String, TreeMap<Integer, double[]>> e : datos.entrySet()) {
-            if (e.getKey().equals("base") || e.getValue().isEmpty()) {
+            if (e.getKey().equals(referencia) || e.getValue().isEmpty()) {
                 continue;
             }
             List<Double> a = new ArrayList<>();
@@ -209,7 +278,7 @@ public final class CompararVariantes {
         for (int i = 0; i < crudos.length; i++) {
             double dif = resultados.get(i)[0];
             String veredicto = holm[i] >= 0.05 ? "sin diferencia significativa"
-                    : (dif > 0 ? "MEJOR que la base" : "PEOR que la base");
+                    : (dif > 0 ? "MEJOR que la referencia" : "PEOR que la referencia");
             System.out.printf("  %-14s dif. media %+7.2f  z = %6.2f  p = %.4f  p Holm = %.4f  -> %s%n",
                     nombres.get(i), dif, resultados.get(i)[1], crudos[i], holm[i], veredicto);
         }

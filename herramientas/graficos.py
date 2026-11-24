@@ -35,23 +35,29 @@ def leer(ruta):
         return list(csv.DictReader(f))
 
 
-def frente():
-    ruta = Path("resultados/mo_eval-chica_frentes_preliminar.csv")
+def frente(nombre="eval-chica"):
+    ruta = Path(f"resultados/mo_{nombre}_frentes_preliminar.csv")
     if not ruta.exists():
         return
     filas = leer(ruta)
-    fig, ax = plt.subplots(figsize=(3.4, 2.6))
+    fig, ax = plt.subplots(figsize=(3.4, 3.3))
     ref = sorted([(float(r["f2_costo_neto"]), float(r["f1_utilidad"])) for r in filas if r["algoritmo"] == "referencia"])
     ax.plot([p[0] for p in ref], [p[1] for p in ref], color=GRIS, lw=1, zorder=1, label="frente de referencia")
-    for alg, color, nombre, m in [("NSGA-II", AZUL, "NSGA-II", "o"), ("agregacion", NARANJA, "agregación (barrido de β)", "s")]:
+    for alg, color, etiqueta, m in [("NSGA-II", AZUL, "NSGA-II", "o"), ("agregacion", NARANJA, "agregación (barrido de β)", "s")]:
         pts = [(float(r["f2_costo_neto"]), float(r["f1_utilidad"])) for r in filas if r["algoritmo"] == alg]
         ax.scatter([p[0] for p in pts], [p[1] for p in pts], s=10, marker=m, color=color,
-                   edgecolors="white", linewidths=0.4, zorder=2, label=nombre)
-    ax.set_xlabel("f₂: costo neto (M€, menor es mejor)")
+                   edgecolors="white", linewidths=0.4, zorder=2, label=etiqueta)
+    # Planes de referencia (P29): rombo negro el plan real, cruz el statu quo.
+    for alg, etiqueta, m in [("plan_real", "plan real del club", "D"), ("statu_quo", "statu quo", "X")]:
+        pts = [(float(r["f2_costo_neto"]), float(r["f1_utilidad"])) for r in filas if r["algoritmo"] == alg]
+        if pts:
+            ax.scatter([p[0] for p in pts], [p[1] for p in pts], s=34, marker=m, color=TINTA,
+                       edgecolors="white", linewidths=0.8, zorder=3, label=etiqueta)
+    ax.set_xlabel("f₂: costo neto (M, menor es mejor)")
     ax.set_ylabel("f₁: utilidad deportiva")
-    ax.legend(fontsize=7, loc="lower right")
+    ax.legend(fontsize=6.5, loc="upper center", bbox_to_anchor=(0.45, -0.22), ncol=2)
     fig.tight_layout()
-    fig.savefig(OUT / "frente_pareto_eval-chica.png")
+    fig.savefig(OUT / f"frente_pareto_{nombre}.png")
     plt.close(fig)
 
 
@@ -105,7 +111,8 @@ def replicas():
 
 
 if __name__ == "__main__":
-    frente()
+    frente("eval-chica")
+    frente("barcelona-2020-chica")
     gap()
     replicas()
     print("figuras en", OUT)

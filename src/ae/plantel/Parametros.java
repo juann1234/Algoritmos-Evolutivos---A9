@@ -136,6 +136,40 @@ public final class Parametros {
         /** Un jugador ajeno al que se le vence el contrato renueva con esta probabilidad. */
         public double probRenuevaExterno = 0.75;
         public int aniosRenovacionExterna = 3;
+
+        // --- calibración con datos reales (D-J5); los valores por defecto
+        //     reproducen el modelo original, calibrados() los cambia ---
+
+        /**
+         * true: el multiplicador salarial del gen se aplica sobre el salario de
+         * referencia del nivel actual del jugador, como define el informe
+         * (§I-A). false (modelo original): sobre su salario actual, lo que
+         * hacía imposible fichar a quien viene de una liga que paga poco.
+         */
+        public boolean ofertaSobreReferencia = false;
+
+        /**
+         * true: fichar a un jugador con el contrato vencido no paga traspaso,
+         * solo la prima de firma. false (modelo original): se cobraba el 45% de
+         * su valor aunque fuera libre.
+         */
+        public boolean agenteLibreSinTraspaso = false;
+
+        /** Cociente ofrecido / exigido con 50% de aceptación (original: 1). */
+        public double umbralAceptacion = 1.0;
+
+        /**
+         * true: cuando otro club ficha a un candidato, el jugador sigue en el
+         * mercado con un contrato nuevo (más caro de comprar), y la probabilidad
+         * anual de cambiar de club baja con el nivel, como en los datos.
+         * false (original): el jugador desaparece del mercado y las estrellas
+         * son las más buscadas.
+         */
+        public boolean fichajeExternoReubica = false;
+        public double probCambioClubBase = 0.354;       // a nivel thetaCambioClubRef
+        public double probCambioClubPendiente = -0.0115; // por punto de nivel
+        public double thetaCambioClubRef = 72.0;
+        public int aniosContratoNuevoClub = 4;
     }
 
     public final Evolucion evolucion = new Evolucion();
@@ -161,4 +195,61 @@ public final class Parametros {
     public double rho = 0.5;
 
     public int edadRetiro = 38;
+
+    /**
+     * Parámetros calibrados contra datos reales (PENDIENTES P17, DECISIONES D-J2).
+     *
+     * Se usan con las instancias reales. Los valores por defecto se mantienen
+     * para las instancias sintéticas, así los números de referencia de
+     * validar.sh no cambian. Reproducir con:
+     *   python3 herramientas/calibrar.py &lt;carpeta_con_los_csv&gt;
+     *
+     *  - Salario: FIFA 21, cinco grandes ligas, nivel &gt;= 65 (n = 2.968, R2 = 0,60).
+     *  - Valor: FIFA 21, contratos de 3+ años (n = 1.569, R2 = 0,95). El factor
+     *    contractual se mantiene y se VALIDÓ con montos reales de Transfermarkt:
+     *    precio/valor con 1 año de contrato 0,67 (modelo 0,63), con 2 años 0,79
+     *    (modelo 0,82).
+     *  - Evolución: cambio de rating entre ediciones consecutivas con minutos de
+     *    liga de Transfermarkt (n = 35.146). La sensibilidad a los minutos no es
+     *    identificable con estos datos (simultaneidad) y queda en el supuesto
+     *    de 1200 (D-J3).
+     *  - Lesiones y negociación: sin datos para calibrar; quedan los supuestos.
+     *
+     * [No está en el informe inicial: ver DECISIONES D-J2]
+     */
+    public static Parametros calibrados() {
+        Parametros p = new Parametros();
+        p.valor.salarioBase = 0.0888;
+        p.valor.salarioEscala = 0.1727;
+
+        p.valor.valorBase = 2.8283;
+        p.valor.thetaEscala = 0.2291;
+        p.valor.edadTope = 1.5170;
+        p.valor.edadPendiente = 0.2140;
+        p.valor.edadCentro = 26.2514;
+
+        p.evolucion.crecimientoMax = 9.3041;
+        p.evolucion.minutosMediaSaturacion = 1200.0;
+        p.evolucion.decliveCoef = 0.1897;
+        p.evolucion.decliveExp = 0.7121;
+        p.evolucion.edadInicioDeclive = 28.9461;
+        p.evolucion.sigmaTheta = 2.2512;
+
+        // Mercado (D-J5): oferta sobre el salario de referencia, aceptación
+        // centrada en el percentil 10 del cociente salario real / referencia de
+        // los fichajes reales (n = 4.952), y cambio de club decreciente con el
+        // nivel (35% anual a nivel 72, 12% a nivel 92; 5 grandes ligas).
+        p.mercado.ofertaSobreReferencia = true;
+        p.mercado.agenteLibreSinTraspaso = true;
+        p.mercado.umbralAceptacion = 0.61;
+        p.mercado.fichajeExternoReubica = true;
+
+        // beta recalibrado para la escala monetaria real (D-J6): los valores
+        // reales son unas cinco veces los sintéticos, y en el barrido sobre
+        // barcelona-2020-chica beta = 0.01 es el codo: el AE suma puntos de
+        // liga sin resignar patrimonio. Con 0.05 el AE cambia partidos por
+        // dinero; con 0, gasta todo.
+        p.beta = 0.01;
+        return p;
+    }
 }

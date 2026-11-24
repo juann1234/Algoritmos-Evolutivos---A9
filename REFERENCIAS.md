@@ -52,10 +52,14 @@ Todas las rutas son relativas a `src/ae/plantel/`.
 | §III-C selección por torneo de tamaño 3 | `Operadores.java` · `torneo`; `jmetal/OperadoresJMetal.Torneo` | ✅ | |
 | §III-C selección proporcional con escalado | `jmetal/OperadoresJMetal.ProporcionalEscalada` (ruleta con punteros equiespaciados); `Config.seleccion` | ✅ | comparada en `jmetal/CompararOperadores`: peor que torneo |
 | §III-C cruzamiento uniforme a nivel de gen + reales | `Operadores.java` · `cruzar`; `jmetal/OperadoresJMetal.Cruzamiento` | ✅ | aritmético en lugar de BLX-α |
-| §III-C cruzamiento por bloques posicionales | `Operadores.cruzarPorBloques`; `Config.cruce` | ✅ | comparado en `jmetal/CompararOperadores`: sin diferencia significativa |
+| §III-C cruzamiento por bloques posicionales | `Operadores.cruzarPorBloques`; `Config.cruce` | ✅ | comparado en `jmetal/CompararOperadores`: sin diferencia en eval-chica, peor en las dos de configuración (D-A16) |
 | §III-C mutación (cinco operadores) | `Operadores.java` · `mutar`, `intercambiar`; `jmetal/OperadoresJMetal.Mutacion` | ✅ | |
 | §III-C reemplazo generacional con elitismo | `jmetal/AGPlantel.java` (motor de los experimentos); `AlgoritmoEvolutivo.java` · `bucleGeneracional` (referencia) | ✅ | equivalencia validada (`jmetal/ValidarEquivalenciaJMetal`) |
-| §III-C comparación con estado estacionario | `AlgoritmoEvolutivo.java` (gap = 2/P); `CompararVariantes.java` | ✅ | |
+| §IV-A instancias con datos públicos | `herramientas/preparar_instancias.py`; `InstanciasReales.cargar`; `instancias/barcelona-2020-*.csv` | ✅ | D-J4 |
+| §IV-A calibración de valor, salario y evolución | `herramientas/calibrar.py`; `Parametros.calibrados()` | ✅ | D-J2, D-J3, D-J6 |
+| §IV-B(1) plan real del club | `instancias/plan_real_barcelona.csv`; `InstanciasReales.planReal`; `EvaluarCasoReal`; en el protocolo final: `jmetal/CompararReferencias` (referencia con desglose f₁/f₂) y `jmetal/ExperimentoMO` (ubicación respecto de los frentes) | ✅ | P29 (D-A18); falta la corrida completa (P23) |
+| §III-B aumento progresivo de N | `AlgoritmoEvolutivo.Config.replicasMin`/`replicasMax`; `CompararVariantes` (variante `ncreciente`) | ✅ | evaluado y no adoptado: empata con N = 10 fijo (D-J1) |
+| §III-C comparación con estado estacionario | `AlgoritmoEvolutivo.java` (gap = 2/P); `CompararVariantes.java` | ✅ | repetida en instancias de configuración (P25) |
 | §III-C parada: 40.000 evaluaciones | `AlgoritmoEvolutivo.Config.maxEvaluaciones`; `jmetal/AGPlantel.isStoppingConditionReached` | ✅ | |
 | §III-C parada: límite de tiempo de reloj | `AlgoritmoEvolutivo.Config.segundosMax`; `AlgoritmoEvolutivo.Corrida.vencido`; `jmetal/AGPlantel` y `jmetal/NSGAIIPlantel` · `isStoppingConditionReached` | ✅ | apagado por defecto (rompe la reproducibilidad) |
 | §III-C diversidad (sharing) | `AlgoritmoEvolutivo.java` · `compartido`; `Operadores.distancia` | ✅ | |
@@ -68,14 +72,13 @@ Todas las rutas son relativas a `src/ae/plantel/`.
 
 | sección del informe | archivo · clase/método | estado | notas |
 |---|---|---|---|
-| §IV-A tres instancias (50, 150, 400 candidatos) | `GeneradorInstancias.java` · `evaluacion` | 🟨 | sintéticas; faltan datos reales (P17) |
+| §IV-A tres instancias (50, 150, 400 candidatos) | sintéticas: `GeneradorInstancias.evaluacion`; reales: `instancias/barcelona-2020-{chica,media,grande}.csv`; ambas por nombre en `jmetal/ExperimentoMO.instancia` | ✅ | las reales usan `Parametros.calibrados()` (`ExperimentoMO.parametros`) |
 | §IV-A instancias de configuración separadas | `GeneradorInstancias.java` · `configuracion` | ✅ | |
 | §IV-A diseño factorial 3×3×3, 30 corridas | `Experimentos.java` | 🟨 | hecho; falta correrlo (P19) |
 | §IV-A Shapiro-Wilk → ANOVA / Kruskal-Wallis, Friedman | `Estadistica.java` · `shapiroWilk`, `anova`, `kruskalWallis`, `friedman`; usado en `Experimentos.java` | ✅ | Lilliefors queda como control (D-A5) |
 | §IV-A estudio del número de réplicas N | `jmetal/EstudioReplicas.java` | ✅ | D-A13 |
-| §IV-B(1) plan real del club | — | ⬜ | P18 |
 | §IV-B(2) óptimo exacto en micro-instancias | `OptimoExacto.java` · `enumerar`; `Operadores.proyectarAGrilla`; `jmetal/GapMicroInstancias.java` (3 micro-instancias de 5 jugadores, 30 corridas) | ✅ | escenarios fijos para el GAP (D-A15) |
-| §IV-B(3) greedy miope | `GreedyMiope.java` | ✅ | |
+| §IV-B(3) greedy miope | `GreedyMiope.java` · `construir(inst, evals, p)` | ✅ | con los parámetros de la instancia (calibrados en las reales, P29) |
 | §IV-B(4) búsqueda aleatoria con igual presupuesto | `AlgoritmoEvolutivo.java` · `busquedaAleatoria` | ✅ | |
 | §IV-B comparación NSGA-II vs agregación (Tema 10) | `jmetal/ExperimentoMO.java` | ✅ | no estaba en el informe: ver D-A9 |
 | §IV-B(5) statu quo | `Cromosoma.java` · `statuQuo` | ✅ | |

@@ -235,7 +235,19 @@ public final class Evaluador {
      * [Informe §III-B paso (iv): operaciones que fracasan según la oferta]
      */
     private static double probAcepta(double ofrecido, double exigido, Parametros p) {
-        return sigmoide(p.mercado.pendienteNegociacion * (ofrecido / exigido - 1.0));
+        return sigmoide(p.mercado.pendienteNegociacion
+                * (ofrecido / exigido - p.mercado.umbralAceptacion));
+    }
+
+    /**
+     * Base sobre la que se aplica el multiplicador salarial del gen: el salario
+     * de referencia de su nivel actual (lo que define el informe) o, en el
+     * modelo original, el salario de su contrato vigente (D-J5).
+     */
+    private static double baseOferta(JugadorBase j, EstadoJugador e, Parametros p) {
+        return p.mercado.ofertaSobreReferencia
+                ? Evolucion.salarioReferencia(e.theta, p.valor)
+                : j.contrato().salario();
     }
 
     /**
@@ -316,23 +328,23 @@ public final class Evaluador {
                 }
                 case RENOVAR -> {
                     if (!enPlantel) {
-                        club.descartadas++;
+                        descartar(club, j, a, ventana, "ya no está en el plantel");
                         break;
                     }
                     int duracion = x.duracion[i];
                     // Nadie extiende contrato por menos de lo que ya cobra.
-                    double ofrecido = Math.max(j.contrato().salario() * x.salario[i],
+                    double ofrecido = Math.max(baseOferta(j, e, p) * x.salario[i],
                             e.salario * m.incrementoMinRenovacion);
                     double exigido = Evolucion.salarioReferencia(e.theta, p.valor)
                             * exigenciaPorClausula(x.clausula[i], p);
                     if (esc.en(id, periodo, Escenario.NEGOCIACION).uniforme()
                             >= probAcepta(ofrecido, exigido, p)) {
-                        club.descartadas++;
+                        descartar(club, j, a, ventana, "el jugador no aceptó la oferta");
                         break;
                     }
                     double prima = primaDeFirma(e, duracion, p);
                     if (prima > club.caja) {
-                        club.descartadas++;
+                        descartar(club, j, a, ventana, "no alcanza la caja para la prima");
                         break;
                     }
                     revertibles.add(new Revertible(i, RENOVACION, e.aniosContrato,
@@ -345,11 +357,11 @@ public final class Evaluador {
                 }
                 case VENDER -> {
                     if (!enPlantel) {
-                        club.descartadas++;
+                        descartar(club, j, a, ventana, "ya no está en el plantel");
                         break;
                     }
                     if (esc.en(id, periodo, Escenario.VENTA).uniforme() >= m.probVenta) {
-                        club.descartadas++;
+                        descartar(club, j, a, ventana, "no apareció comprador");
                         break;
                     }
                     club.cobrar(valor(e, p) * m.descuentoVenta);
@@ -362,7 +374,7 @@ public final class Evaluador {
                     // jugador vuelve. Afuera juega más de lo que jugaría acá de
                     // suplente, que es para lo que sirve ceder a un juvenil.
                     if (!enPlantel || club.nCedidos >= inst.maxCedidos) {
-                        club.descartadas++;
+                        descartar(club, j, a, ventana, "ya no está en el plantel o tope de cedidos");
                         break;
                     }
                     club.salir(i);
@@ -373,7 +385,7 @@ public final class Evaluador {
                 case LIBERAR -> {
                     double costo = e.salario * e.aniosContrato * m.costoRescision;
                     if (!enPlantel || costo > club.caja) {
-                        club.descartadas++;
+                        descartar(club, j, a, ventana, "ya no está en el plantel o no alcanza la caja");
                         break;
                     }
                     club.pagar(costo);
@@ -384,21 +396,27 @@ public final class Evaluador {
                 }
                 case COMPRAR -> {
                     if (enPlantel || club.prestado[i] || club.noDisponible[i]) {
-                        club.descartadas++;   // ya no está en el mercado
+                        descartar(club, j, a, ventana, "ya no está disponible en el mercado");
                         break;
                     }
                     int duracion = x.duracion[i];
-                    double precio = valor(e, p) * m.primaCompra + primaDeFirma(e, duracion, p);
+                    // Un jugador con el contrato vencido es agente libre: no hay
+                    // traspaso que pagarle a nadie, solo la prima de firma. El
+                    // modelo original cobraba igual el 45% de su valor (D-J5).
+                    // [Informe §III-B paso (iv)]
+                    boolean libre = m.agenteLibreSinTraspaso && e.aniosContrato <= 0;
+                    double traspaso = libre ? 0.0 : valor(e, p) * m.primaCompra;
+                    double precio = traspaso + primaDeFirma(e, duracion, p);
                     if (precio > club.caja) {
-                        club.descartadas++;   // restricción dura de caja
+                        descartar(club, j, a, ventana, "no alcanza la caja");
                         break;
                     }
-                    double ofrecido = j.contrato().salario() * x.salario[i];
+                    double ofrecido = baseOferta(j, e, p) * x.salario[i];
                     double exigido = Evolucion.salarioReferencia(e.theta, p.valor)
                             * exigenciaPorClausula(x.clausula[i], p);
                     if (esc.en(id, periodo, Escenario.NEGOCIACION).uniforme()
                             >= probAcepta(ofrecido, exigido, p)) {
-                        club.descartadas++;
+                        descartar(club, j, a, ventana, "el jugador no aceptó la oferta");
                         break;
                     }
                     revertibles.add(new Revertible(i, COMPRA, e.aniosContrato,
@@ -413,20 +431,20 @@ public final class Evaluador {
                 case INCORPORAR_PRESTAMO -> {
                     if (enPlantel || club.prestado[i] || club.noDisponible[i]
                             || club.nPrestados >= inst.maxPrestamos) {
-                        club.descartadas++;
+                        descartar(club, j, a, ventana, "no disponible o tope de préstamos");
                         break;
                     }
                     double cargo = m.cargoPrestamo * valor(e, p)
                             * mitadesRestantes / Parametros.MITADES;
                     if (cargo > club.caja) {
-                        club.descartadas++;
+                        descartar(club, j, a, ventana, "no alcanza la caja");
                         break;
                     }
-                    double ofrecido = j.contrato().salario() * x.salario[i];
+                    double ofrecido = baseOferta(j, e, p) * x.salario[i];
                     double exigido = Evolucion.salarioReferencia(e.theta, p.valor);
                     if (esc.en(id, periodo, Escenario.NEGOCIACION).uniforme()
                             >= probAcepta(ofrecido, exigido, p)) {
-                        club.descartadas++;
+                        descartar(club, j, a, ventana, "el jugador no aceptó la oferta");
                         break;
                     }
                     revertibles.add(new Revertible(i, PRESTAMO, 0, 0, 0, cargo));
@@ -441,6 +459,19 @@ public final class Evaluador {
         }
 
         reparar(inst, club, revertibles, p);
+    }
+
+    /**
+     * Registro opcional de cada operación, para diagnóstico (EvaluarCasoReal).
+     * En null no cuesta nada; no usar en corridas paralelas.
+     */
+    public static java.util.function.Consumer<String> traza = null;
+
+    private static void descartar(Club club, JugadorBase j, Accion a, int ventana, String motivo) {
+        club.descartadas++;
+        if (traza != null) {
+            traza.accept(String.format("  V%d %-20s %-20s DESCARTADA: %s", ventana, j.nombre(), a, motivo));
+        }
     }
 
     /**
@@ -484,6 +515,9 @@ public final class Evaluador {
             club.cobrar(r.reembolso());
             club.concretadas--;
             club.descartadas++;
+            if (traza != null) {
+                traza.accept(String.format("  reparación deshace: %s (excede cupo o tope salarial)", club.e[i].base.nombre()));
+            }
             masa = club.masaSalarial(p);
         }
 
@@ -643,6 +677,17 @@ public final class Evaluador {
             if (e.aniosContrato <= 0 && esc.en(club.ids[i], temporada, Escenario.RENUEVA)
                     .uniforme() < m.probRenuevaExterno) {
                 e.aniosContrato = m.aniosRenovacionExterna;
+            }
+            if (m.fichajeExternoReubica) {
+                // Calibrado (D-J5): cambiar de club es menos probable cuanto
+                // mejor es el jugador, y quien cambia sigue en el mercado con
+                // un contrato nuevo y largo, así que comprarlo sale más caro.
+                double pCambio = Math.max(0.02, Math.min(0.5, m.probCambioClubBase
+                        + m.probCambioClubPendiente * (e.theta - m.thetaCambioClubRef)));
+                if (esc.en(club.ids[i], temporada, Escenario.FICHADO).uniforme() < pCambio) {
+                    e.aniosContrato = m.aniosContratoNuevoClub;
+                }
+                continue;
             }
             double pFichado = m.probFichadoMax
                     * sigmoide((e.theta - m.thetaInteresMercado) / m.escalaInteresRival);

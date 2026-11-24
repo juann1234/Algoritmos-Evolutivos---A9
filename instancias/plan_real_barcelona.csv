@@ -1,0 +1,42 @@
+id,nombre,accion,ventana,duracion,salario,clausula,justificacion
+158023,L. Messi,MANTENER,1,1,1.0,3.0,contrato hasta 2021; se fue libre al PSG (ago-2021) al no poder renovar
+192448,M. ter Stegen,RENOVAR,1,5,0.823,2.125,renovó en oct-2020
+176580,L. Suárez,LIBERAR,1,1,1.0,3.0,"rescisión en sept-2020, al Atlético"
+189511,Sergio Busquets,MANTENER,1,1,1.0,3.0,siguió con su contrato
+194765,A. Griezmann,VENDER,3,1,1.0,3.0,cedido al Atlético (ago-2021) con obligación de compra; no volvió
+152729,Piqué,RENOVAR,1,4,1.6,2.052,renovó en oct-2020
+189332,Jordi Alba,MANTENER,1,1,1.0,3.0,siguió con su contrato
+228702,F. de Jong,MANTENER,1,1,1.0,3.0,siguió con su contrato
+220440,C. Lenglet,CEDER,5,1,1.0,3.0,"cedido al Tottenham 2022-23, volvió en jun-2023"
+180206,M. Pjanić,LIBERAR,3,1,1.0,3.0,cedido al Besiktas 2021-22 y después se fue libre; no volvió a jugar
+231443,O. Dembélé,RENOVAR,4,3,1.6,2.125,contrato hasta 2022; renovó en 2022
+205600,S. Umtiti,CEDER,5,1,1.0,3.0,"cedido al Lecce 2022-23, volvió en jun-2023"
+227928,Nélson Semedo,VENDER,1,1,1.0,3.0,"vendido al Wolves (32M, sept-2020)"
+189242,Coutinho,VENDER,4,1,1.0,3.0,cedido al Aston Villa (ene-2022) y vendido (jul-2022); no volvió
+199564,Sergi Roberto,RENOVAR,4,2,1.6,2.05,contrato hasta 2022; renovó
+194404,Neto,LIBERAR,5,1,1.0,3.0,se fue libre al Bournemouth (ago-2022)
+241184,Junior Firpo,VENDER,3,1,1.0,3.0,"vendido al Leeds (15M, jul-2021)"
+201400,Rafinha,LIBERAR,1,1,1.0,3.0,se fue al PSG en oct-2020
+244778,Trincão,VENDER,3,1,1.0,3.0,"cedido al Wolves y al Sporting, vendido en 2023; no volvió"
+253004,Ansu Fati,RENOVAR,3,5,1.6,2.25,renovó en oct-2021
+193290,M. Braithwaite,LIBERAR,5,1,1.0,3.0,rescisión en sept-2022
+242816,Riqui Puig,RENOVAR,2,3,1.6,2.253,contrato hasta jun-2021: la renovación tiene que ser antes (V2); siguió hasta 2022 y se fue libre
+245388,J. Todibo,VENDER,1,1,1.0,3.0,"cedido al Benfica y al Niza, vendido en 2021; no volvió"
+251854,Pedri,RENOVAR,3,5,0.898,2.25,renovó en oct-2021
+253163,R. Araujo,RENOVAR,3,5,1.489,2.25,renovó en 2021
+251804,S. Dest,COMPRAR,1,5,1.6,2.252,"comprado al Ajax (21M, oct-2020)"
+153079,S. Agüero,COMPRAR,3,2,1.437,2.051,libre (jul-2021)
+202556,M. Depay,COMPRAR,3,2,1.6,2.125,libre (jul-2021)
+245037,Eric García,COMPRAR,3,5,1.6,2.251,libre (jul-2021)
+189805,L. de Jong,INCORPORAR_PRESTAMO,3,1,1.0,3.0,cedido por el Sevilla (ago-2021)
+251873,Y. Demir,INCORPORAR_PRESTAMO,3,1,1.0,3.0,cedido por el Rapid (jul-2021)
+241461,Ferran Torres,COMPRAR,4,5,1.6,2.251,"comprado al City (55M, ene-2022)"
+213956,Adama Traoré,INCORPORAR_PRESTAMO,4,1,1.0,3.0,cedido por el Wolves (ene-2022)
+188567,P. Aubameyang,COMPRAR,4,4,1.0,3.0,libre tras rescindir con el Arsenal (ene-2022)
+188545,R. Lewandowski,COMPRAR,5,3,1.163,2.05,"comprado al Bayern (45M, jul-2022)"
+241486,J. Koundé,COMPRAR,5,5,1.392,2.125,"comprado al Sevilla (50M, jul-2022)"
+230938,F. Kessié,COMPRAR,5,4,1.531,2.124,libre (jul-2022)
+233419,Raphinha,COMPRAR,5,5,1.6,2.125,"comprado al Leeds (58M, jul-2022)"
+213661,A. Christensen,COMPRAR,5,4,1.6,2.125,libre (jul-2022)
+203747,Héctor Bellerín,COMPRAR,5,1,1.6,2.124,libre tras rescindir con el Arsenal (sept-2022)
+192638,Marcos Alonso,COMPRAR,5,1,1.6,2.048,libre tras rescindir con el Chelsea (sept-2022)

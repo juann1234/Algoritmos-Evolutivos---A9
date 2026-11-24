@@ -4,7 +4,8 @@
 #
 # Uso (todo en el nodo de acceso de ClusterUY):
 #   1. git clone del repo y, una sola vez:  bash herramientas/preparar_cluster.sh
-#      (consigue Java 21 y Maven, compila y baja jMetal a lib/)
+#      (consigue Java 21, Maven y jMetal y compila; todo lo pesado va a /tmp
+#      porque el home tiene cuota)
 #   2. Prueba corta (qos rapida, máximo 30 min):
 #        sbatch --qos=rapida --time=00:30:00 --cpus-per-task=8 herramientas/clusteruy.sh prueba
 #   3. Corridas:  sbatch herramientas/clusteruy.sh <experimento>
@@ -37,14 +38,16 @@
 set -e
 cd "${SLURM_SUBMIT_DIR:-.}"
 [ -n "$(type -t module)" ] || source /etc/profile.d/modules.sh 2>/dev/null || true
-# Java 21 que dejó preparar_cluster.sh (módulo del cluster o JDK propio).
-[ -f "$HOME/herramientas/entorno.sh" ] && source "$HOME/herramientas/entorno.sh"
-if [ ! -f out/classpath.txt ]; then
-    echo "Falta compilar: correr antes  bash herramientas/preparar_cluster.sh" >&2
+# Java 21, jMetal y clases compiladas que dejó preparar_cluster.sh en /tmp
+# (el home tiene cuota y no entran). Ver cabecera de preparar_cluster.sh.
+BASE="${PLANTEL_BASE:-/tmp/$USER/plantel-ae}"
+[ -f "$BASE/entorno.sh" ] && source "$BASE/entorno.sh"
+if [ ! -f "$BASE/out/classpath.txt" ]; then
+    echo "Falta compilar o se limpió /tmp: correr  bash herramientas/preparar_cluster.sh" >&2
     exit 1
 fi
-echo "nodo: $(hostname) · CPUs: ${SLURM_CPUS_PER_TASK:-?} · $(java -version 2>&1 | head -1)"
-CP="$(cat out/classpath.txt)"
+echo "nodo: $(hostname) · CPUs: ${SLURM_CPUS_PER_TASK:-?} · base: $BASE · $(java -version 2>&1 | head -1)"
+CP="$(cat "$BASE/out/classpath.txt")"
 JAVA="java -Xmx12g -XX:ActiveProcessorCount=${SLURM_CPUS_PER_TASK:-1} -cp $CP"
 
 case "${1:-referencias}" in

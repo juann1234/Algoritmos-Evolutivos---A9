@@ -31,7 +31,7 @@ Estados: ⬜ pendiente · 🟨 en curso · ✅ hecho · ⛔ bloqueado
 | P17 | Datos reales: cargar SoFIFA/Transfermarkt al esquema `JugadorBase`, recalibrar valor, salario y rivales | §IV-A | Juan | ✅ | `herramientas/calibrar.py`, `Parametros.calibrados()`, instancias `barcelona-2020-*` (D-J2 a D-J6). Rivales y lesiones siguen siendo supuestos |
 | P18 | Reconstruir el **plan real del club** como individuo y evaluarlo | §IV-B(1) | Juan | ✅ | `instancias/plan_real_barcelona.csv`, `EvaluarCasoReal`. Preliminar: el AE le gana +6 a +8% y lo domina en puntos y patrimonio |
 | P19 | Barrido factorial completo en ClusterUY (27 config × 2 inst × 30) | §IV-A | — | ⬜ | `Experimentos 40000 30 2`; ya usa `AGPlantel` (P24) |
-| P20 | Verificar `mvn package` en una máquina con Maven Central | — | Juan o Alen | ⬜ | en el entorno del Claude de Alen Maven está bloqueado (D-A4) |
+| P20 | Verificar `mvn package` en una máquina con Maven Central | — | Juan | 🟨 | se resuelve en el nodo de acceso de ClusterUY con `herramientas/preparar_cluster.sh`, que baja Maven si no está y corre `compilar.sh` |
 | P21 | Informe final (IEEE, doble columna): ampliar con implementación, calibración, instancias, validación, resultados, conclusiones | todo | ambos | ⬜ | ver "Correcciones para el informe final" abajo |
 | P22 | Zip de entrega: fuentes + instancias, sin binarios ni framework | consigna | ambos | ⬜ | |
 | P23 | Corridas completas en ClusterUY: `CompararReferencias 40000 30` (3 instancias) y `ExperimentoMO 40000 30` por instancia | §IV-B, §IV-C | — | ⬜ | en el entorno del Claude de Alen solo hay 2 núcleos: ahí se corrieron versiones chicas |
@@ -42,7 +42,7 @@ Estados: ⬜ pendiente · 🟨 en curso · ✅ hecho · ⛔ bloqueado
 | P29 | Protocolo final sobre instancias reales: `Parametros.calibrados()` + `barcelona-2020-{chica,media,grande}`, incluido el plan real como referencia, en `CompararReferencias` y `ExperimentoMO` | §IV-B, §IV-C | Alen | ✅ | D-A17, D-A18; preliminar en RESULTADOS §10. Corridas completas: `clusteruy.sh referencias-reales` y `mo-real-*` (P23) |
 | P31 | Revisar la magnitud de f₂ en las reales: el AE es casi indiferente entre planes con f₂ de −369 a +4 M (β = 0,01) y los extremos renuevan temprano a todo el plantel valioso; ¿la economía de la renovación (D4/D5) con el valor calibrado (D-J2) es razonable a esa escala? | §I-C, §IV-B | Juan (modelo) | ⬜ | RESULTADOS §10. No cambia la conclusión en f₁ (dominancia 26/26), pero sí cómo se reporta el patrimonio |
 | P30 | Instancias de configuración también reales (por ejemplo, otros clubes con el mismo script) para que configuración y evaluación tengan la misma distribución | §IV-A, Tema 12 | — | ⬜ | opcional; `preparar_instancias.py` ya está armado para un club, habría que parametrizar el club |
-| P27 | Probar `herramientas/clusteruy.sh` en ClusterUY (partición, módulo de Java) | — | quien tenga cuenta | ⬜ | |
+| P27 | Probar `herramientas/clusteruy.sh` en ClusterUY (partición, módulo de Java) | — | Juan | 🟨 | script ajustado (partición y qos normal, `bash -l`, Java 21 detectado, modo `prueba`) y `preparar_cluster.sh`; falta correrlos en el cluster |
 
 ## Correcciones para el informe final (acumuladas)
 

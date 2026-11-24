@@ -26,8 +26,11 @@ Qué se calibra y contra qué:
      como supuesto (1200) y se calibran el nivel medio de crecimiento y
      declive por edad y el ruido.
 
-Uso:  python3 herramientas/calibrar.py <carpeta_con_los_csv>
-Imprime los parámetros a copiar en Parametros.calibrados().
+Uso:  python3 herramientas/calibrar.py <carpeta_con_los_csv> [M1,M2,...]
+Imprime los parámetros a copiar en Parametros.calibrados(). Con la lista
+opcional de valores de minutosMediaSaturacion, recalibra además la evolución
+para cada uno (análisis de sensibilidad de P31, D-J7): como el efecto de los
+minutos no es identificable, todos ajustan los datos igual de bien.
 """
 import re
 import sys
@@ -159,6 +162,12 @@ def main():
         for k, v in res.items():
             print(f"  {k:36s} {v:.4f}" if isinstance(v, float) else f"  {k:36s} {v}")
         print()
+    if len(sys.argv) > 2:
+        print("SENSIBILIDAD A LOS MINUTOS (D-J7)")
+        for M in (float(x) for x in sys.argv[2].split(",")):
+            r = calibrar_evolucion(fifa, vinculo, carpeta, minutos_saturacion=M)
+            print(f"  minutosMediaSaturacion={M:7.0f}  crecimientoMax={r['crecimientoMax']:.3f}  "
+                  f"sigmaTheta={r['sigmaTheta']:.3f}")
 
 
 if __name__ == "__main__":

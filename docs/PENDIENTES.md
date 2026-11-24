@@ -40,7 +40,7 @@ Estados: ⬜ pendiente · 🟨 en curso · ✅ hecho · ⛔ bloqueado
 | P26 | Revisar y aprobar la decisión de N = 10 (D-A13) | §IV-A | Juan | ✅ | aprobada el 23/11, verificada con el AE original (+5,56 y +3,15, p Holm 0,0117) |
 | P28 | N creciente prometido por el informe (§III-B) | §III-B, §IV-A | Juan | ✅ | implementado y evaluado: empata con N = 10 fijo, que se mantiene (D-J1) |
 | P29 | Protocolo final sobre instancias reales: `Parametros.calibrados()` + `barcelona-2020-{chica,media,grande}`, incluido el plan real como referencia, en `CompararReferencias` y `ExperimentoMO` | §IV-B, §IV-C | Alen | ✅ | D-A17, D-A18; preliminar en RESULTADOS §10. Corridas completas: `clusteruy.sh referencias-reales` y `mo-real-*` (P23) |
-| P31 | Revisar la magnitud de f₂ en las reales: el AE es casi indiferente entre planes con f₂ de −369 a +4 M (β = 0,01) y los extremos renuevan temprano a todo el plantel valioso; ¿la economía de la renovación (D4/D5) con el valor calibrado (D-J2) es razonable a esa escala? | §I-C, §IV-B | Juan (modelo) | ⬜ | RESULTADOS §10. No cambia la conclusión en f₁ (dominancia 26/26), pero sí cómo se reporta el patrimonio |
+| P31 | Revisar la magnitud de f₂ en las reales (dispersión de −369 a +4 M entre semillas) | §I-C, §IV-B | Juan (modelo) | ✅ | D-J7: puntos robustos (+10,5 a +11,6 bajo 4 supuestos); la renovación no es la causa; el nivel depende del supuesto no identificable de los minutos y la dispersión es estructural. Patrimonio: reportarlo con el frente de NSGA-II. `resultados/p31_sensibilidad_patrimonio.txt` |
 | P30 | Instancias de configuración también reales (por ejemplo, otros clubes con el mismo script) para que configuración y evaluación tengan la misma distribución | §IV-A, Tema 12 | — | ⬜ | opcional; `preparar_instancias.py` ya está armado para un club, habría que parametrizar el club |
 | P27 | Probar `herramientas/clusteruy.sh` en ClusterUY (partición, módulo de Java) | — | quien tenga cuenta | ⬜ | |
 
@@ -70,6 +70,7 @@ final. Agregar acá cada vez que aparezca una.
 19. **Instancias reales y plan real del Barcelona 2020-2023** (D-J4), con sus limitaciones (canteranos, una acción por jugador, precios del modelo).
 20. **Correcciones del modelo de mercado** que aparecieron al evaluar el plan real (D-J5), y **β = 0,01** para la escala real (D-J6).
 21. Sobre las instancias reales, el greedy usa los parámetros calibrados y el plan real entra como referencia en todos los tests (D-A18). Reportar la dominancia en f₁ y f₂, y el frente de Pareto, además del % de mejora.
+21. **Patrimonio del AE mono-objetivo** (D-J7): la conclusión va en puntos, robusta bajo cuatro supuestos; el patrimonio se reporta con el frente de NSGA-II y la tabla de sensibilidad, no como un número único.
 
 ---
 
@@ -77,6 +78,16 @@ final. Agregar acá cada vez que aparezca una.
 
 Entradas nuevas arriba. Formato: fecha · quién · qué se hizo · cómo se validó · qué sigue.
 
+
+### 24/11/2026 · Juan (con Claude) · P31: sensibilidad del patrimonio
+- `SensibilidadPatrimonio`: cuatro variantes (sensibilidad a los minutos
+  fuerte, media y débil, recalibradas con `calibrar.py <carpeta> 300,50`, y
+  sin ganancia patrimonial por renovar), 6 semillas cada una.
+- Puntos robustos en las 24 corridas; la renovación no causa la dispersión;
+  el nivel de f₂ depende del supuesto de los minutos; la dispersión es
+  estructural (D-J7). La conclusión del informe se apoya en f₁, como propuso Alen.
+- Validación: la variante base reproduce la sonda inicial (280,34 y −199,1).
+- Qué sigue: corridas en ClusterUY (Juan) e informe.
 ### 24/11/2026 · Alen (con Claude) · P29: protocolo final sobre las instancias reales
 - Partí de `juan/p17-p18-datos-reales` (sus PRs #2 y #3 siguen abiertos;
   esta rama los contiene). `validar.sh` pasó entero antes de tocar nada.

@@ -245,6 +245,23 @@ parámetros calibrados, plan real como referencia (D-A18). Fuente:
   (D-J2), no de un error, pero conviene apoyar la conclusión en la dominancia
   en f₁ y mostrar el compromiso completo con el frente de Pareto (PENDIENTES P31).
 
+**P31: sensibilidad del patrimonio** (Juan, D-J7; `resultados/p31_sensibilidad_patrimonio.txt`).
+Con 6 semillas por variante en barcelona-2020-chica:
+
+| variante | puntos AE (plan real) | f₂ AE, media ± sd (plan real) |
+|---|---|---|
+| minutos fuerte (actual) | 280,3 (269,5) | −147 ± 115 (231) |
+| minutos medio, recalibrado | 279,6 (269,1) | 26 ± 145 (238) |
+| minutos débil, recalibrado | 280,3 (268,6) | 144 ± 100 (253) |
+| sin ganancia patrimonial por renovar | 279,4 (268,3) | −32 ± 151 (270) |
+
+Los puntos son robustos a los dos mecanismos sospechados. La renovación no
+causa la dispersión. El nivel de f₂ depende de la sensibilidad a los minutos,
+que no es identificable con los datos (D-J3), y la dispersión es estructural
+(β = 0,01 deja una franja de planes casi equivalentes en f). Por eso el
+patrimonio se reporta con el frente de Pareto y no como un número del AE
+mono-objetivo.
+
 **Multiobjetivo en barcelona-2020-chica** (`ExperimentoMO 24000 10`; fuente
 `resultados/mo_barcelona-2020-chica_preliminar.txt`; figura
 `frente_pareto_barcelona-2020-chica.png`):

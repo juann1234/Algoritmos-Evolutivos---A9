@@ -1,0 +1,37 @@
+# P31: sensibilidad del patrimonio (barcelona-2020-chica, 12.000 evaluaciones, N = 10, 6 semillas, validación N = 200)
+# Generado con: SensibilidadPatrimonio <variante> 12000 6  (columnas: variante | plan | puntos 3 temporadas | costo neto f2 | patrimonio final | renovaciones | compras de <=23 años)
+
+base|real|269.50|230.9|666.9
+base|AE1|280.34|-199.1|1096.9|ren=13|jovenes=3
+base|AE2|280.25|-237.4|1135.3|ren=12|jovenes=4
+base|AE3|281.76|75.2|822.6|ren=12|jovenes=5
+base|AE4|279.16|-215.1|1113.0|ren=10|jovenes=5
+base|AE5|279.33|-181.2|1079.1|ren=10|jovenes=7
+base|AE6|280.72|-124.8|1022.6|ren=10|jovenes=6
+minutos-medio|real|269.08|238.0|659.9
+minutos-medio|AE1|279.84|61.5|836.4|ren=11|jovenes=4
+minutos-medio|AE2|279.67|-109.6|1007.5|ren=8|jovenes=5
+minutos-medio|AE3|281.62|140.6|757.3|ren=13|jovenes=3
+minutos-medio|AE4|275.80|-124.0|1021.8|ren=10|jovenes=6
+minutos-medio|AE5|281.13|238.2|659.7|ren=11|jovenes=4
+minutos-medio|AE6|279.55|-48.0|945.9|ren=10|jovenes=3
+minutos-debil|real|268.64|253.1|644.8
+minutos-debil|AE1|281.70|286.0|611.9|ren=9|jovenes=5
+minutos-debil|AE2|280.48|220.6|677.2|ren=10|jovenes=4
+minutos-debil|AE3|279.20|109.2|788.6|ren=10|jovenes=2
+minutos-debil|AE4|279.50|91.4|806.5|ren=10|jovenes=4
+minutos-debil|AE5|279.87|4.5|893.3|ren=12|jovenes=4
+minutos-debil|AE6|280.81|151.7|746.1|ren=11|jovenes=6
+sin-ganancia-renovacion|real|268.33|270.2|627.6
+sin-ganancia-renovacion|AE1|280.18|-39.6|937.4|ren=12|jovenes=6
+sin-ganancia-renovacion|AE2|278.25|-253.6|1151.5|ren=10|jovenes=5
+sin-ganancia-renovacion|AE3|279.19|51.5|846.4|ren=7|jovenes=7
+sin-ganancia-renovacion|AE4|278.17|-67.7|965.5|ren=9|jovenes=5
+sin-ganancia-renovacion|AE5|280.36|200.9|696.9|ren=10|jovenes=3
+sin-ganancia-renovacion|AE6|280.11|-86.1|983.9|ren=10|jovenes=6
+
+# Resumen
+# base (minutos fuerte, actual)  puntos AE  280.3 (plan real  269.5, +10.8) | f2 AE   -147 ± 115 (plan real  231) | domina en ambos: 6/6
+# minutos-medio                  puntos AE  279.6 (plan real  269.1, +10.5) | f2 AE     26 ± 145 (plan real  238) | domina en ambos: 5/6
+# minutos-debil                  puntos AE  280.3 (plan real  268.6, +11.6) | f2 AE    144 ± 100 (plan real  253) | domina en ambos: 5/6
+# sin-ganancia-renovacion        puntos AE  279.4 (plan real  268.3, +11.0) | f2 AE    -32 ± 151 (plan real  270) | domina en ambos: 6/6

@@ -473,3 +473,43 @@ Validación: la identidad de D-A6 sigue siendo exacta con los parámetros
 calibrados y las correcciones de mercado de D-J5 (error 1e-13 en
 barcelona-2020-chica y -grande, incluido el plan real); quedó como chequeo
 en `ValidarMO`.
+
+### D-J7 · P31: el patrimonio del AE mono-objetivo no se reporta como un número único
+**Fecha:** 24/11/2026 · **Autor:** Juan · **Estado:** vigente · **Afecta al informe** (§IV-B, §IV-C)
+
+Alen observó (RESULTADOS §10) que en las instancias reales el AE es estable
+en puntos pero el costo neto f₂ varía cientos de millones entre semillas.
+Análisis de sensibilidad (`SensibilidadPatrimonio`, barcelona-2020-chica,
+12.000 evaluaciones, 6 semillas por variante; `resultados/p31_sensibilidad_patrimonio.txt`):
+
+| variante | puntos AE (plan real) | f₂ del AE, media ± sd (plan real) |
+|---|---|---|
+| minutos fuerte (actual, M = 1200) | 280,3 (269,5) | −147 ± 115 (231) |
+| minutos medio (M = 300, recalibrado) | 279,6 (269,1) | 26 ± 145 (238) |
+| minutos débil (M = 50, recalibrado) | 280,3 (268,6) | 144 ± 100 (253) |
+| sin ganancia patrimonial por renovar | 279,4 (268,3) | −32 ± 151 (270) |
+
+Las tres sensibilidades a los minutos ajustan los datos igual de bien (ruido
+residual 2,25 a 2,29: D-J3), pero difieren en cuánto crece un juvenil con
+minutos frente a sin ellos (3,5, 1,9 y 0,5 puntos por temporada).
+
+Conclusiones:
+1. **Los puntos son robustos**: el AE le saca 10,5 a 11,6 puntos de liga al
+   plan real en las 24 corridas, bajo los cuatro supuestos. La conclusión en
+   f₁ no depende de ninguno de los dos mecanismos sospechados.
+2. **La renovación no causa la dispersión**: sin ganancia patrimonial por
+   renovar, el AE sigue renovando a unos 10 jugadores (para no perderlos
+   libres) y la dispersión no baja.
+3. **El nivel del patrimonio depende del supuesto de los minutos**, que no es
+   identificable: la ventaja de costo del AE sobre el plan real va de 378 M
+   (fuerte) a 109 M (débil). Bajo el supuesto débil, en 1 de 6 corridas el AE
+   gasta más que el plan real.
+4. **La dispersión es estructural**: aparece en las cuatro variantes. Con
+   β = 0,01, 100 M valen un punto de fitness, así que hay una franja de planes
+   casi equivalentes en f con patrimonios muy distintos.
+
+**Decisión para el informe:** el resultado mono-objetivo se reporta en puntos
+(f₁). El patrimonio se reporta con el frente de Pareto de NSGA-II, que es la
+herramienta para esa dimensión, acompañado por esta tabla de sensibilidad. Si
+se da un número de f₂ del AE mono-objetivo, que sea mediana y rango
+intercuartílico de las 30 corridas y con la advertencia del punto 3.
